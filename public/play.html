@@ -98,13 +98,13 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .wheel-overlay{position:fixed;inset:0;z-index:95;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,0,0,.5);backdrop-filter:blur(8px);animation:alertPulse 2s ease-in-out infinite alternate}
 @keyframes alertPulse{0%{background:rgba(0,0,0,.5)}100%{background:rgba(160,0,0,.7)}}
 .wheel-overlay.hidden{display:none}
-.slot-machine{background:var(--bg2);border-radius:var(--radius);padding:24px 20px;box-shadow:var(--shadow-lg)}
-.slot-window{position:relative;height:432px;overflow:hidden;border-radius:var(--radius-sm);background:var(--bg3);border:2px solid var(--border)}
-.slot-window::before{content:'';position:absolute;inset:0;z-index:2;pointer-events:none;background:linear-gradient(to bottom,var(--bg3) 0%,transparent 28%,transparent 72%,var(--bg3) 100%)}
-.slot-track{will-change:transform}
-.slot-item{height:144px;display:flex;align-items:center;justify-content:center;gap:16px;font-size:24px;font-weight:700;color:var(--text);border-bottom:1px solid var(--border)}
-.slot-item .si-icon{font-size:40px}
-.slot-item .si-name{color:var(--text2);font-size:22px}
+.wheel-spinner{text-align:center}
+.ws-icon{font-size:80px;animation:wsSpin 1.5s ease-in-out infinite}
+@keyframes wsSpin{0%{transform:rotate(0deg) scale(1)}50%{transform:rotate(180deg) scale(1.15)}100%{transform:rotate(360deg) scale(1)}}
+.ws-icon.shield{animation:wsPulse 1s ease-in-out infinite alternate}
+@keyframes wsPulse{0%{transform:scale(.8);opacity:.5}100%{transform:scale(1.15);opacity:1}}
+.ws-text{color:rgba(255,255,255,.8);font-size:18px;font-weight:600;margin-top:20px}
+.ws-sub{color:rgba(255,255,255,.5);font-size:14px;margin-top:8px}
 .wheel-label{color:#fff;font-size:24px;font-weight:700;margin-bottom:24px;text-align:center}
 #confettiCanvas{position:fixed;inset:0;z-index:96;pointer-events:none}
 .zoom-reveal{position:fixed;inset:0;z-index:97;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,0,0,.88);animation:zrIn .6s ease-out both}
@@ -179,7 +179,7 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .waiting-overlay .wo-text{font-size:20px;font-weight:700;color:var(--text2)}
 .waiting-overlay .wo-sub{font-size:14px;color:var(--text3);margin-top:8px}
 @media(max-width:768px){.header{padding:12px 16px}.header h1{font-size:16px}.header-right{gap:12px}.round-badge{padding:4px 12px;font-size:12px}.main{top:60px;bottom:40px;padding:16px}.main.selecting{padding:12px 12px 80px}.round-title{font-size:22px;margin-bottom:4px}.round-sub{font-size:14px;margin-bottom:16px}.defence-grid{gap:10px}.defence-card{padding:14px}.defence-icon{font-size:24px;width:32px}.defence-name{font-size:16px}.defence-counters{font-size:13px}.timer-display{font-size:36px;min-width:90px}.timer-section{margin-bottom:16px}.status-bar{padding:8px 16px;font-size:12px}.intro{padding:24px}.intro h2{font-size:20px}.intro-grid{grid-template-columns:1fr}.result-card{padding:24px}.result-title{font-size:18px}.go-stats{gap:8px}.go-stat{padding:12px}.go-stat .value{font-size:22px}}
-@media(max-width:480px){.header{padding:8px 12px}.header h1{font-size:14px}.header-right{gap:8px}.header-budget{gap:4px;font-size:12px}.header-budget .amount{font-size:13px}.round-badge{padding:3px 8px;font-size:10px}.main{top:52px;bottom:36px;padding:12px}.main.selecting{padding:8px 8px 70px}.round-title{font-size:20px}.round-sub{font-size:14px;margin-bottom:12px}.defence-grid{gap:8px;max-width:100%}.defence-card{padding:12px;gap:12px}.defence-card.carried::after{font-size:8px;padding:2px 6px;top:4px;right:4px}.defence-icon{font-size:20px;width:28px}.defence-name{font-size:15px}.defence-counters{font-size:13px}.timer-display{font-size:26px;min-width:60px}.timer-section{gap:6px;margin-bottom:12px}.status-bar{display:none}.wheel-label{font-size:20px;margin-bottom:16px}.slot-machine{padding:16px 12px}.slot-window{height:288px}.slot-item{height:96px;font-size:20px;gap:12px}.slot-item .si-icon{font-size:32px}.slot-item .si-name{font-size:18px}.intro{padding:16px}.intro h2{font-size:18px;margin-bottom:16px}.intro-item{padding:10px}.intro-item .icon{font-size:20px}.intro-item .name{font-size:14px}.intro-item .counters{font-size:12px}.intro-btn{padding:10px 24px;font-size:13px}.result-card{padding:20px}.result-title{font-size:16px}.result-sub{font-size:12px;margin-bottom:16px}.verdict{padding:16px}.verdict .v-icon{font-size:36px}.verdict .v-label{font-size:15px}.verdict .v-detail{font-size:13px}.attack-info{padding:12px}.budget-item .value{font-size:16px}.defences-deployed .dd-item{font-size:10px;padding:4px 8px}.result-btn{width:100%;padding:12px 20px;font-size:14px}.zr-icon{font-size:80px}.zr-name{font-size:32px}.zr-example{font-size:16px}.game-over h2{font-size:24px}.game-over .go-sub{font-size:14px;margin-bottom:20px}.go-stats{gap:6px}.go-stat{padding:10px}.go-stat .label{font-size:10px}.go-stat .value{font-size:18px}.name-card{padding:24px}.name-card h2{font-size:22px}.name-input{font-size:16px;padding:12px}.priority-item{padding:14px}.priority-item .p-rank{font-size:18px;width:28px}.priority-item .p-icon{font-size:20px;width:28px}.priority-item .p-name{font-size:15px}.drag-handle{font-size:18px}}
+@media(max-width:480px){.header{padding:8px 12px}.header h1{font-size:14px}.header-right{gap:8px}.header-budget{gap:4px;font-size:12px}.header-budget .amount{font-size:13px}.round-badge{padding:3px 8px;font-size:10px}.main{top:52px;bottom:36px;padding:12px}.main.selecting{padding:8px 8px 70px}.round-title{font-size:20px}.round-sub{font-size:14px;margin-bottom:12px}.defence-grid{gap:8px;max-width:100%}.defence-card{padding:12px;gap:12px}.defence-card.carried::after{font-size:8px;padding:2px 6px;top:4px;right:4px}.defence-icon{font-size:20px;width:28px}.defence-name{font-size:15px}.defence-counters{font-size:13px}.timer-display{font-size:26px;min-width:60px}.timer-section{gap:6px;margin-bottom:12px}.status-bar{display:none}.wheel-label{font-size:20px;margin-bottom:16px}.ws-icon{font-size:60px}.ws-text{font-size:16px}.intro{padding:16px}.intro h2{font-size:18px;margin-bottom:16px}.intro-item{padding:10px}.intro-item .icon{font-size:20px}.intro-item .name{font-size:14px}.intro-item .counters{font-size:12px}.intro-btn{padding:10px 24px;font-size:13px}.result-card{padding:20px}.result-title{font-size:16px}.result-sub{font-size:12px;margin-bottom:16px}.verdict{padding:16px}.verdict .v-icon{font-size:36px}.verdict .v-label{font-size:15px}.verdict .v-detail{font-size:13px}.attack-info{padding:12px}.budget-item .value{font-size:16px}.defences-deployed .dd-item{font-size:10px;padding:4px 8px}.result-btn{width:100%;padding:12px 20px;font-size:14px}.zr-icon{font-size:80px}.zr-name{font-size:32px}.zr-example{font-size:16px}.game-over h2{font-size:24px}.game-over .go-sub{font-size:14px;margin-bottom:20px}.go-stats{gap:6px}.go-stat{padding:10px}.go-stat .label{font-size:10px}.go-stat .value{font-size:18px}.name-card{padding:24px}.name-card h2{font-size:22px}.name-input{font-size:16px;padding:12px}.priority-item{padding:14px}.priority-item .p-rank{font-size:18px;width:28px}.priority-item .p-icon{font-size:20px;width:28px}.priority-item .p-name{font-size:15px}.drag-handle{font-size:18px}}
 </style>
 </head>
 <body>
@@ -229,7 +229,11 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 </div>
 <div class="wheel-overlay hidden" id="wheel-overlay">
   <div class="wheel-label" id="wheel-label">Incoming Attack...</div>
-  <div class="slot-machine"><div class="slot-window"><div class="slot-track" id="slot-track"></div></div></div>
+  <div class="wheel-spinner" id="wheel-spinner">
+    <div class="ws-icon">🛡️</div>
+    <div class="ws-text">Scanning for threats...</div>
+    <div class="ws-sub">Analysing attack vector</div>
+  </div>
 </div>
 <div class="zoom-reveal hidden" id="zoom-reveal">
   <div class="zr-content"><div class="zr-icon" id="zr-icon"></div><div class="zr-name" id="zr-name"></div><div class="zr-example" id="zr-example"></div></div>
@@ -312,7 +316,7 @@ const aIcon=$('a-icon'),aName=$('a-name'),aDesc=$('a-desc'),biImpact=$('bi-impac
 const gameoverOverlay=$('gameover-overlay'),goTitle=$('go-title'),goSub=$('go-sub'),goBlocked=$('go-blocked'),goBreaches=$('go-breaches'),goBudget=$('go-budget');
 const waitingOverlay=$('waiting-overlay'),woText=$('wo-text'),woSub=$('wo-sub');
 const priorityOverlay=$('priority-overlay'),priorityList=$('priority-list'),prioritySubBtn=$('priority-sub-btn');
-const slotTrack=$('slot-track');
+const wheelSpinner=$('wheel-spinner');
 
 let audioCtx=null,audioUnlocked=false;
 function ensureAudio(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();if(audioCtx.state==='suspended')audioCtx.resume();if(!audioUnlocked){audioUnlocked=true;const src=audioCtx.createBufferSource();src.buffer=audioCtx.createBuffer(1,1,audioCtx.sampleRate);src.connect(audioCtx.destination);src.start();src.stop()}}
@@ -486,11 +490,9 @@ function renderPhase(gs){
     timerSection.style.display='none';
     roundTitle.textContent='';
     roundSub.textContent='';
-    if(currentAttack){
-      wheelOverlay.classList.remove('hidden');
-      wheelLabel.textContent='Incoming Attack...';
-      spinWheel(ATTACKS.indexOf(currentAttack));
-    }
+    wheelOverlay.classList.remove('hidden');
+    wheelLabel.textContent='Incoming Attack...';
+    wheelSpinner.style.display='';
   }else if(phase==='reveal'){
     clearTimeout(revealTimer);
     if(currentAttack&&!zoomReveal.classList.contains('hidden')&&zoomReveal.classList.contains('out')){}else{
@@ -552,29 +554,6 @@ function renderPhase(gs){
     }else histEl.innerHTML='';
     gameoverOverlay.classList.remove('hidden');
   }
-}
-
-function spinWheel(targetIdx){
-  const ih=window.innerWidth<=480?96:144,cycles=5;
-  slotTrack.innerHTML='';
-  for(let c=0;c<cycles+1;c++)ATTACKS.forEach(a=>{
-    const d=document.createElement('div');d.className='slot-item';
-    d.innerHTML='<span class="si-icon">'+a.icon+'</span><span class="si-name">'+a.name+'</span>';
-    slotTrack.appendChild(d);
-  });
-  ATTACKS.slice(0,2).forEach(a=>{
-    const d=document.createElement('div');d.className='slot-item';
-    d.innerHTML='<span class="si-icon">'+a.icon+'</span><span class="si-name">'+a.name+'</span>';
-    slotTrack.appendChild(d);
-  });
-  const tgi=cycles*ATTACKS.length+targetIdx,endY=(tgi-1)*ih,duration=10000,st=performance.now();
-  function eo(t){return 1-Math.pow(1-t,3)}
-  function an(now){
-    const elapsed=now-st,progress=Math.min(elapsed/duration,1),cur=eo(progress)*endY;
-    slotTrack.style.transform='translateY(-'+cur+'px)';
-    if(progress<1)requestAnimationFrame(an);
-  }
-  requestAnimationFrame(an);
 }
 
 function launchConfetti(){
