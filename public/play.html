@@ -182,20 +182,7 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
     <div class="connecting" id="connecting-msg">Connecting to server...</div>
   </div>
 </div>
-<div class="overlay" id="intro-overlay">
-  <div class="intro">
-    <h2 id="intro-title">Defence Mechanisms</h2>
-    <div class="intro-page active" id="intro-page-1"><div class="intro-grid" id="intro-defences"></div></div>
-    <div class="intro-page" id="intro-page-2">
-      <div class="intro-grid" id="intro-attacks"></div>
-      <div class="waiting-text" id="waiting-text"><span class="waiting-spinner"></span>Waiting for game to start...</div>
-    </div>
-    <div class="intro-nav">
-      <button class="intro-btn secondary" id="intro-prev" style="display:none">Previous</button>
-      <button class="intro-btn primary" id="intro-next">Next</button>
-    </div>
-  </div>
-</div>
+
 <div class="waiting-overlay hidden" id="waiting-overlay">
   <div class="wo-icon">⏳</div>
   <div class="wo-text" id="wo-text">Waiting for next round...</div>
@@ -270,7 +257,6 @@ const socket=io();
 let playerId=null;
 
 const connDot=$('conn-dot'),nameOverlay=$('name-overlay'),nameInput=$('name-input'),nameSubBtn=$('name-sub-btn'),connMsg=$('connecting-msg');
-const introOverlay=$('intro-overlay'),introTitle=$('intro-title'),introPage1=$('intro-page-1'),introPage2=$('intro-page-2'),introPrev=$('intro-prev'),introNext=$('intro-next');
 const defenceGrid=$('defence-grid'),roundTitle=$('round-title'),roundSub=$('round-sub'),roundBadge=$('round-badge');
 const timerDisplay=$('timer-display'),timerSection=$('timer-section');
 const headerBudget=$('header-budget'),statusText=$('status-text'),statusBudget=$('status-budget');
@@ -347,7 +333,6 @@ function renderPhase(gs){
     woText.textContent='Waiting for game to start...';
     woSub.textContent='The dashboard operator will start the game shortly';
   }else if(phase==='selecting'){
-    introOverlay.classList.add('hidden');
     waitingOverlay.classList.add('hidden');
     defenceGrid.style.display='grid';
     timerSection.style.display='flex';
@@ -384,30 +369,6 @@ function renderPhase(gs){
     goSub.textContent=b>0?'Your defences held strong':'Budget depleted — too many breaches';
     gameoverOverlay.classList.remove('hidden');
   }
-}
-
-function showIntroPage(page){
-  introOverlay.classList.remove('hidden');
-  introPage1.classList.toggle('active',page===1);
-  introPage2.classList.toggle('active',page===2);
-  introPrev.style.display=page===1?'none':'';
-  if(page===1){
-    introTitle.textContent='Defence Mechanisms';
-    introNext.textContent='Next';
-    introNext.style.display='';
-    $('intro-defences').innerHTML=DEFENCES.map(d=>`<div class="intro-item"><div class="icon">${d.icon}</div><div><div class="name">${d.name}</div><div class="counters">${d.desc}</div></div></div>`).join('');
-  }else{
-    introTitle.textContent='Attack Vectors';
-    introNext.textContent='Waiting...';
-    introNext.style.display='none';
-    $('intro-attacks').innerHTML=ATTACKS.map(a=>`<div class="intro-item"><div class="icon">${a.icon}</div><div><div class="name">${a.name}</div><div class="counters">${a.desc}</div></div></div>`).join('');
-  }
-  introPrev.addEventListener('click',()=>{
-    if(page===2)showIntroPage(1);
-  },{once:true});
-  introNext.addEventListener('click',()=>{
-    if(page===1)showIntroPage(2);
-  },{once:true});
 }
 
 function spinWheel(targetIdx){
@@ -477,7 +438,6 @@ socket.on('disconnect',()=>{connDot.className='conn-dot disconnected'});
 socket.on('joined',(data)=>{
   playerId=data.id;
   nameOverlay.classList.add('hidden');
-  introOverlay.classList.add('hidden');
   waitingOverlay.classList.remove('hidden');
   woText.textContent='Waiting for game to start...';
   woSub.textContent='The dashboard operator will start the game shortly';
