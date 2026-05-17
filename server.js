@@ -25,7 +25,7 @@ const DEFENCES = [
   {id:'endpoint',name:'Endpoint Protection',icon:'💻',desc:'Secures devices from malicious software',counters:['malware','ransomware']},
   {id:'mfa',name:'Multi-Factor Auth',icon:'🔐',desc:'Requires multiple verification methods',counters:['insider','social_eng']},
   {id:'encryption',name:'Encryption',icon:'🔒',desc:'Scrambles data to prevent unauthorised access',counters:['data_exfil','mitm']},
-  {id:'seg',name:'Network Segmentation',icon:'🔀',desc:'Divides networks to contain breaches',counters:['sql_injection','insider']},
+   {id:'seg',name:'Network Segmentation',icon:'🔀',desc:'seperates the network into departmental areas',counters:['sql_injection','insider']},
   {id:'backup',name:'Backup & Recovery',icon:'💾',desc:'Restores data after loss or attack',counters:['ransomware','ddos']},
   {id:'threat',name:'Threat Detection',icon:'👁️',desc:'Identifies suspicious activity in real time',counters:['zero_day','phishing']},
   {id:'passwords',name:'Improved User Passwords',icon:'🔑',desc:'Enforces strong password policies',counters:['sql_injection','mitm']},
@@ -35,6 +35,13 @@ const DEFENCES = [
 
 const EFFECTIVENESS = {};
 DEFENCES.forEach(d => { EFFECTIVENESS[d.id] = d.counters; });
+
+const PRIORITY_MAP = {
+  'Money': ['ransomware', 'insider', 'social_eng'],
+  'Data': ['phishing', 'sql_injection', 'mitm', 'data_exfil'],
+  'Maintain Services': ['malware', 'ddos', 'zero_day']
+};
+const PRIORITY_EMOJIS = {'Money':'💰','Data':'💾','Maintain Services':'⚙️'};
 
 const ATTACK_COST = 100000;
 const START_BUDGET = 300000;
@@ -84,22 +91,43 @@ function getGameState() {
   };
 }
 
+function calculateAward(player) {
+  const topPriority = (player.priority || ['Money'])[0];
+  const priorityAttacks = PRIORITY_MAP[topPriority] || [];
+  const history = player.roundHistory || [];
+  const faced = history.filter(r => priorityAttacks.includes(r.attackId));
+  const blocked = faced.filter(r => r.blocked).length;
+  const tot = faced.length;
+  const pct = tot === 0 ? 1 : blocked / tot;
+  const award = pct >= 2/3 ? 'Gold' : pct >= 1/3 ? 'Silver' : 'Bronze';
+  const score = Math.round((pct * 50) + ((player.budget / START_BUDGET) * 50));
+  return { award, score, priorityPct: Math.round(pct * 100) };
+}
+
 function getPlayersData() {
-  return Object.values(players).map(p => ({
-    id: p.id,
-    name: p.name,
-    connected: p.connected,
-    budget: p.budget,
-    blocked: p.blocked,
-    breaches: p.breaches,
-    defences: [...p.carriedOver, ...p.selected],
-    selected: p.selected,
-    carriedOver: p.carriedOver,
-    maxSelect: p.maxSelect,
-    lastAttack: p.lastAttack,
-    lastResult: p.lastResult,
-    preventInfo: p.preventInfo,
-  }));
+  return Object.values(players).map(p => {
+    const awardInfo = game.phase === 'gameover' ? calculateAward(p) : { award: null, score: 0, priorityPct: 0 };
+    return {
+      id: p.id,
+      name: p.name,
+      connected: p.connected,
+      budget: p.budget,
+      blocked: p.blocked,
+      breaches: p.breaches,
+      defences: [...p.carriedOver, ...p.selected],
+      selected: p.selected,
+      carriedOver: p.carriedOver,
+      maxSelect: p.maxSelect,
+      lastAttack: p.lastAttack,
+      lastResult: p.lastResult,
+      preventInfo: p.preventInfo,
+      priority: p.priority || [],
+      roundHistory: p.roundHistory || [],
+      award: awardInfo.award,
+      score: awardInfo.score,
+      priorityPct: awardInfo.priorityPct,
+    };
+  });
 }
 
 function broadcast() {
@@ -131,6 +159,7 @@ function endRound() {
     p.lastAttack = null;
     p.lastResult = null;
     p.preventInfo = null;
+    const blocked = !!blocker;
     if (blocker) {
       p.blocked++;
       p.lastResult = 'blocked';
@@ -145,6 +174,8 @@ function endRound() {
       p.lastAttack = { id: attack.id, name: attack.name, icon: attack.icon, desc: attack.desc, example: attack.example, preventers };
       p.preventInfo = `Could have been prevented by: ${preventers.join(', ')}`;
     }
+    if (!p.roundHistory) p.roundHistory = [];
+    p.roundHistory.push({ attackId: attack.id, blocked });
   });
 
   broadcast();
@@ -196,6 +227,8 @@ function startGame() {
     p.lastResult = null;
     p.preventInfo = null;
     p.maxSelect = 3;
+    p.roundHistory = [];
+    p.priority = [];
   });
   startRound();
 }
@@ -217,6 +250,8 @@ function resetGame() {
     p.lastResult = null;
     p.preventInfo = null;
     p.maxSelect = 3;
+    p.roundHistory = [];
+    p.priority = [];
   });
   broadcast();
 }
@@ -242,6 +277,8 @@ io.on('connection', (socket) => {
       lastResult: null,
       preventInfo: null,
       maxSelect: 3,
+      roundHistory: [],
+      priority: [],
     };
     socket.emit('joined', { id: socket.id });
     broadcast();
@@ -277,6 +314,13 @@ io.on('connection', (socket) => {
     if (p.selected.length >= p.maxSelect) return;
     if (p.carriedOver.includes(defenceId)) return;
     p.selected.push(defenceId);
+    broadcast();
+  });
+
+  socket.on('set-priority', (priority) => {
+    const p = players[socket.id];
+    if (!p || priority.length !== 3) return;
+    p.priority = priority;
     broadcast();
   });
 

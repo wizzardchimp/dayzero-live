@@ -12,9 +12,10 @@
 body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column}
 button{font-family:inherit;cursor:pointer;border:none;outline:none}
 button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-.header{display:flex;align-items:center;justify-content:space-between;padding:16px 32px;border-bottom:1px solid var(--border);flex-shrink:0}
+.header{display:flex;align-items:center;justify-content:space-between;padding:12px 32px;border-bottom:1px solid var(--border);flex-shrink:0}
+.header-left{flex:1}.header-center{flex:1;text-align:center}.header-right{flex:1;display:flex;align-items:center;justify-content:flex-end;gap:16px;font-size:14px;color:var(--text2)}
 .header h1{font-size:20px;font-weight:900;background:linear-gradient(135deg,var(--accent),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.header-right{display:flex;align-items:center;gap:16px;font-size:14px;color:var(--text2)}
+.header-rock{height:40px;width:auto;vertical-align:middle}
 .player-count{font-weight:700;color:var(--accent2);font-size:18px}
 .main{flex:1;overflow-y:auto;padding:20px 32px;padding-bottom:120px}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
@@ -103,11 +104,34 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
   display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;padding:12px;background:var(--card2);border-radius:var(--radius-sm);justify-content:center
 }
 .dg-title{font-size:16px;font-weight:700;margin-bottom:8px;color:var(--text2);text-align:center}
+.ranking-container{max-width:900px;width:100%;margin:24px auto 0}
+.ranking-title{font-size:28px;font-weight:900;margin-bottom:24px;text-align:center;color:#fff}
+.podium{display:flex;align-items:flex-end;justify-content:center;gap:16px;margin-bottom:32px}
+.podium-item{text-align:center;border-radius:var(--radius);padding:20px 24px;min-width:180px;transition:all .3s}
+.podium-item.gold{background:linear-gradient(135deg,#f59e0b,#d97706);order:2;padding-bottom:32px}
+.podium-item.silver{background:linear-gradient(135deg,#94a3b8,#64748b);order:1;padding-bottom:16px}
+.podium-item.bronze{background:linear-gradient(135deg,#cd7f32,#a0522d);order:3;padding-bottom:12px}
+.podium-rank{font-size:32px;font-weight:900;color:#fff;margin-bottom:4px}
+.podium-name{font-size:20px;font-weight:800;color:#fff;margin-bottom:4px}
+.podium-score{font-size:14px;color:rgba(255,255,255,.8)}
+.podium-priority{font-size:12px;color:rgba(255,255,255,.7);margin-bottom:4px}
+.podium-budget{font-size:16px;font-weight:700;color:rgba(255,255,255,.9);margin-top:4px}
+.podium-award{display:inline-block;font-size:28px;margin-top:6px}
+.ranking-table{background:rgba(255,255,255,.05);border-radius:var(--radius);overflow:hidden}
+.ranking-row{display:grid;grid-template-columns:50px 1fr 120px 120px 100px;align-items:center;padding:10px 20px;border-bottom:1px solid rgba(255,255,255,.08);font-size:14px;color:rgba(255,255,255,.8)}
+.ranking-row:last-child{border-bottom:none}
+.ranking-row.header{font-size:11px;color:rgba(255,255,255,.4);font-weight:600;letter-spacing:1px;text-transform:uppercase}
+.ranking-row .rr-rank{font-weight:800;font-size:16px;text-align:center}
+.ranking-row .rr-name{font-weight:700;text-align:left}
+.ranking-row .rr-priority{text-align:center;font-size:13px}
+.ranking-row .rr-budget{text-align:right;font-weight:700;font-family:monospace}
+.ranking-row .rr-award{text-align:center;font-size:18px}
 </style>
 </head>
 <body>
 <div class="header">
-  <h1>DAY ZERO LIVE</h1>
+  <div class="header-left"><h1>DAY ZERO LIVE</h1></div>
+  <div class="header-center"><img src="rock.png" alt="Rock" class="header-rock" id="header-rock" onerror="this.style.display='none'"></div>
   <div class="header-right">
     <span class="phase-indicator" id="phase-indicator"><span class="phase-dot orange" id="phase-dot"></span><span id="phase-label">Lobby</span></span>
     <span>Players: <span class="player-count" id="player-count">0</span></span>
@@ -156,10 +180,15 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
     </div>
   </div>
 </div>
-<div class="reveal-overlay hidden" id="gameover-reveal" style="background:rgba(0,0,0,.88)">
+<div class="reveal-overlay hidden" id="gameover-reveal" style="background:rgba(0,0,0,.88);overflow-y:auto">
   <div class="rev-icon">🏁</div>
   <div class="rev-name" id="gov-name">Game Over</div>
   <div class="rev-example" id="gov-sub" style="font-style:normal;color:rgba(255,255,255,.7)">All rounds complete</div>
+  <div class="ranking-container" id="ranking-container">
+    <div class="ranking-title">🏆 Final Rankings</div>
+    <div class="podium" id="podium"></div>
+    <div class="ranking-table" id="ranking-table"></div>
+  </div>
   <button class="ctrl-btn primary" id="btn-gov-lobby" style="font-size:18px;padding:14px 48px;margin-top:32px">Return to Lobby</button>
 </div>
 <audio id="dash-music" loop src="music.mp3"></audio>
@@ -191,7 +220,7 @@ const DEFENCE_DATA=[
   {id:'endpoint',name:'Endpoint Protection',icon:'💻',desc:'Secures devices from malicious software'},
   {id:'mfa',name:'Multi-Factor Auth',icon:'🔐',desc:'Requires multiple verification methods'},
   {id:'encryption',name:'Encryption',icon:'🔒',desc:'Scrambles data to prevent unauthorised access'},
-  {id:'seg',name:'Network Segmentation',icon:'🔀',desc:'Divides networks to contain breaches'},
+   {id:'seg',name:'Network Segmentation',icon:'🔀',desc:'seperates the network into departmental areas'},
   {id:'backup',name:'Backup & Recovery',icon:'💾',desc:'Restores data after loss or attack'},
   {id:'threat',name:'Threat Detection',icon:'👁️',desc:'Identifies suspicious activity in real time'},
   {id:'passwords',name:'Improved User Passwords',icon:'🔑',desc:'Enforces strong password policies'},
@@ -218,6 +247,9 @@ const dashMusic=$('dash-music'),dashDrumroll=$('dash-drumroll'),dashWin=$('dash-
 let currentPhase='lobby';
 let currentAttack=null;
 let introPage=1;
+let lastPlayers=[];
+
+const PRIORITY_EMOJIS={'Money':'💰','Data':'💾','Maintain Services':'⚙️'};
 
 function stopAllAudio(){
   dashMusic.pause();dashMusic.currentTime=0;
@@ -290,7 +322,7 @@ function renderCards(players){
     const defs=p.defences||[];
     const atk=p.lastAttack;
     const bc=budgetClass(p.budget);
-    return `<div class="card ${currentPhase==='selecting'?'playing':''}">
+    return `<div class="card ${currentPhase==='selecting'?'playing':currentPhase==='gameover'?(p.budget>0?'done':'bankrupt'):''}">
       <div class="card-header">
         <div class="card-name">${p.name}</div>
         <div class="card-status playing">${p.selected.length}/${p.maxSelect}</div>
@@ -304,6 +336,8 @@ function renderCards(players){
         <div><div class="budget-bar"><div class="budget-bar-fill ${bc}" style="width:${budgetPct(p.budget)}%"></div></div></div>
         ${defs.length?`<div class="defence-tags">${defs.map(d=>`<span class="defence-tag">${DEFENCE_NAMES[d]||d}</span>`).join('')}</div>`:''}
         ${atk?`<div class="attack-line"><span class="a-icon">${ATTACKS[atk.id]||'🔓'}</span><span class="a-name">${atk.name}</span><span class="a-result ${p.lastResult||'blocked'}">${(p.lastResult||'ok').toUpperCase()}</span></div>`:''}
+        ${p.priority&&p.priority.length?`<div style="font-size:11px;color:var(--text3);margin-top:4px;text-align:center">Priority: ${p.priority.map((x,i)=>`${PRIORITY_EMOJIS[x]||''} ${i+1}st:${x}`).join(' · ')}</div>`:''}
+        ${p.award?`<div style="font-size:13px;font-weight:700;text-align:center;margin-top:4px;color:${p.award==='Gold'?'#f59e0b':p.award==='Silver'?'#94a3b8':'#cd7f32'}">${p.award==='Gold'?'🏆':p.award==='Silver'?'🥈':'🥉'} ${p.award}</div>`:''}
         ${dotsHtml}
       </div>
     </div>`;
@@ -379,9 +413,44 @@ function showReveal(attack){
   revealOverlay.classList.remove('hidden');
 }
 
+function renderRanking(players){
+  if(!players||players.length===0){$('podium').innerHTML='';$('ranking-table').innerHTML='<div style="text-align:center;padding:32px;color:rgba(255,255,255,.4)">No players to rank</div>';return}
+  const sorted=[...players].sort((a,b)=>(b.score||0)-(a.score||0));
+  const top3=sorted.slice(0,3);
+  const podiumEl=$('podium');
+  podiumEl.innerHTML='';
+  const rankLabels=['🥇','🥈','🥉'];
+  const rankClasses=['gold','silver','bronze'];
+  top3.forEach((p,i)=>{
+    const div=document.createElement('div');
+    div.className='podium-item '+rankClasses[i];
+    const pri=p.priority&&p.priority[0]?`${PRIORITY_EMOJIS[p.priority[0]]||''} ${p.priority[0]}`:'—';
+    div.innerHTML=`<div class="podium-rank">${rankLabels[i]}</div><div class="podium-name">${p.name}</div><div class="podium-priority">${pri}</div><div class="podium-score">Score: ${p.score||0}</div><div class="podium-budget">£${(p.budget||0).toLocaleString()}</div><div class="podium-award">${p.award==='Gold'?'🏆':p.award==='Silver'?'🥈':p.award==='Bronze'?'🥉':'—'}</div>`;
+    podiumEl.appendChild(div);
+  });
+  if(podiumEl.children.length<3){
+    for(let i=podiumEl.children.length;i<3;i++){
+      const div=document.createElement('div');
+      div.className='podium-item silver';div.style.background='rgba(255,255,255,.05)';
+      div.innerHTML='<div class="podium-name" style="color:rgba(255,255,255,.3)">—</div>';
+      podiumEl.appendChild(div);
+    }
+  }
+  const tableEl=$('ranking-table');
+  tableEl.innerHTML='<div class="ranking-row header"><span class="rr-rank">Rank</span><span class="rr-name">Name</span><span class="rr-priority">Priority</span><span class="rr-budget">Budget</span><span class="rr-award">Award</span></div>';
+  sorted.forEach((p,i)=>{
+    const row=document.createElement('div');
+    row.className='ranking-row';
+    const pri=p.priority&&p.priority.length>0?p.priority.map((x,i)=>`${PRIORITY_EMOJIS[x]||''}${i+1}st:${x}`).join(' | '):'—';
+    row.innerHTML=`<span class="rr-rank">#${i+1}</span><span class="rr-name">${p.name}</span><span class="rr-priority">${pri}</span><span class="rr-budget">£${(p.budget||0).toLocaleString()}</span><span class="rr-award">${p.award==='Gold'?'🏆 Gold':p.award==='Silver'?'🥈 Silver':p.award==='Bronze'?'🥉 Bronze':'—'}</span>`;
+    tableEl.appendChild(row);
+  });
+}
+
 function showGameOver(){
   slotOverlay.classList.add('hidden');
   revealOverlay.classList.add('hidden');
+  renderRanking(lastPlayers);
   gameoverReveal.classList.remove('hidden');
 }
 
@@ -420,7 +489,11 @@ socket.on('game-state',(gs)=>{
   }
 });
 
-socket.on('players-update',renderCards);
+socket.on('players-update',(players)=>{
+  lastPlayers=players;
+  renderCards(players);
+  if(currentPhase==='gameover')renderRanking(players);
+});
 
 socket.on('timer-update',(remaining)=>{
   dashTimer.textContent=formatTime(remaining);

@@ -28,16 +28,20 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .main{position:fixed;top:72px;left:0;right:0;bottom:48px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;overflow:hidden}
 .round-title{font-size:28px;font-weight:800;margin-bottom:8px;text-align:center}
 .round-sub{font-size:16px;color:var(--text2);margin-bottom:24px;text-align:center}
-.defence-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;max-width:1000px;width:100%;margin-bottom:24px}
-.defence-card{background:var(--bg2);border:2px solid var(--border);border-radius:var(--radius);padding:20px;text-align:center;transition:all .2s;cursor:pointer;position:relative;overflow:hidden}
+.defence-grid{display:flex;flex-direction:column;gap:12px;width:100%;max-width:600px;margin-bottom:24px;padding:0 4px}
+.defence-card{background:var(--bg2);border:2px solid var(--border);border-radius:var(--radius);padding:16px 20px;text-align:left;transition:all .2s;cursor:pointer;position:relative;overflow:hidden;width:100%;display:flex;align-items:center;gap:16px}
 .defence-card:hover:not(.carried):not(.locked){transform:translateY(-2px);box-shadow:var(--shadow);border-color:var(--accent2)}
 .defence-card.selected{border-color:var(--accent);background:var(--accent-light)}
 .defence-card.carried{border-color:var(--green);background:var(--green-light);cursor:default}
-.defence-card.carried::after{content:'DEPLOYED';position:absolute;top:8px;right:8px;background:var(--green);color:#fff;font-size:10px;font-weight:700;padding:3px 8px;border-radius:12px;letter-spacing:1px}
+.defence-card.carried::after{content:'DEPLOYED';position:absolute;top:4px;right:4px;background:var(--green);color:#fff;font-size:9px;font-weight:700;padding:2px 6px;border-radius:8px;letter-spacing:1px}
 .defence-card.locked{opacity:.5;cursor:not-allowed}
-.defence-icon{font-size:32px;margin-bottom:8px}
-.defence-name{font-weight:700;font-size:15px;margin-bottom:4px}
-.defence-counters{font-size:13px;color:var(--text3);line-height:1.4}
+.defence-icon{font-size:28px;width:40px;text-align:center;flex-shrink:0}
+.defence-card-body{flex:1}
+.defence-name{font-weight:700;font-size:14px;margin-bottom:2px}
+.defence-counters{font-size:12px;color:var(--text3);line-height:1.4}
+.defence-card.selected .defence-name{color:var(--accent)}
+.defence-card.carried .defence-name{color:var(--green)}
+.main.selecting{justify-content:flex-start;overflow-y:auto;padding:12px 16px 80px}
 .timer-section{display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:24px}
 .timer-display{font-size:48px;font-weight:900;font-variant-numeric:tabular-nums;min-width:120px;text-align:center}
 .timer-display.warning{color:var(--orange)}
@@ -71,6 +75,23 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .intro-btn.primary:hover{transform:translateY(-2px);box-shadow:0 4px 20px rgba(37,99,235,.3)}
 .intro-btn.secondary{background:var(--bg3);color:var(--text2);border:1px solid var(--border)}
 .intro-btn.secondary:hover{background:var(--accent-light);color:var(--accent)}
+.priority-overlay{position:fixed;inset:0;z-index:190;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.5);backdrop-filter:blur(12px)}
+.priority-overlay.hidden{display:none}
+.priority-card{background:var(--bg2);border-radius:var(--radius);padding:32px;box-shadow:var(--shadow-lg);text-align:center;max-width:420px;width:90%}
+.priority-card h2{font-size:22px;font-weight:800;margin-bottom:8px;background:linear-gradient(135deg,var(--accent),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.priority-card .p-intro{color:var(--text2);font-size:14px;margin-bottom:24px;line-height:1.5}
+#priority-list{display:flex;flex-direction:column;gap:8px;margin-bottom:24px;min-height:180px}
+.priority-item{background:var(--bg3);border:2px solid var(--border);border-radius:var(--radius-sm);padding:16px;display:flex;align-items:center;gap:14px;cursor:grab;transition:all .2s;user-select:none;-webkit-user-select:none;touch-action:none}
+.priority-item:active{cursor:grabbing}
+.priority-item.dragging{opacity:.5;border-style:dashed}
+.priority-item.drag-over{border-color:var(--accent);background:var(--accent-light)}
+.drag-handle{font-size:20px;color:var(--text3);flex-shrink:0;line-height:1}
+.priority-item .p-icon{font-size:24px;width:32px;flex-shrink:0}
+.priority-item .p-name{flex:1;font-weight:700;font-size:16px;text-align:left}
+.priority-item .p-rank{font-size:20px;font-weight:900;color:var(--accent);width:32px;text-align:center;flex-shrink:0}
+.priority-sub-btn{width:100%;padding:14px;font-size:16px;font-weight:700;border-radius:var(--radius-sm);background:linear-gradient(135deg,var(--accent),var(--purple));color:#fff;transition:all .2s}
+.priority-sub-btn:hover{transform:translateY(-2px);box-shadow:0 4px 20px rgba(37,99,235,.3)}
+.priority-sub-btn:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
 .waiting-text{color:var(--text2);font-size:16px;text-align:center;margin-top:24px;padding:20px}
 .waiting-spinner{display:inline-block;width:20px;height:20px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;margin-right:10px;vertical-align:middle}
 @keyframes spin{to{transform:rotate(360deg)}}
@@ -148,8 +169,8 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .waiting-overlay .wo-icon{font-size:48px;margin-bottom:16px}
 .waiting-overlay .wo-text{font-size:20px;font-weight:700;color:var(--text2)}
 .waiting-overlay .wo-sub{font-size:14px;color:var(--text3);margin-top:8px}
-@media(max-width:768px){.header{padding:12px 16px}.header h1{font-size:16px}.header-right{gap:12px}.round-badge{padding:4px 12px;font-size:12px}.main{top:60px;bottom:40px;padding:16px}.round-title{font-size:22px;margin-bottom:4px}.round-sub{font-size:14px;margin-bottom:16px}.defence-grid{grid-template-columns:repeat(3,1fr);gap:10px;max-width:600px}.defence-card{padding:14px}.defence-icon{font-size:24px;margin-bottom:4px}.defence-name{font-size:13px}.defence-counters{font-size:11px}.timer-display{font-size:36px;min-width:90px}.timer-section{margin-bottom:16px}.status-bar{padding:8px 16px;font-size:12px}.intro{padding:24px}.intro h2{font-size:20px}.intro-grid{grid-template-columns:1fr}.result-card{padding:24px}.result-title{font-size:18px}.go-stats{gap:8px}.go-stat{padding:12px}.go-stat .value{font-size:22px}}
-@media(max-width:480px){.header{padding:8px 12px}.header h1{font-size:14px}.header-right{gap:8px}.header-budget{gap:4px;font-size:12px}.header-budget .amount{font-size:13px}.round-badge{padding:3px 8px;font-size:10px}.main{top:52px;bottom:36px;padding:12px}.round-title{font-size:20px}.round-sub{font-size:14px;margin-bottom:12px}.defence-grid{grid-template-columns:repeat(2,1fr);gap:8px;max-width:400px}.defence-card{padding:10px}.defence-card.carried::after{font-size:8px;padding:2px 6px;top:4px;right:4px}.defence-icon{font-size:20px}.defence-name{font-size:13px}.defence-counters{font-size:11px}.timer-display{font-size:26px;min-width:60px}.timer-section{gap:6px;margin-bottom:12px}.status-bar{display:none}.wheel-label{font-size:16px;margin-bottom:16px}.slot-machine{padding:16px 20px}.slot-window{height:192px}.slot-item{height:64px;font-size:15px;gap:10px}.slot-item .si-icon{font-size:24px}.intro{padding:16px}.intro h2{font-size:18px;margin-bottom:16px}.intro-item{padding:10px}.intro-item .icon{font-size:20px}.intro-item .name{font-size:14px}.intro-item .counters{font-size:12px}.intro-btn{padding:10px 24px;font-size:13px}.result-card{padding:20px}.result-title{font-size:16px}.result-sub{font-size:12px;margin-bottom:16px}.verdict{padding:16px}.verdict .v-icon{font-size:36px}.verdict .v-label{font-size:15px}.verdict .v-detail{font-size:13px}.attack-info{padding:12px}.budget-item .value{font-size:16px}.defences-deployed .dd-item{font-size:10px;padding:4px 8px}.result-btn{width:100%;padding:12px 20px;font-size:14px}.zr-icon{font-size:80px}.zr-name{font-size:32px}.zr-example{font-size:16px}.game-over h2{font-size:24px}.game-over .go-sub{font-size:14px;margin-bottom:20px}.go-stats{gap:6px}.go-stat{padding:10px}.go-stat .label{font-size:10px}.go-stat .value{font-size:18px}.name-card{padding:24px}.name-card h2{font-size:22px}.name-input{font-size:16px;padding:12px}}
+@media(max-width:768px){.header{padding:12px 16px}.header h1{font-size:16px}.header-right{gap:12px}.round-badge{padding:4px 12px;font-size:12px}.main{top:60px;bottom:40px;padding:16px}.main.selecting{padding:12px 12px 80px}.round-title{font-size:22px;margin-bottom:4px}.round-sub{font-size:14px;margin-bottom:16px}.defence-grid{gap:10px}.defence-card{padding:14px}.defence-icon{font-size:24px;width:32px}.defence-name{font-size:13px}.defence-counters{font-size:11px}.timer-display{font-size:36px;min-width:90px}.timer-section{margin-bottom:16px}.status-bar{padding:8px 16px;font-size:12px}.intro{padding:24px}.intro h2{font-size:20px}.intro-grid{grid-template-columns:1fr}.result-card{padding:24px}.result-title{font-size:18px}.go-stats{gap:8px}.go-stat{padding:12px}.go-stat .value{font-size:22px}}
+@media(max-width:480px){.header{padding:8px 12px}.header h1{font-size:14px}.header-right{gap:8px}.header-budget{gap:4px;font-size:12px}.header-budget .amount{font-size:13px}.round-badge{padding:3px 8px;font-size:10px}.main{top:52px;bottom:36px;padding:12px}.main.selecting{padding:8px 8px 70px}.round-title{font-size:20px}.round-sub{font-size:14px;margin-bottom:12px}.defence-grid{gap:8px;max-width:100%}.defence-card{padding:12px;gap:12px}.defence-card.carried::after{font-size:8px;padding:2px 6px;top:4px;right:4px}.defence-icon{font-size:20px;width:28px}.defence-name{font-size:13px}.defence-counters{font-size:11px}.timer-display{font-size:26px;min-width:60px}.timer-section{gap:6px;margin-bottom:12px}.status-bar{display:none}.wheel-label{font-size:16px;margin-bottom:16px}.slot-machine{padding:16px 20px}.slot-window{height:192px}.slot-item{height:64px;font-size:15px;gap:10px}.slot-item .si-icon{font-size:24px}.intro{padding:16px}.intro h2{font-size:18px;margin-bottom:16px}.intro-item{padding:10px}.intro-item .icon{font-size:20px}.intro-item .name{font-size:14px}.intro-item .counters{font-size:12px}.intro-btn{padding:10px 24px;font-size:13px}.result-card{padding:20px}.result-title{font-size:16px}.result-sub{font-size:12px;margin-bottom:16px}.verdict{padding:16px}.verdict .v-icon{font-size:36px}.verdict .v-label{font-size:15px}.verdict .v-detail{font-size:13px}.attack-info{padding:12px}.budget-item .value{font-size:16px}.defences-deployed .dd-item{font-size:10px;padding:4px 8px}.result-btn{width:100%;padding:12px 20px;font-size:14px}.zr-icon{font-size:80px}.zr-name{font-size:32px}.zr-example{font-size:16px}.game-over h2{font-size:24px}.game-over .go-sub{font-size:14px;margin-bottom:20px}.go-stats{gap:6px}.go-stat{padding:10px}.go-stat .label{font-size:10px}.go-stat .value{font-size:18px}.name-card{padding:24px}.name-card h2{font-size:22px}.name-input{font-size:16px;padding:12px}.priority-item{padding:14px}.priority-item .p-rank{font-size:18px;width:28px}.priority-item .p-icon{font-size:20px;width:28px}.priority-item .p-name{font-size:15px}.drag-handle{font-size:18px}}
 </style>
 </head>
 <body>
@@ -180,6 +201,15 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
     <input class="name-input" id="name-input" type="text" placeholder="Your name" maxlength="20" autofocus>
     <button class="name-sub-btn" id="name-sub-btn">Join Game</button>
     <div class="connecting" id="connecting-msg">Connecting to server...</div>
+  </div>
+</div>
+
+<div class="priority-overlay hidden" id="priority-overlay">
+  <div class="priority-card">
+    <h2>Your Priority</h2>
+    <p class="p-intro">What is your first priority for the function of your organisation?<br>Drag into order of priority</p>
+    <div id="priority-list"></div>
+    <button class="priority-sub-btn" id="priority-sub-btn">Submit Priority</button>
   </div>
 </div>
 
@@ -220,6 +250,7 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
       <div class="go-stat"><div class="label">Breaches</div><div class="value red" id="go-breaches">0</div></div>
       <div class="go-stat"><div class="label">Final Budget</div><div class="value blue" id="go-budget">£0</div></div>
     </div>
+    <div id="go-award" style="margin-bottom:16px;text-align:center"></div>
     <div class="waiting-text" style="color:var(--text3);font-size:14px">Game session ended — return to lobby to play again</div>
   </div>
 </div>
@@ -231,7 +262,7 @@ const DEFENCES=[
   {id:'endpoint',name:'Endpoint Protection',icon:'💻',desc:'Secures devices from malicious software',counters:['malware','ransomware']},
   {id:'mfa',name:'Multi-Factor Auth',icon:'🔐',desc:'Requires multiple verification methods',counters:['insider','social_eng']},
   {id:'encryption',name:'Encryption',icon:'🔒',desc:'Scrambles data to prevent unauthorised access',counters:['data_exfil','mitm']},
-  {id:'seg',name:'Network Segmentation',icon:'🔀',desc:'Divides networks to contain breaches',counters:['sql_injection','insider']},
+   {id:'seg',name:'Network Segmentation',icon:'🔀',desc:'seperates the network into departmental areas',counters:['sql_injection','insider']},
   {id:'backup',name:'Backup & Recovery',icon:'💾',desc:'Restores data after loss or attack',counters:['ransomware','ddos']},
   {id:'threat',name:'Threat Detection',icon:'👁️',desc:'Identifies suspicious activity in real time',counters:['zero_day','phishing']},
   {id:'passwords',name:'Improved User Passwords',icon:'🔑',desc:'Enforces strong password policies',counters:['sql_injection','mitm']},
@@ -255,6 +286,7 @@ const MAX_ROUNDS=3,ATTACK_COST=100000,START_BUDGET=300000;
 
 const socket=io();
 let playerId=null;
+let prioritySubmitted=false;
 
 const connDot=$('conn-dot'),nameOverlay=$('name-overlay'),nameInput=$('name-input'),nameSubBtn=$('name-sub-btn'),connMsg=$('connecting-msg');
 const defenceGrid=$('defence-grid'),roundTitle=$('round-title'),roundSub=$('round-sub'),roundBadge=$('round-badge');
@@ -267,6 +299,7 @@ const resultOverlay=$('result-overlay'),resultTitle=$('result-title'),resultSub=
 const aIcon=$('a-icon'),aName=$('a-name'),aDesc=$('a-desc'),biImpact=$('bi-impact'),biRemaining=$('bi-remaining'),ddList=$('dd-list'),resultBtn=$('result-btn');
 const gameoverOverlay=$('gameover-overlay'),goTitle=$('go-title'),goSub=$('go-sub'),goBlocked=$('go-blocked'),goBreaches=$('go-breaches'),goBudget=$('go-budget');
 const waitingOverlay=$('waiting-overlay'),woText=$('wo-text'),woSub=$('wo-sub');
+const priorityOverlay=$('priority-overlay'),priorityList=$('priority-list'),prioritySubBtn=$('priority-sub-btn');
 const slotTrack=$('slot-track');
 
 let audioCtx=null,audioUnlocked=false;
@@ -274,8 +307,91 @@ function ensureAudio(){if(!audioCtx)audioCtx=new(window.AudioContext||window.web
 function playSelectBeep(){ensureAudio();if(!audioCtx)return;const t=audioCtx.currentTime;const osc=audioCtx.createOscillator(),g=audioCtx.createGain();osc.connect(g);g.connect(audioCtx.destination);osc.type='triangle';osc.frequency.setValueAtTime(1200,t);osc.frequency.exponentialRampToValueAtTime(600,t+.05);g.gain.setValueAtTime(.4,t);g.gain.exponentialRampToValueAtTime(.001,t+.08);osc.start(t);osc.stop(t+.1)}
 function playBeep(){ensureAudio();if(!audioCtx)return;const t=audioCtx.currentTime;for(let i=0;i<3;i++){const osc=audioCtx.createOscillator(),g=audioCtx.createGain();osc.connect(g);g.connect(audioCtx.destination);osc.type='sine';osc.frequency.setValueAtTime(880,t+i*.25);osc.frequency.setValueAtTime(1100,t+i*.25+.05);g.gain.setValueAtTime(.35,t+i*.25);g.gain.setValueAtTime(.35,t+i*.25+.15);g.gain.exponentialRampToValueAtTime(.001,t+i*.25+.25);osc.start(t+i*.25);osc.stop(t+i*.25+.3)}}
 
-let myData={selected:[],carriedOver:[],maxSelect:3,budget:START_BUDGET,blocked:0,breaches:0,lastAttack:null,lastResult:null,defences:[]};
+let myData={selected:[],carriedOver:[],maxSelect:3,budget:START_BUDGET,blocked:0,breaches:0,lastAttack:null,lastResult:null,defences:[],priority:[]};
 let currentAttack=null;
+
+// Priority state
+const PRIORITY_OPTIONS=[
+  {id:'Money',icon:'💰',name:'Money'},
+  {id:'Data',icon:'💾',name:'Data'},
+  {id:'Maintain Services',icon:'⚙️',name:'Maintain Services'}
+];
+let priorityOrder=['Money','Data','Maintain Services'];
+let dragSrcIdx=null;
+
+function renderPriority(){
+  priorityList.innerHTML='';
+  const ranks=['1st','2nd','3rd'];
+  priorityOrder.forEach((id,i)=>{
+    const opt=PRIORITY_OPTIONS.find(o=>o.id===id);
+    if(!opt)return;
+    const item=document.createElement('div');
+    item.className='priority-item';
+    item.draggable=true;
+    item.dataset.idx=i;
+    item.dataset.priority=id;
+    item.innerHTML=`<span class="drag-handle">⠿</span><span class="p-icon">${opt.icon}</span><span class="p-name">${opt.name}</span><span class="p-rank">${ranks[i]}</span>`;
+    item.addEventListener('dragstart',(e)=>{dragSrcIdx=i;item.classList.add('dragging');e.dataTransfer.effectAllowed='move'});
+    item.addEventListener('dragend',()=>{item.classList.remove('dragging');document.querySelectorAll('.priority-item').forEach(el=>el.classList.remove('drag-over'));dragSrcIdx=null});
+    item.addEventListener('dragover',(e)=>{e.preventDefault();e.dataTransfer.dropEffect='move';document.querySelectorAll('.priority-item').forEach(el=>el.classList.remove('drag-over'));item.classList.add('drag-over')});
+    item.addEventListener('dragleave',()=>item.classList.remove('drag-over'));
+    item.addEventListener('drop',(e)=>{e.preventDefault();if(dragSrcIdx===null||dragSrcIdx===i)return;const arr=[...priorityOrder];const[dragged]=arr.splice(dragSrcIdx,1);arr.splice(i,0,dragged);priorityOrder=arr;renderPriority()});
+    // Touch support
+    let touchStartY=0,touchItemIdx=null,touchClone=null;
+    item.addEventListener('touchstart',(e)=>{
+      touchItemIdx=i;touchStartY=e.touches[0].clientY;
+      const rect=item.getBoundingClientRect();
+      touchClone=item.cloneNode(true);
+      touchClone.style.position='fixed';touchClone.style.zIndex='1000';touchClone.style.pointerEvents='none';
+      touchClone.style.opacity='.7';touchClone.style.width=rect.width+'px';
+      touchClone.style.top=rect.top+'px';touchClone.style.left=rect.left+'px';
+      touchClone.style.transform='scale(1.03)';touchClone.style.border='2px dashed var(--accent)';
+      document.body.appendChild(touchClone);
+      item.style.opacity='.4';
+    },{passive:true});
+    item.addEventListener('touchmove',(e)=>{
+      e.preventDefault();
+      const y=e.touches[0].clientY;
+      if(touchClone)touchClone.style.top=(parseInt(touchClone.style.top)+(y-touchStartY))+'px';
+      touchStartY=y;
+      // Find which item we're over
+      const items=Array.from(document.querySelectorAll('.priority-item'));
+      items.forEach(el=>el.classList.remove('drag-over'));
+      for(let k=0;k<items.length;k++){
+        const r=items[k].getBoundingClientRect();
+        if(y>=r.top&&y<=r.bottom){items[k].classList.add('drag-over');break}
+      }
+    },{passive:false});
+    item.addEventListener('touchend',()=>{
+      if(touchClone){touchClone.remove();touchClone=null}
+      document.querySelectorAll('.priority-item').forEach(el=>{el.style.opacity='';el.classList.remove('drag-over')});
+      const items=Array.from(document.querySelectorAll('.priority-item'));
+      for(let k=0;k<items.length;k++){
+        const r=items[k].getBoundingClientRect();
+        if(r.top<touchStartY&&r.bottom>touchStartY&&k!==touchItemIdx){
+          const arr=[...priorityOrder];
+          const[dragged]=arr.splice(touchItemIdx,1);
+          arr.splice(k,0,dragged);
+          priorityOrder=arr;
+          renderPriority();
+          break;
+        }
+      }
+      touchItemIdx=null;
+    });
+    priorityList.appendChild(item);
+  });
+}
+
+prioritySubBtn.addEventListener('click',()=>{
+  prioritySubBtn.disabled=true;prioritySubBtn.textContent='Saving...';
+  socket.emit('set-priority',priorityOrder);
+  priorityOverlay.classList.add('hidden');
+  prioritySubmitted=true;
+  waitingOverlay.classList.remove('hidden');
+  woText.textContent='Waiting for game to start...';
+  woSub.textContent='The dashboard operator will start the game shortly';
+});
 
 function defName(id){const d=DEFENCES.find(x=>x.id===id);return d?d.name:id}
 function formatTime(s){const m=Math.floor(s/60),sec=s%60;return `${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`}
@@ -301,7 +417,7 @@ function renderDefences(){
     else if(isSelected)card.classList.add('selected');
     else if(maxed)card.classList.add('locked');
     card.dataset.id=d.id;
-    card.innerHTML=`<div class="defence-icon">${d.icon}</div><div class="defence-name">${d.name}</div><div class="defence-counters">${d.desc}</div>`;
+    card.innerHTML=`<div class="defence-icon">${d.icon}</div><div class="defence-card-body"><div class="defence-name">${d.name}</div><div class="defence-counters">${d.desc}</div></div>`;
     if(!isCarried){
       card.addEventListener('click',()=>{
         ensureAudio();
@@ -329,12 +445,14 @@ function renderPhase(gs){
     timerSection.style.display='none';
     roundTitle.textContent='';
     roundSub.textContent='';
+    document.querySelector('.main').classList.remove('selecting');
     waitingOverlay.classList.remove('hidden');
     woText.textContent='Waiting for game to start...';
     woSub.textContent='The dashboard operator will start the game shortly';
   }else if(phase==='selecting'){
     waitingOverlay.classList.add('hidden');
-    defenceGrid.style.display='grid';
+    defenceGrid.style.display='flex';
+    document.querySelector('.main').classList.add('selecting');
     timerSection.style.display='flex';
     roundTitle.textContent='Select Your Defences';
     const maxDesc=['','Choose 3 defence mechanisms to deploy','- Previous carried over — select 2 more','- Previous carried over — select 1 more'];
@@ -367,6 +485,16 @@ function renderPhase(gs){
     goBudget.className='value'+(b>START_BUDGET*.5?' green':b>0?' blue':' red');
     goTitle.textContent=b>0?'Mission Complete':'System Compromised';
     goSub.textContent=b>0?'Your defences held strong':'Budget depleted — too many breaches';
+    const awardEl=$('go-award');
+    if(myData.award){
+      const awardIcons={'Gold':'🏆','Silver':'🥈','Bronze':'🥉'};
+      const awardColors={'Gold':'#f59e0b','Silver':'#94a3b8','Bronze':'#cd7f32'};
+      const pri=myData.priority&&myData.priority[0]||'—';
+      const priEmojis={'Money':'💰','Data':'💾','Maintain Services':'⚙️'};
+      awardEl.innerHTML=`<div style="font-size:48px;margin-bottom:8px">${awardIcons[myData.award]||'—'}</div><div style="font-size:20px;font-weight:900;color:${awardColors[myData.award]||'var(--text2)'}">${myData.award}</div><div style="font-size:14px;color:var(--text3);margin-top:4px">${priEmojis[pri]||''} Priority: ${pri} · Score: ${myData.score||0}</div>`;
+    }else{
+      awardEl.innerHTML='';
+    }
     gameoverOverlay.classList.remove('hidden');
   }
 }
@@ -438,9 +566,9 @@ socket.on('disconnect',()=>{connDot.className='conn-dot disconnected'});
 socket.on('joined',(data)=>{
   playerId=data.id;
   nameOverlay.classList.add('hidden');
-  waitingOverlay.classList.remove('hidden');
-  woText.textContent='Waiting for game to start...';
-  woSub.textContent='The dashboard operator will start the game shortly';
+  priorityOrder=['Money','Data','Maintain Services'];
+  renderPriority();
+  priorityOverlay.classList.remove('hidden');
 });
 
 socket.on('game-state',(gs)=>{
@@ -448,12 +576,15 @@ socket.on('game-state',(gs)=>{
     hideAllOverlays();
     renderPhase(gs);
   }else if(gs.phase==='spinning'){
+    document.querySelector('.main').classList.remove('selecting');
     currentAttack=gs.currentAttack;
     renderPhase(gs);
   }else if(gs.phase==='reveal'){
+    document.querySelector('.main').classList.remove('selecting');
     currentAttack=gs.currentAttack||currentAttack;
     renderPhase(gs);
   }else if(gs.phase==='gameover'){
+    document.querySelector('.main').classList.remove('selecting');
     renderPhase(gs);
   }else if(gs.phase==='lobby'){
     hideAllOverlays();
@@ -461,10 +592,17 @@ socket.on('game-state',(gs)=>{
     timerSection.style.display='none';
     roundTitle.textContent='';
     roundSub.textContent='';
-    waitingOverlay.classList.remove('hidden');
-    woText.textContent='Waiting for game to start...';
-    woSub.textContent='The dashboard operator will start the game shortly';
+    document.querySelector('.main').classList.remove('selecting');
     gameoverOverlay.classList.add('hidden');
+    if(prioritySubmitted){
+      priorityOrder=['Money','Data','Maintain Services'];prioritySubmitted=false;
+      prioritySubBtn.disabled=false;prioritySubBtn.textContent='Submit Priority';
+      renderPriority();priorityOverlay.classList.remove('hidden');
+    }else{
+      waitingOverlay.classList.remove('hidden');
+      woText.textContent='Waiting for game to start...';
+      woSub.textContent='The dashboard operator will start the game shortly';
+    }
   }
 });
 
