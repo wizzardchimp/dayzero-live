@@ -9,151 +9,369 @@
 <style>
 :root{--bg:#0f1117;--card:#1a1d28;--card2:#232738;--accent:#2563eb;--accent2:#3b82f6;--green:#10b981;--orange:#f59e0b;--red:#ef4444;--purple:#8b5cf6;--text:#e2e8f0;--text2:#94a3b8;--text3:#64748b;--border:#2d3142;--radius:14px;--radius-sm:8px}
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
-.header{display:flex;align-items:center;justify-content:space-between;padding:20px 32px;border-bottom:1px solid var(--border)}
-.header h1{font-size:22px;font-weight:900;background:linear-gradient(135deg,var(--accent),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column}
+button{font-family:inherit;cursor:pointer;border:none;outline:none}
+button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.header{display:flex;align-items:center;justify-content:space-between;padding:16px 32px;border-bottom:1px solid var(--border);flex-shrink:0}
+.header h1{font-size:20px;font-weight:900;background:linear-gradient(135deg,var(--accent),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .header-right{display:flex;align-items:center;gap:16px;font-size:14px;color:var(--text2)}
 .player-count{font-weight:700;color:var(--accent2);font-size:18px}
-.main{padding:24px 32px}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px}
-.card{background:var(--card);border-radius:var(--radius);border:1px solid var(--border);padding:20px;position:relative;overflow:hidden;transition:border-color .3s}
+.main{flex:1;overflow-y:auto;padding:20px 32px;padding-bottom:120px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+.card{background:var(--card);border-radius:var(--radius);border:1px solid var(--border);padding:16px;transition:border-color .3s}
 .card.playing{border-color:var(--accent)}
 .card.done{border-color:var(--green)}
 .card.bankrupt{border-color:var(--red)}
-.card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
-.card-name{font-size:20px;font-weight:800}
-.card-status{font-size:11px;font-weight:600;padding:4px 10px;border-radius:12px;letter-spacing:1px;text-transform:uppercase}
+.card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.card-name{font-size:18px;font-weight:800}
+.card-status{font-size:10px;font-weight:600;padding:3px 8px;border-radius:10px;letter-spacing:1px;text-transform:uppercase}
 .card-status.playing{background:rgba(37,99,235,.15);color:var(--accent2)}
 .card-status.done{background:rgba(16,185,129,.15);color:var(--green)}
 .card-status.intro{background:rgba(148,163,184,.15);color:var(--text2)}
-.card-body{display:flex;flex-direction:column;gap:12px}
-.stat-row{display:flex;gap:12px}
-.stat-box{flex:1;background:var(--card2);border-radius:var(--radius-sm);padding:12px;text-align:center}
-.stat-box .label{font-size:10px;color:var(--text3);font-weight:600;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
-.stat-box .value{font-size:20px;font-weight:900}
+.card-body{display:flex;flex-direction:column;gap:8px}
+.stat-row{display:flex;gap:8px}
+.stat-box{flex:1;background:var(--card2);border-radius:var(--radius-sm);padding:10px;text-align:center}
+.stat-box .label{font-size:9px;color:var(--text3);font-weight:600;letter-spacing:1px;text-transform:uppercase;margin-bottom:2px}
+.stat-box .value{font-size:18px;font-weight:900}
 .stat-box .value.green{color:var(--green)}
 .stat-box .value.red{color:var(--red)}
 .stat-box .value.blue{color:var(--accent2)}
-.budget-bar{height:6px;background:var(--card2);border-radius:3px;overflow:hidden;margin-top:4px}
+.budget-bar{height:5px;background:var(--card2);border-radius:3px;overflow:hidden;margin-top:2px}
 .budget-bar-fill{height:100%;border-radius:3px;transition:width .5s,background .5s}
 .budget-bar-fill.ok{background:var(--green)}
 .budget-bar-fill.low{background:var(--orange)}
 .budget-bar-fill.critical{background:var(--red)}
-.defence-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
-.defence-tag{background:rgba(37,99,235,.12);color:var(--accent2);padding:2px 8px;border-radius:10px;font-size:11px;font-weight:500}
-.attack-line{display:flex;align-items:center;gap:8px;background:var(--card2);border-radius:var(--radius-sm);padding:8px 12px;font-size:13px;margin-top:4px}
-.attack-line .a-icon{font-size:18px}
+.defence-tags{display:flex;flex-wrap:wrap;gap:3px;margin-top:2px}
+.defence-tag{background:rgba(37,99,235,.12);color:var(--accent2);padding:2px 7px;border-radius:8px;font-size:10px;font-weight:500}
+.attack-line{display:flex;align-items:center;gap:6px;background:var(--card2);border-radius:var(--radius-sm);padding:6px 10px;font-size:12px;margin-top:2px}
+.attack-line .a-icon{font-size:16px}
 .attack-line .a-name{font-weight:600;flex:1}
-.attack-line .a-result{font-size:11px;font-weight:700;padding:2px 8px;border-radius:8px}
+.attack-line .a-result{font-size:10px;font-weight:700;padding:2px 6px;border-radius:6px}
 .attack-line .a-result.blocked{background:rgba(16,185,129,.15);color:var(--green)}
 .attack-line .a-result.breached{background:rgba(239,68,68,.15);color:var(--red)}
-.round-dots{display:flex;gap:6px;margin-top:8px;justify-content:center}
-.round-dot{width:10px;height:10px;border-radius:50%;background:var(--card2);transition:all .3s}
-.round-dot.blocked{background:var(--green);box-shadow:0 0 6px rgba(16,185,129,.5)}
-.round-dot.breached{background:var(--red);box-shadow:0 0 6px rgba(239,68,68,.5)}
+.round-dots{display:flex;gap:5px;margin-top:6px;justify-content:center}
+.round-dot{width:8px;height:8px;border-radius:50%;background:var(--card2);transition:all .3s}
+.round-dot.blocked{background:var(--green);box-shadow:0 0 4px rgba(16,185,129,.5)}
+.round-dot.breached{background:var(--red);box-shadow:0 0 4px rgba(239,68,68,.5)}
 .round-dot.future{background:var(--border)}
-.empty-state{text-align:center;padding:80px 20px;color:var(--text3)}
-.empty-state .big-icon{font-size:64px;margin-bottom:16px;opacity:.4}
-.empty-state h2{font-size:20px;font-weight:700;color:var(--text2);margin-bottom:8px}
-.empty-state p{font-size:14px;max-width:400px;margin:0 auto}
+.empty-state{text-align:center;padding:60px 20px;color:var(--text3)}
+.empty-state .big-icon{font-size:56px;margin-bottom:12px;opacity:.4}
+.empty-state h2{font-size:18px;font-weight:700;color:var(--text2);margin-bottom:6px}
+.empty-state p{font-size:13px;max-width:400px;margin:0 auto}
+.controls-bar{position:fixed;bottom:0;left:0;right:0;z-index:50;background:var(--card);border-top:1px solid var(--border);padding:12px 32px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-shrink:0}
+.controls-left{display:flex;align-items:center;gap:16px}
+.controls-right{display:flex;align-items:center;gap:12px}
+.dash-timer{font-size:40px;font-weight:900;font-variant-numeric:tabular-nums;min-width:100px;text-align:center}
+.dash-timer.warning{color:var(--orange)}
+.dash-timer.danger{color:var(--red);animation:dashPulse .5s infinite}
+@keyframes dashPulse{0%,100%{opacity:1}50%{opacity:.5}}
+.timer-adjust{width:36px;height:36px;border-radius:50%;background:var(--card2);border:1px solid var(--border);font-size:18px;font-weight:700;color:var(--text2);transition:all .2s;display:flex;align-items:center;justify-content:center}
+.timer-adjust:hover{background:rgba(37,99,235,.15);color:var(--accent2);border-color:var(--accent)}
+.phase-label{font-size:12px;color:var(--text3);font-weight:600;letter-spacing:1px;text-transform:uppercase;margin-right:4px}
+.ctrl-btn{padding:10px 24px;border-radius:var(--radius-sm);font-size:14px;font-weight:700;transition:all .2s;letter-spacing:.5px}
+.ctrl-btn.primary{background:linear-gradient(135deg,var(--accent),var(--purple));color:#fff}
+.ctrl-btn.primary:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(37,99,235,.3)}
+.ctrl-btn.primary:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none}
+.ctrl-btn.secondary{background:var(--card2);color:var(--text2);border:1px solid var(--border)}
+.ctrl-btn.secondary:hover{background:rgba(37,99,235,.1);color:var(--accent2)}
+.ctrl-btn.danger{background:linear-gradient(135deg,var(--red),#dc2626);color:#fff}
+.ctrl-btn.danger:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(239,68,68,.3)}
+.reveal-overlay{position:fixed;inset:0;z-index:100;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,0,0,.88);animation:revIn .6s ease-out both}
+.reveal-overlay.hidden{display:none}
+@keyframes revIn{0%{transform:scale(.3);opacity:0}100%{transform:scale(1);opacity:1}}
+.rev-icon{font-size:140px;margin-bottom:16px}
+.rev-name{font-size:56px;font-weight:900;color:#fff;margin-bottom:8px}
+.rev-example{font-size:20px;color:rgba(255,255,255,.7);font-style:italic;max-width:700px;text-align:center;padding:0 24px;margin-bottom:48px}
+.slot-overlay{position:fixed;inset:0;z-index:99;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,0,0,.6);animation:pulseBg 2s ease-in-out infinite alternate}
+@keyframes pulseBg{0%{background:rgba(0,0,0,.6)}100%{background:rgba(140,0,0,.7)}}
+.slot-overlay.hidden{display:none}
+.dash-slot-machine{background:var(--card);border-radius:var(--radius);padding:24px 32px;box-shadow:0 8px 40px rgba(0,0,0,.3)}
+.dash-slot-window{position:relative;height:200px;overflow:hidden;border-radius:var(--radius-sm);background:var(--card2);border:2px solid var(--border)}
+.dash-slot-window::before{content:'';position:absolute;inset:0;z-index:2;pointer-events:none;background:linear-gradient(to bottom,var(--card2) 0%,transparent 28%,transparent 72%,var(--card2) 100%)}
+.dash-slot-track{will-change:transform}
+.dash-slot-item{height:100px;display:flex;align-items:center;justify-content:center;gap:12px;font-size:24px;font-weight:700;color:var(--text);border-bottom:1px solid var(--border)}
+.dash-slot-item .dsi-icon{font-size:32px}
+.dash-slot-item .dsi-name{color:var(--text2)}
+.slot-label{color:#fff;font-size:18px;font-weight:700;margin-bottom:20px;text-align:center}
+.phase-indicator{display:flex;align-items:center;gap:8px;background:var(--card2);padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;color:var(--text2)}
+.phase-dot{width:8px;height:8px;border-radius:50%}
+.phase-dot.green{background:var(--green)}
+.phase-dot.orange{background:var(--orange)}
+.phase-dot.purple{background:var(--purple)}
+.phase-dot.red{background:var(--red)}
+#defenceGrid{
+  display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;padding:12px;background:var(--card2);border-radius:var(--radius-sm);justify-content:center
+}
+.dg-title{font-size:16px;font-weight:700;margin-bottom:8px;color:var(--text2);text-align:center}
 </style>
 </head>
 <body>
 <div class="header">
   <h1>DAY ZERO LIVE</h1>
   <div class="header-right">
+    <span class="phase-indicator" id="phase-indicator"><span class="phase-dot orange" id="phase-dot"></span><span id="phase-label">Lobby</span></span>
     <span>Players: <span class="player-count" id="player-count">0</span></span>
   </div>
 </div>
 <div class="main">
   <div class="grid" id="grid"></div>
 </div>
+<div class="controls-bar">
+  <div class="controls-left">
+    <div class="phase-label">Timer</div>
+    <div class="dash-timer" id="dash-timer">02:00</div>
+    <button class="timer-adjust" id="timer-dec">−</button>
+    <button class="timer-adjust" id="timer-inc">+</button>
+  </div>
+  <div class="controls-right">
+    <button class="ctrl-btn primary" id="btn-start-game" style="display:none">Start Game</button>
+    <button class="ctrl-btn secondary" id="btn-force-end" style="display:none">Force End Round</button>
+    <button class="ctrl-btn primary" id="btn-next-round" style="display:none">Start Next Round</button>
+  </div>
+</div>
+<div class="slot-overlay hidden" id="slot-overlay">
+  <div class="slot-label">Incoming Attack...</div>
+  <div class="dash-slot-machine"><div class="dash-slot-window"><div class="dash-slot-track" id="dash-slot-track"></div></div></div>
+</div>
+<div class="reveal-overlay hidden" id="reveal-overlay">
+  <div class="rev-icon" id="rev-icon">🎣</div>
+  <div class="rev-name" id="rev-name">Phishing</div>
+  <div class="rev-example" id="rev-example">e.g. An email from your "CEO" requests urgent gift card purchases</div>
+  <button class="ctrl-btn primary" id="btn-reveal-next" style="font-size:18px;padding:14px 48px">Start Next Round</button>
+</div>
+<div class="reveal-overlay hidden" id="gameover-reveal" style="background:rgba(0,0,0,.88)">
+  <div class="rev-icon">🏁</div>
+  <div class="rev-name" id="gov-name">Game Over</div>
+  <div class="rev-example" id="gov-sub" style="font-style:normal;color:rgba(255,255,255,.7)">All rounds complete</div>
+  <button class="ctrl-btn primary" id="btn-gov-lobby" style="font-size:18px;padding:14px 48px;margin-top:32px">Return to Lobby</button>
+</div>
 <script>
-const socket = io();
+const socket=io();
 
-const ATTACKS = {
-  phishing: '🎣', malware: '🦠', ransomware: '🔒', ddos: '🌊',
-  sql_injection: '💉', mitm: '👤', zero_day: '⚡', insider: '🏢',
-  data_exfil: '📤', social_eng: '🎭'
+const ATTACKS={
+  phishing:'🎣',malware:'🦠',ransomware:'🔒',ddos:'🌊',
+  sql_injection:'💉',mitm:'👤',zero_day:'⚡',insider:'🏢',
+  data_exfil:'📤',social_eng:'🎭'
 };
-const DEFENCE_ICONS = {
-  firewall: '🛡️', endpoint: '💻', mfa: '🔐', encryption: '🔒',
-  seg: '🔀', backup: '💾', threat: '👁️', passwords: '🔑',
-  training: '📚', monitoring: '📊'
+const DEFENCE_NAMES={
+  firewall:'Firewall',endpoint:'Endpoint Protection',mfa:'Multi-Factor Auth',encryption:'Encryption',
+  seg:'Network Segmentation',backup:'Backup & Recovery',threat:'Threat Detection',
+  passwords:'Improved Passwords',training:'Security Training',monitoring:'Continuous Monitoring'
 };
 
-function statusLabel(p) {
-  if (p.phase === 'gameover' || p.round >= 3) return 'Done';
-  if (p.phase === 'intro') return 'Waiting';
-  return 'Playing';
+const $=id=>document.getElementById(id);
+const grid=$('grid'),playerCount=$('player-count');
+const dashTimer=$('dash-timer'),timerDec=$('timer-dec'),timerInc=$('timer-inc');
+const btnStartGame=$('btn-start-game'),btnForceEnd=$('btn-force-end'),btnNextRound=$('btn-next-round');
+const slotOverlay=$('slot-overlay'),dashSlotTrack=$('dash-slot-track'),slotLabel=$('slot-label');
+const revealOverlay=$('reveal-overlay'),revIcon=$('rev-icon'),revName=$('rev-name'),revExample=$('rev-example'),btnRevealNext=$('btn-reveal-next');
+const gameoverReveal=$('gameover-reveal'),govName=$('gov-name'),govSub=$('gov-sub'),btnGovLobby=$('btn-gov-lobby');
+const phaseIndicator=$('phase-indicator'),phaseDot=$('phase-dot'),phaseLabel=$('phase-label');
+
+let currentPhase='lobby';
+let currentAttack=null;
+
+function budgetPct(b){return Math.max(0,Math.min(100,(b/300000)*100))}
+function budgetClass(b){const p=b/300000;return p<=0.25?'critical':p<=0.5?'low':'ok'}
+
+function formatTime(s){
+  const m=Math.floor(s/60),sec=s%60;
+  return `${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
 }
 
-function statusClass(s) {
-  return s === 'Done' ? 'done' : s === 'Playing' ? 'playing' : 'intro';
-}
-
-function budgetPct(budget) {
-  return Math.max(0, Math.min(100, (budget / 300000) * 100));
-}
-
-function budgetClass(budget) {
-  const pct = budget / 300000;
-  return pct <= 0.25 ? 'critical' : pct <= 0.5 ? 'low' : 'ok';
-}
-
-function renderCard(p) {
-  const r = p.round || 0;
-  const status = statusLabel(p);
-  const bp = budgetPct(p.budget);
-  const bc = budgetClass(p.budget);
-  const attack = p.lastAttack;
-  const result = p.lastResult;
-  const defences = p.defences || [];
-  const dots = [];
-  for (let i = 0; i < 3; i++) {
-    if (i < r) {
-      dots.push(`<div class="round-dot blocked" title="Round ${i+1}"></div>`);
-    } else if (i === r && status === 'Playing' && attack) {
-      dots.push(`<div class="round-dot breached" title="Round ${i+1} in progress"></div>`);
-    } else {
-      dots.push(`<div class="round-dot future" title="Round ${i+1}"></div>`);
-    }
-  }
-
-  return `<div class="card ${status === 'Done' ? 'done' : status === 'Playing' ? 'playing' : ''}">
-    <div class="card-header">
-      <div class="card-name">${p.name}</div>
-      <div class="card-status ${statusClass(status)}">${status}</div>
-    </div>
-    <div class="card-body">
-      <div class="stat-row">
-        <div class="stat-box"><div class="label">Blocked</div><div class="value green">${p.blocked || 0}</div></div>
-        <div class="stat-box"><div class="label">Breaches</div><div class="value red">${p.breaches || 0}</div></div>
-        <div class="stat-box"><div class="label">Budget</div><div class="value ${bc}">£${(p.budget || 0).toLocaleString()}</div></div>
-      </div>
-      <div>
-        <div class="budget-bar"><div class="budget-bar-fill ${bc}" style="width:${bp}%"></div></div>
-      </div>
-      ${defences.length > 0 ? `<div class="defence-tags">${defences.map(d => `<span class="defence-tag">${DEFENCE_ICONS[d]||''} ${d}</span>`).join('')}</div>` : ''}
-      ${attack ? `<div class="attack-line"><span class="a-icon">${ATTACKS[attack.id]||'🔓'}</span><span class="a-name">${attack.name}</span><span class="a-result ${result && result.blocked ? 'blocked' : 'breached'}">${result && result.blocked ? 'BLOCKED' : 'BREACHED'}</span></div>` : ''}
-      <div class="round-dots">${dots.join('')}</div>
-    </div>
-  </div>`;
-}
-
-function renderDashboard(players) {
-  const grid = document.getElementById('grid');
-  document.getElementById('player-count').textContent = players.length;
-  if (players.length === 0) {
-    grid.innerHTML = `<div class="empty-state"><div class="big-icon">📡</div><h2>Waiting for players</h2><p>Share the link with your team and their cards will appear here as they join.</p></div>`;
+function renderCards(players){
+  playerCount.textContent=players.length;
+  if(players.length===0){
+    grid.innerHTML=`<div class="empty-state"><div class="big-icon">📡</div><h2>Waiting for players</h2><p>Share the link with your team and their cards will appear here as they join.</p></div>`;
     return;
   }
-  grid.innerHTML = players.map(renderCard).join('');
+  grid.innerHTML=players.map(p=>{
+    const r=currentPhase==='reveal'||currentPhase==='gameover'?3:(currentPhase==='selecting'?p.defences.length:0);
+    const dots='';
+    let dotsHtml='<div class="round-dots">';
+    for(let i=0;i<3;i++){
+      if(i<p.breaches+p.blocked||(currentPhase==='gameover')){
+        const known=!!p.lastAttack;
+        dotsHtml+=`<div class="round-dot ${known?'blocked':'blocked'}" title="Round ${i+1}"></div>`;
+      }else if(i===p.blocked+p.breaches&&currentPhase==='selecting'){
+        dotsHtml+=`<div class="round-dot future" style="border:2px solid var(--accent);background:transparent" title="Round ${i+1} active"></div>`;
+      }else{
+        dotsHtml+=`<div class="round-dot future" title="Round ${i+1}"></div>`;
+      }
+    }
+    dotsHtml+='</div>';
+    const defs=p.defences||[];
+    const atk=p.lastAttack;
+    const bc=budgetClass(p.budget);
+    return `<div class="card ${currentPhase==='selecting'?'playing':''}">
+      <div class="card-header">
+        <div class="card-name">${p.name}</div>
+        <div class="card-status playing">${p.selected.length}/${p.maxSelect}</div>
+      </div>
+      <div class="card-body">
+        <div class="stat-row">
+          <div class="stat-box"><div class="label">Blocked</div><div class="value green">${p.blocked||0}</div></div>
+          <div class="stat-box"><div class="label">Breaches</div><div class="value red">${p.breaches||0}</div></div>
+          <div class="stat-box"><div class="label">Budget</div><div class="value ${bc}">£${(p.budget||0).toLocaleString()}</div></div>
+        </div>
+        <div><div class="budget-bar"><div class="budget-bar-fill ${bc}" style="width:${budgetPct(p.budget)}%"></div></div></div>
+        ${defs.length?`<div class="defence-tags">${defs.map(d=>`<span class="defence-tag">${DEFENCE_NAMES[d]||d}</span>`).join('')}</div>`:''}
+        ${atk?`<div class="attack-line"><span class="a-icon">${ATTACKS[atk.id]||'🔓'}</span><span class="a-name">${atk.name}</span><span class="a-result ${p.lastResult||'blocked'}">${(p.lastResult||'ok').toUpperCase()}</span></div>`:''}
+        ${dotsHtml}
+      </div>
+    </div>`;
+  }).join('');
 }
 
-socket.on('players-update', renderDashboard);
+function updatePhase(gs){
+  const phases={lobby:'Lobby',selecting:'Round '+gs.round,spinning:'Spinning...',reveal:'Reveal',gameover:'Game Over'};
+  phaseLabel.textContent=phases[gs.phase]||gs.phase;
+  const colors={lobby:'orange',selecting:'green',spinning:'purple',reveal:'purple',gameover:'red'};
+  phaseDot.className='phase-dot '+(colors[gs.phase]||'orange');
+}
 
-socket.on('connect', () => { console.log('Dashboard connected'); });
+function updateButtons(gs){
+  btnStartGame.style.display='none';
+  btnForceEnd.style.display='none';
+  btnNextRound.style.display='none';
+  if(gs.phase==='lobby'){
+    btnStartGame.style.display='';
+    btnStartGame.disabled=false;
+    btnStartGame.textContent='Start Game';
+  }else if(gs.phase==='selecting'){
+    btnForceEnd.style.display='';
+    btnForceEnd.textContent='Force End Round';
+  }else if(gs.phase==='reveal'){
+    btnNextRound.style.display='';
+    btnNextRound.textContent=gs.round>=3?'End Game':'Start Round '+(gs.round+1);
+  }else if(gs.phase==='gameover'){
+    btnNextRound.style.display='';
+    btnNextRound.textContent='Return to Lobby';
+  }
+}
+
+function showSlotMachine(attack){
+  if(!attack)return;
+  slotOverlay.classList.remove('hidden');
+  revealOverlay.classList.add('hidden');
+  gameoverReveal.classList.add('hidden');
+  const ih=100,cycles=5;
+  const atts=Object.keys(ATTACKS).map(id=>{
+    const names={phishing:'Phishing',malware:'Malware',ransomware:'Ransomware',ddos:'DDoS',sql_injection:'SQL Injection',mitm:'MITM',zero_day:'Zero-Day',insider:'Insider Threat',data_exfil:'Data Exfiltration',social_eng:'Social Engineering'};
+    return {id,icon:ATTACKS[id],name:names[id]||id};
+  });
+  const targetIdx=atts.findIndex(a=>a.id===attack.id);
+  if(targetIdx<0)return;
+  dashSlotTrack.innerHTML='';
+  for(let c=0;c<cycles+1;c++)atts.forEach(a=>{
+    const d=document.createElement('div');d.className='dash-slot-item';
+    d.innerHTML='<span class="dsi-icon">'+a.icon+'</span><span class="dsi-name">'+a.name+'</span>';
+    dashSlotTrack.appendChild(d);
+  });
+  atts.slice(0,2).forEach(a=>{
+    const d=document.createElement('div');d.className='dash-slot-item';
+    d.innerHTML='<span class="dsi-icon">'+a.icon+'</span><span class="dsi-name">'+a.name+'</span>';
+    dashSlotTrack.appendChild(d);
+  });
+  const tgi=cycles*atts.length+targetIdx,endY=(tgi-1)*ih,duration=10000,st=performance.now();
+  function eo(t){return 1-Math.pow(1-t,3)}
+  function an(now){
+    const elapsed=now-st,progress=Math.min(elapsed/duration,1),cur=eo(progress)*endY;
+    dashSlotTrack.style.transform='translateY(-'+cur+'px)';
+    if(progress<1)requestAnimationFrame(an);
+  }
+  requestAnimationFrame(an);
+}
+
+function showReveal(attack){
+  if(!attack)return;
+  slotOverlay.classList.add('hidden');
+  revIcon.textContent=attack.icon;
+  revName.textContent=attack.name;
+  revExample.textContent='e.g. '+attack.example;
+  revealOverlay.classList.remove('hidden');
+}
+
+function showGameOver(){
+  slotOverlay.classList.add('hidden');
+  revealOverlay.classList.add('hidden');
+  gameoverReveal.classList.remove('hidden');
+}
+
+function hideAll(){
+  slotOverlay.classList.add('hidden');
+  revealOverlay.classList.add('hidden');
+  gameoverReveal.classList.add('hidden');
+}
+
+// Socket events
+socket.on('connect',()=>console.log('Dashboard connected'));
+
+socket.on('game-state',(gs)=>{
+  currentPhase=gs.phase;
+  currentAttack=gs.currentAttack;
+  updatePhase(gs);
+  updateButtons(gs);
+  if(gs.phase==='lobby'){
+    hideAll();
+  }else if(gs.phase==='selecting'){
+    hideAll();
+    dashTimer.className='dash-timer';
+  }else if(gs.phase==='spinning'){
+    showSlotMachine(gs.currentAttack);
+  }else if(gs.phase==='reveal'){
+    showReveal(gs.currentAttack);
+  }else if(gs.phase==='gameover'){
+    showGameOver();
+  }
+});
+
+socket.on('players-update',renderCards);
+
+socket.on('timer-update',(remaining)=>{
+  dashTimer.textContent=formatTime(remaining);
+  dashTimer.className='dash-timer'+(remaining<=10?' danger':remaining<=30?' warning':'');
+});
+
+// Controls
+btnStartGame.addEventListener('click',()=>{
+  btnStartGame.disabled=true;
+  btnStartGame.textContent='Starting...';
+  socket.emit('start-game');
+});
+
+btnForceEnd.addEventListener('click',()=>{
+  socket.emit('adjust-timer',-9999);
+});
+
+btnNextRound.addEventListener('click',()=>{
+  if(currentPhase==='gameover'){
+    socket.emit('reset-game');
+  }else{
+    socket.emit('start-next-round');
+  }
+});
+
+btnRevealNext.addEventListener('click',()=>{
+  socket.emit('start-next-round');
+});
+
+btnGovLobby.addEventListener('click',()=>{
+  socket.emit('reset-game');
+});
+
+timerDec.addEventListener('click',()=>socket.emit('adjust-timer',-30));
+timerInc.addEventListener('click',()=>socket.emit('adjust-timer',30));
+
+document.addEventListener('keydown',e=>{
+  if(e.key==='f'||e.key==='F'){
+    if(!document.fullscreenElement)document.documentElement.requestFullscreen().catch(()=>{});
+    else document.exitFullscreen();
+  }
+});
+
+// Initial state
+renderCards([]);
 </script>
 </body>
 </html>

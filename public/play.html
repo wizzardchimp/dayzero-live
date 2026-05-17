@@ -16,7 +16,7 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .header h1{font-size:20px;font-weight:800;background:linear-gradient(135deg,var(--accent),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .header-right{display:flex;align-items:center;gap:24px}
 .conn-dot{width:8px;height:8px;border-radius:50%;background:#94a3b8;transition:background .3s}
-.conn-dot.connected{background:var(--green)}
+.conn-dot.ready{background:var(--green)}
 .conn-dot.disconnected{background:var(--red)}
 .header-budget{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600}
 .header-budget .label{color:var(--text3);font-weight:500}
@@ -38,15 +38,11 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .defence-icon{font-size:32px;margin-bottom:8px}
 .defence-name{font-weight:700;font-size:15px;margin-bottom:4px}
 .defence-counters{font-size:13px;color:var(--text3);line-height:1.4}
-.timer-section{display:flex;align-items:center;gap:16px;margin-bottom:24px}
-.timer-btn{width:40px;height:40px;border-radius:50%;background:var(--bg3);border:1px solid var(--border);font-size:20px;font-weight:600;color:var(--text2);transition:all .2s}
-.timer-btn:hover{background:var(--accent-light);color:var(--accent);border-color:var(--accent2)}
+.timer-section{display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:24px}
 .timer-display{font-size:48px;font-weight:900;font-variant-numeric:tabular-nums;min-width:120px;text-align:center}
 .timer-display.warning{color:var(--orange)}
 .timer-display.danger{color:var(--red);animation:pulse .5s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
-.skip-btn{padding:14px 40px;border-radius:var(--radius-sm);font-size:16px;font-weight:700;letter-spacing:1px;transition:all .2s;background:linear-gradient(135deg,var(--accent),var(--purple));color:#fff;box-shadow:0 4px 20px rgba(37,99,235,.3)}
-.skip-btn:hover{transform:translateY(-2px);box-shadow:0 6px 28px rgba(37,99,235,.4)}
 .status-bar{position:fixed;bottom:0;left:0;right:0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:12px 32px;background:rgba(255,255,255,.8);backdrop-filter:blur(12px);border-top:1px solid var(--border);font-size:13px}
 .status-left{display:flex;align-items:center;gap:8px}
 .status-dot{width:8px;height:8px;border-radius:50%;background:var(--green);animation:blink 2s infinite}
@@ -75,6 +71,9 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .intro-btn.primary:hover{transform:translateY(-2px);box-shadow:0 4px 20px rgba(37,99,235,.3)}
 .intro-btn.secondary{background:var(--bg3);color:var(--text2);border:1px solid var(--border)}
 .intro-btn.secondary:hover{background:var(--accent-light);color:var(--accent)}
+.waiting-text{color:var(--text2);font-size:16px;text-align:center;margin-top:24px;padding:20px}
+.waiting-spinner{display:inline-block;width:20px;height:20px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;margin-right:10px;vertical-align:middle}
+@keyframes spin{to{transform:rotate(360deg)}}
 .wheel-overlay{position:fixed;inset:0;z-index:95;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,0,0,.5);backdrop-filter:blur(8px);animation:alertPulse 2s ease-in-out infinite alternate}
 @keyframes alertPulse{0%{background:rgba(0,0,0,.5)}100%{background:rgba(160,0,0,.7)}}
 .wheel-overlay.hidden{display:none}
@@ -144,8 +143,13 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .name-card .name-sub-btn{margin-top:16px;width:100%;padding:14px;font-size:16px;font-weight:700;border-radius:var(--radius-sm);background:linear-gradient(135deg,var(--accent),var(--purple));color:#fff}
 .name-card .name-sub-btn:hover{transform:translateY(-2px);box-shadow:0 4px 20px rgba(37,99,235,.3)}
 .name-card .connecting{color:var(--text3);font-size:13px;margin-top:12px}
-@media(max-width:768px){.header{padding:12px 16px}.header h1{font-size:16px}.header-right{gap:12px}.round-badge{padding:4px 12px;font-size:12px}.main{top:60px;bottom:40px;padding:16px}.round-title{font-size:22px;margin-bottom:4px}.round-sub{font-size:14px;margin-bottom:16px}.defence-grid{grid-template-columns:repeat(3,1fr);gap:10px;max-width:600px}.defence-card{padding:14px}.defence-icon{font-size:24px;margin-bottom:4px}.defence-name{font-size:13px}.defence-counters{font-size:11px}.timer-display{font-size:36px;min-width:90px}.timer-section{margin-bottom:16px}.skip-btn{padding:12px 28px;font-size:14px}.status-bar{padding:8px 16px;font-size:12px}.intro{padding:24px}.intro h2{font-size:20px}.intro-grid{grid-template-columns:1fr}.result-card{padding:24px}.result-title{font-size:18px}.go-stats{gap:8px}.go-stat{padding:12px}.go-stat .value{font-size:22px}}
-@media(max-width:480px){.header{padding:8px 12px}.header h1{font-size:14px}.header-right{gap:8px}.header-budget{gap:4px;font-size:12px}.header-budget .amount{font-size:13px}.round-badge{padding:3px 8px;font-size:10px}.main{top:52px;bottom:36px;padding:12px}.round-title{font-size:20px}.round-sub{font-size:14px;margin-bottom:12px}.defence-grid{grid-template-columns:repeat(2,1fr);gap:8px;max-width:400px}.defence-card{padding:10px}.defence-card.carried::after{font-size:8px;padding:2px 6px;top:4px;right:4px}.defence-icon{font-size:20px}.defence-name{font-size:13px}.defence-counters{font-size:11px}.timer-display{font-size:26px;min-width:60px}.timer-btn{width:34px;height:34px;font-size:16px}.timer-section{gap:6px;margin-bottom:12px}.skip-btn{padding:10px 20px;font-size:14px}.status-bar{display:none}.wheel-label{font-size:16px;margin-bottom:16px}.slot-machine{padding:16px 20px}.slot-window{height:192px}.slot-item{height:64px;font-size:15px;gap:10px}.slot-item .si-icon{font-size:24px}.intro{padding:16px}.intro h2{font-size:18px;margin-bottom:16px}.intro-item{padding:10px}.intro-item .icon{font-size:20px}.intro-item .name{font-size:14px}.intro-item .counters{font-size:12px}.intro-btn{padding:10px 24px;font-size:13px}.result-card{padding:20px}.result-title{font-size:16px}.result-sub{font-size:12px;margin-bottom:16px}.verdict{padding:16px}.verdict .v-icon{font-size:36px}.verdict .v-label{font-size:15px}.verdict .v-detail{font-size:13px}.attack-info{padding:12px}.budget-item .value{font-size:16px}.defences-deployed .dd-item{font-size:10px;padding:4px 8px}.result-btn{width:100%;padding:12px 20px;font-size:14px}.zr-icon{font-size:80px}.zr-name{font-size:32px}.zr-example{font-size:16px}.game-over h2{font-size:24px}.game-over .go-sub{font-size:14px;margin-bottom:20px}.go-stats{gap:6px}.go-stat{padding:10px}.go-stat .label{font-size:10px}.go-stat .value{font-size:18px}.name-card{padding:24px}.name-card h2{font-size:22px}.name-input{font-size:16px;padding:12px}}
+.waiting-overlay{position:fixed;inset:0;z-index:80;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(255,255,255,.85);backdrop-filter:blur(4px)}
+.waiting-overlay.hidden{display:none}
+.waiting-overlay .wo-icon{font-size:48px;margin-bottom:16px}
+.waiting-overlay .wo-text{font-size:20px;font-weight:700;color:var(--text2)}
+.waiting-overlay .wo-sub{font-size:14px;color:var(--text3);margin-top:8px}
+@media(max-width:768px){.header{padding:12px 16px}.header h1{font-size:16px}.header-right{gap:12px}.round-badge{padding:4px 12px;font-size:12px}.main{top:60px;bottom:40px;padding:16px}.round-title{font-size:22px;margin-bottom:4px}.round-sub{font-size:14px;margin-bottom:16px}.defence-grid{grid-template-columns:repeat(3,1fr);gap:10px;max-width:600px}.defence-card{padding:14px}.defence-icon{font-size:24px;margin-bottom:4px}.defence-name{font-size:13px}.defence-counters{font-size:11px}.timer-display{font-size:36px;min-width:90px}.timer-section{margin-bottom:16px}.status-bar{padding:8px 16px;font-size:12px}.intro{padding:24px}.intro h2{font-size:20px}.intro-grid{grid-template-columns:1fr}.result-card{padding:24px}.result-title{font-size:18px}.go-stats{gap:8px}.go-stat{padding:12px}.go-stat .value{font-size:22px}}
+@media(max-width:480px){.header{padding:8px 12px}.header h1{font-size:14px}.header-right{gap:8px}.header-budget{gap:4px;font-size:12px}.header-budget .amount{font-size:13px}.round-badge{padding:3px 8px;font-size:10px}.main{top:52px;bottom:36px;padding:12px}.round-title{font-size:20px}.round-sub{font-size:14px;margin-bottom:12px}.defence-grid{grid-template-columns:repeat(2,1fr);gap:8px;max-width:400px}.defence-card{padding:10px}.defence-card.carried::after{font-size:8px;padding:2px 6px;top:4px;right:4px}.defence-icon{font-size:20px}.defence-name{font-size:13px}.defence-counters{font-size:11px}.timer-display{font-size:26px;min-width:60px}.timer-section{gap:6px;margin-bottom:12px}.status-bar{display:none}.wheel-label{font-size:16px;margin-bottom:16px}.slot-machine{padding:16px 20px}.slot-window{height:192px}.slot-item{height:64px;font-size:15px;gap:10px}.slot-item .si-icon{font-size:24px}.intro{padding:16px}.intro h2{font-size:18px;margin-bottom:16px}.intro-item{padding:10px}.intro-item .icon{font-size:20px}.intro-item .name{font-size:14px}.intro-item .counters{font-size:12px}.intro-btn{padding:10px 24px;font-size:13px}.result-card{padding:20px}.result-title{font-size:16px}.result-sub{font-size:12px;margin-bottom:16px}.verdict{padding:16px}.verdict .v-icon{font-size:36px}.verdict .v-label{font-size:15px}.verdict .v-detail{font-size:13px}.attack-info{padding:12px}.budget-item .value{font-size:16px}.defences-deployed .dd-item{font-size:10px;padding:4px 8px}.result-btn{width:100%;padding:12px 20px;font-size:14px}.zr-icon{font-size:80px}.zr-name{font-size:32px}.zr-example{font-size:16px}.game-over h2{font-size:24px}.game-over .go-sub{font-size:14px;margin-bottom:20px}.go-stats{gap:6px}.go-stat{padding:10px}.go-stat .label{font-size:10px}.go-stat .value{font-size:18px}.name-card{padding:24px}.name-card h2{font-size:22px}.name-input{font-size:16px;padding:12px}}
 </style>
 </head>
 <body>
@@ -158,13 +162,11 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
   </div>
 </div>
 <div class="main">
-  <div class="round-title" id="round-title">Select Your Defences</div>
-  <div class="round-sub" id="round-sub">Choose 3 defence mechanisms to deploy</div>
-  <div class="defence-grid" id="defence-grid"></div>
-  <div class="timer-section">
-    <button class="timer-btn" id="timer-dec">−</button>
-    <div class="timer-display" id="timer-display">01:00</div>
-    <button class="timer-btn" id="timer-inc">+</button>
+  <div class="round-title" id="round-title"></div>
+  <div class="round-sub" id="round-sub"></div>
+  <div class="defence-grid" id="defence-grid" style="display:none"></div>
+  <div class="timer-section" id="timer-section" style="display:none">
+    <div class="timer-display" id="timer-display">02:00</div>
   </div>
 </div>
 <div class="status-bar">
@@ -174,7 +176,7 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 <div class="name-overlay" id="name-overlay">
   <div class="name-card">
     <h2>Day Zero</h2>
-    <p>Enter your callsign to join the live session</p>
+    <p>Enter your callsign to join the session</p>
     <input class="name-input" id="name-input" type="text" placeholder="Your name" maxlength="20" autofocus>
     <button class="name-sub-btn" id="name-sub-btn">Join Game</button>
     <div class="connecting" id="connecting-msg">Connecting to server...</div>
@@ -184,12 +186,20 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
   <div class="intro">
     <h2 id="intro-title">Defence Mechanisms</h2>
     <div class="intro-page active" id="intro-page-1"><div class="intro-grid" id="intro-defences"></div></div>
-    <div class="intro-page" id="intro-page-2"><div class="intro-grid" id="intro-attacks"></div></div>
+    <div class="intro-page" id="intro-page-2">
+      <div class="intro-grid" id="intro-attacks"></div>
+      <div class="waiting-text" id="waiting-text"><span class="waiting-spinner"></span>Waiting for game to start...</div>
+    </div>
     <div class="intro-nav">
       <button class="intro-btn secondary" id="intro-prev" style="display:none">Previous</button>
       <button class="intro-btn primary" id="intro-next">Next</button>
     </div>
   </div>
+</div>
+<div class="waiting-overlay hidden" id="waiting-overlay">
+  <div class="wo-icon">⏳</div>
+  <div class="wo-text" id="wo-text">Waiting for next round...</div>
+  <div class="wo-sub" id="wo-sub">The dashboard operator will start the next round shortly</div>
 </div>
 <div class="wheel-overlay hidden" id="wheel-overlay">
   <div class="wheel-label" id="wheel-label">Incoming Attack...</div>
@@ -202,16 +212,16 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 <canvas id="confettiCanvas"></canvas>
 <div class="result-overlay hidden" id="result-overlay">
   <div class="result-card">
-    <div class="result-title" id="result-title">ROUND 1 — BREACHED</div>
-    <div class="result-sub" id="result-sub">ROUND 1 OF 3</div>
-    <div class="verdict" id="verdict"><div class="v-icon">💥</div><div class="v-label">BREACH DETECTED</div><div class="v-detail">Attack exploited a gap in your defences</div></div>
+    <div class="result-title" id="result-title"></div>
+    <div class="result-sub" id="result-sub"></div>
+    <div class="verdict" id="verdict"><div class="v-icon"></div><div class="v-label"></div><div class="v-detail"></div><div class="v-prevent" style="display:none"></div></div>
     <div class="attack-info"><div class="a-header"><div class="a-icon" id="a-icon">🔓</div><div><div class="a-name" id="a-name">Attack Name</div><div class="a-desc" id="a-desc">Description</div></div></div></div>
     <div class="budget-impact">
-      <div class="budget-item"><div class="label">Impact</div><div class="value negative" id="bi-impact">−£100,000</div></div>
-      <div class="budget-item"><div class="label">Remaining</div><div class="value" id="bi-remaining">£200,000</div></div>
+      <div class="budget-item"><div class="label">Impact</div><div class="value" id="bi-impact">£0</div></div>
+      <div class="budget-item"><div class="label">Remaining</div><div class="value" id="bi-remaining">£300,000</div></div>
     </div>
     <div class="defences-deployed"><div class="dd-label">ACTIVE DEFENCES</div><div class="dd-list" id="dd-list"></div></div>
-    <button class="result-btn" id="result-btn">Continue</button>
+    <button class="result-btn" id="result-btn">Close</button>
   </div>
 </div>
 <div class="overlay hidden" id="gameover-overlay">
@@ -223,7 +233,7 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
       <div class="go-stat"><div class="label">Breaches</div><div class="value red" id="go-breaches">0</div></div>
       <div class="go-stat"><div class="label">Final Budget</div><div class="value blue" id="go-budget">£0</div></div>
     </div>
-    <button class="intro-btn primary" id="go-restart">Play Again</button>
+    <div class="waiting-text" style="color:var(--text3);font-size:14px">Game session ended — return to lobby to play again</div>
   </div>
 </div>
 <audio id="audio" loop src="music.mp3"></audio>
@@ -255,8 +265,25 @@ const ATTACKS=[
 ];
 const EFFECTIVENESS={};DEFENCES.forEach(d=>{EFFECTIVENESS[d.id]=d.counters});
 const MAX_ROUNDS=3,ATTACK_COST=100000,START_BUDGET=300000;
-const WHEEL_COLORS=['#2563eb','#3b82f6','#60a5fa','#93c5fd','#1d4ed8','#2563eb','#3b82f6','#60a5fa','#93c5fd','#1d4ed8'];
-const state={phase:'intro',round:0,selected:[],carriedOver:[],maxSelect:3,timer:60,timerTotal:60,timerInterval:null,budget:START_BUDGET,usedAttacks:[],blocked:0,breaches:0,currentAttack:null,currentResult:null,introPage:1};
+
+const socket=io();
+let playerId=null;
+
+const connDot=$('conn-dot'),nameOverlay=$('name-overlay'),nameInput=$('name-input'),nameSubBtn=$('name-sub-btn'),connMsg=$('connecting-msg');
+const introOverlay=$('intro-overlay'),introTitle=$('intro-title'),introPage1=$('intro-page-1'),introPage2=$('intro-page-2'),introPrev=$('intro-prev'),introNext=$('intro-next');
+const defenceGrid=$('defence-grid'),roundTitle=$('round-title'),roundSub=$('round-sub'),roundBadge=$('round-badge');
+const timerDisplay=$('timer-display'),timerSection=$('timer-section');
+const headerBudget=$('header-budget'),statusText=$('status-text'),statusBudget=$('status-budget');
+const wheelOverlay=$('wheel-overlay'),wheelLabel=$('wheel-label');
+const zoomReveal=$('zoom-reveal'),zrIcon=$('zr-icon'),zrName=$('zr-name'),zrExample=$('zr-example'),zoomBtn=$('zoom-btn');
+const confettiCanvas=$('confettiCanvas'),confettiCtx=confettiCanvas.getContext('2d');
+const resultOverlay=$('result-overlay'),resultTitle=$('result-title'),resultSub=$('result-sub'),verdict=$('verdict'),vIcon=verdict.querySelector('.v-icon'),vLabel=verdict.querySelector('.v-label'),vDetail=verdict.querySelector('.v-detail'),vPrevent=verdict.querySelector('.v-prevent');
+const aIcon=$('a-icon'),aName=$('a-name'),aDesc=$('a-desc'),biImpact=$('bi-impact'),biRemaining=$('bi-remaining'),ddList=$('dd-list'),resultBtn=$('result-btn');
+const gameoverOverlay=$('gameover-overlay'),goTitle=$('go-title'),goSub=$('go-sub'),goBlocked=$('go-blocked'),goBreaches=$('go-breaches'),goBudget=$('go-budget');
+const waitingOverlay=$('waiting-overlay'),woText=$('wo-text'),woSub=$('wo-sub');
+const audio=$('audio');
+const slotTrack=$('slot-track');
+
 let audioCtx=null,audioUnlocked=false;
 function ensureAudio(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();if(audioCtx.state==='suspended')audioCtx.resume();if(!audioUnlocked){audioUnlocked=true;const src=audioCtx.createBufferSource();src.buffer=audioCtx.createBuffer(1,1,audioCtx.sampleRate);src.connect(audioCtx.destination);src.start();src.stop()}}
 let drumrollAudio=null,winAudio=null,loseAudio=null;
@@ -265,79 +292,277 @@ function playBeep(){ensureAudio();if(!audioCtx)return;const t=audioCtx.currentTi
 function playDrumroll(){if(!drumrollAudio)drumrollAudio=new Audio('drumroll.mp3');drumrollAudio.currentTime=0;drumrollAudio.play().catch(()=>{})}
 function playTrumpet(){if(!winAudio)winAudio=new Audio('win.mp3');winAudio.currentTime=0;winAudio.play().catch(()=>{})}
 function playFail(){if(!loseAudio)loseAudio=new Audio('lose.mp3');loseAudio.currentTime=0;loseAudio.play().catch(()=>{})}
-const introOverlay=$('intro-overlay'),introTitle=$('intro-title'),introPage1=$('intro-page-1'),introPage2=$('intro-page-2'),introPrev=$('intro-prev'),introNext=$('intro-next');
-const defenceGrid=$('defence-grid'),roundTitle=$('round-title'),roundSub=$('round-sub'),roundBadge=$('round-badge');
-const timerDisplay=$('timer-display'),timerDec=$('timer-dec'),timerInc=$('timer-inc');
-const headerBudget=$('header-budget'),statusText=$('status-text'),statusBudget=$('status-budget');
-const wheelOverlay=$('wheel-overlay'),wheelLabel=$('wheel-label');
-const resultOverlay=$('result-overlay'),resultTitle=$('result-title'),resultSub=$('result-sub'),verdict=$('verdict'),aIcon=$('a-icon'),aName=$('a-name'),aDesc=$('a-desc'),biImpact=$('bi-impact'),biRemaining=$('bi-remaining'),ddList=$('dd-list'),resultBtn=$('result-btn');
-const gameoverOverlay=$('gameover-overlay'),goTitle=$('go-title'),goSub=$('go-sub'),goBlocked=$('go-blocked'),goBreaches=$('go-breaches'),goBudget=$('go-budget'),goRestart=$('go-restart');
-const audio=$('audio');const confettiCanvas=$('confettiCanvas'),confettiCtx=confettiCanvas.getContext('2d');
-const nameOverlay=$('name-overlay'),nameInput=$('name-input'),nameSubBtn=$('name-sub-btn'),connDot=$('conn-dot'),connMsg=$('connecting-msg');
+
+let myData={selected:[],carriedOver:[],maxSelect:3,budget:START_BUDGET,blocked:0,breaches:0,lastAttack:null,lastResult:null,defences:[]};
+let currentAttack=null;
+
 function defName(id){const d=DEFENCES.find(x=>x.id===id);return d?d.name:id}
-function attackName(id){const a=ATTACKS.find(x=>x.id===id);return a?a.name:id}
 function formatTime(s){const m=Math.floor(s/60),sec=s%60;return `${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`}
-function updateBudgetDisplay(){const pct=state.budget/START_BUDGET;const cls=pct<=0.25?'critical':pct<=0.5?'low':'ok';headerBudget.textContent=`£${state.budget.toLocaleString()}`;headerBudget.className='amount '+cls;statusBudget.textContent=`£${state.budget.toLocaleString()}`;statusBudget.className='amount '+cls}
-function updateTimerDisplay(){timerDisplay.textContent=formatTime(state.timer);timerDisplay.className='timer-display'+(state.timer<=10?' danger':state.timer<=30?' warning':'');if(state.timer<=10&&state.timer>0&&state.phase==='running')playBeep()}
-function renderDefences(){defenceGrid.innerHTML='';DEFENCES.forEach(d=>{const card=document.createElement('div');card.className='defence-card';card.dataset.id=d.id;const isCarried=state.carriedOver.includes(d.id),isSelected=state.selected.includes(d.id);if(isCarried)card.classList.add('carried');else if(isSelected)card.classList.add('selected');else if(state.selected.length>=state.maxSelect)card.classList.add('locked');card.innerHTML=`<div class="defence-icon">${d.icon}</div><div class="defence-name">${d.name}</div><div class="defence-counters">${d.desc}</div>`;if(!isCarried)card.addEventListener('click',()=>toggleDefence(d.id));defenceGrid.appendChild(card)})}
-function toggleDefence(id){if(state.phase!=='idle'&&state.phase!=='running')return;const idx=state.selected.indexOf(id);if(idx>=0)state.selected.splice(idx,1);else if(state.selected.length<state.maxSelect){state.selected.push(id);playSelectBeep()}renderDefences();if(state.selected.length>=state.maxSelect)endRound()}
-function startTimer(){clearInterval(state.timerInterval);state.timerInterval=setInterval(()=>{state.timer--;updateTimerDisplay();if(state.timer<=0){clearInterval(state.timerInterval);endRound()}},1000)}
-function endRound(){if(state.phase!=='running')return;state.phase='result';audio.pause();audio.currentTime=0;clearInterval(state.timerInterval);const attack=selectAttack();state.currentAttack=attack;const blockedBy=findBlocker(attack);const blocked=!!blockedBy;if(blocked)state.blocked++;else{state.breaches++;state.budget-=ATTACK_COST;updateBudgetDisplay()}state.currentResult={round:state.round,attack,blocked,blockedBy:defName(blockedBy),defences:[...state.selected]};setTimeout(()=>{wheelOverlay.classList.remove('hidden');playDrumroll();spinWheel(ATTACKS.indexOf(attack))},300)}
-function selectAttack(){const available=ATTACKS.filter(a=>!state.usedAttacks.includes(a.id));if(available.length===0)return ATTACKS[0];const pick=available[Math.floor(Math.random()*available.length)];state.usedAttacks.push(pick.id);return pick}
-function findBlocker(attack){for(const defId of state.selected)if(EFFECTIVENESS[defId]&&EFFECTIVENESS[defId].includes(attack.id))return defId;return null}
-function spinWheel(targetIdx){const track=$('slot-track'),ih=window.innerWidth<=480?64:96,cycles=5;track.innerHTML='';for(let c=0;c<cycles+1;c++)ATTACKS.forEach(a=>{const d=document.createElement('div');d.className='slot-item';d.innerHTML='<span class="si-icon">'+a.icon+'</span><span class="si-name">'+a.name+'</span>';track.appendChild(d)});ATTACKS.slice(0,2).forEach(a=>{const d=document.createElement('div');d.className='slot-item';d.innerHTML='<span class="si-icon">'+a.icon+'</span><span class="si-name">'+a.name+'</span>';track.appendChild(d)});const tgi=cycles*ATTACKS.length+targetIdx,endY=(tgi-1)*ih,duration=10000,st=performance.now();function eo(t){return 1-Math.pow(1-t,3)}function an(now){const elapsed=now-st,progress=Math.min(elapsed/duration,1),cur=eo(progress)*endY;track.style.transform='translateY(-'+cur+'px)';if(progress<1)requestAnimationFrame(an);else{const a=ATTACKS[targetIdx];$('zr-icon').textContent=a.icon;$('zr-name').textContent=a.name;$('zr-example').textContent='e.g. '+a.example;$('zoom-reveal').classList.remove('hidden')}}requestAnimationFrame(an)}
-function launchConfetti(){confettiCanvas.width=window.innerWidth;confettiCanvas.height=window.innerHeight;const particles=[],colors=['#2563eb','#3b82f6','#10b981','#f59e0b','#ef4444','#8b5cf6','#ec4899'];for(let i=0;i<180;i++)particles.push({x:confettiCanvas.width/2,y:confettiCanvas.height/2,vx:(Math.random()-.5)*20,vy:(Math.random()-.5)*20-8,color:colors[Math.floor(Math.random()*colors.length)],size:Math.random()*8+4,rotation:Math.random()*360,rotSpeed:(Math.random()-.5)*10,life:1});function update(){confettiCtx.clearRect(0,0,confettiCanvas.width,confettiCanvas.height);let alive=false;particles.forEach(p=>{if(p.life<=0)return;alive=true;p.x+=p.vx;p.y+=p.vy;p.vy+=.3;p.rotation+=p.rotSpeed;p.life-=.008;confettiCtx.save();confettiCtx.translate(p.x,p.y);confettiCtx.rotate(p.rotation*Math.PI/180);confettiCtx.globalAlpha=p.life;confettiCtx.fillStyle=p.color;confettiCtx.fillRect(-p.size/2,-p.size/2,p.size,p.size);confettiCtx.restore()});if(alive)requestAnimationFrame(update);else confettiCtx.clearRect(0,0,confettiCanvas.width,confettiCanvas.height)}requestAnimationFrame(update)}
-function reportToServer(){const defenceIds=state.carriedOver.length>0?[...state.carriedOver,...state.selected.filter(id=>!state.carriedOver.includes(id))]:[...state.selected];socket.emit('report-result',{round:state.round,budget:state.budget,blocked:state.blocked,breaches:state.breaches,defences:defenceIds,lastAttack:state.currentAttack?{id:state.currentAttack.id,name:state.currentAttack.name,icon:state.currentAttack.icon}:null,lastResult:state.currentResult})}
-function showResult(){const r=state.currentResult;if(r.blocked)playTrumpet();else playFail();resultTitle.textContent=`ROUND ${r.round+1} — ${r.blocked?'DEFENDED':'BREACHED'}`;resultSub.textContent=`ROUND ${r.round+1} OF ${MAX_ROUNDS}`;aIcon.textContent=r.attack.icon;aName.textContent=r.attack.name;aDesc.textContent=r.attack.desc;if(r.blocked){verdict.className='verdict blocked';verdict.innerHTML=`<div class="v-icon">🛡️</div><div class="v-label">THREAT NEUTRALISED</div><div class="v-detail">${r.attack.name} was blocked by ${r.blockedBy}</div>`}else{const preventers=Object.entries(EFFECTIVENESS).filter(([,attacks])=>attacks.includes(r.attack.id)).map(([defId])=>defName(defId));verdict.className='verdict breached';verdict.innerHTML=`<div class="v-icon">💥</div><div class="v-label">BREACH DETECTED</div><div class="v-detail">${r.attack.name} exploited a gap in your defences</div><div class="v-prevent">Could have been prevented by: ${preventers.join(', ')}</div>`}ddList.innerHTML=r.defences.map(id=>{const d=DEFENCES.find(x=>x.id===id);return d?`<span class="dd-item">${d.icon} ${d.name}</span>`:''}).join('');biImpact.textContent=r.blocked?'£0':`−£${ATTACK_COST.toLocaleString()}`;biImpact.className='value'+(r.blocked?'':' negative');biRemaining.textContent=`£${state.budget.toLocaleString()}`;biRemaining.className='value'+(state.budget<=0?' negative':state.budget<=START_BUDGET*.5?'':' positive');resultOverlay.classList.remove('hidden')}
-function nextRound(){state.round++;if(state.round>=MAX_ROUNDS||state.budget<=0){showGameOver();return}state.carriedOver=[...state.selected];state.selected=[...state.carriedOver];state.maxSelect=state.round===1?5:6;state.timer=state.timerTotal;updateTimerDisplay();roundTitle.textContent='Select Your Defences';roundSub.textContent=state.round===1?'Previous 3 carried over — select 2 more':'Previous 5 carried over — select 1 more';roundBadge.textContent=`ROUND ${state.round+1}`;statusText.textContent='System Active';renderDefences();state.phase='running';audio.currentTime=0;audio.play().catch(()=>{});startTimer();statusText.textContent='Timer Running — Select Defences'}
-function showGameOver(){state.phase='gameover';reportToServer();goBlocked.textContent=state.blocked;goBreaches.textContent=state.breaches;goBudget.textContent=`£${state.budget.toLocaleString()}`;goBudget.className='value'+(state.budget>START_BUDGET*.5?' green':state.budget>0?' blue':' red');goTitle.textContent=state.budget>0?'Mission Complete':'System Compromised';goSub.textContent=state.budget>0?'Your defences held strong':'Budget depleted — too many breaches';gameoverOverlay.classList.remove('hidden')}
-function resetGame(){state.phase='intro';state.round=0;state.selected=[];state.carriedOver=[];state.maxSelect=3;state.timer=60;state.timerTotal=60;state.budget=START_BUDGET;state.usedAttacks=[];state.blocked=0;state.breaches=0;state.currentAttack=null;state.currentResult=null;state.introPage=1;updateBudgetDisplay();updateTimerDisplay();roundBadge.textContent='ROUND 1';roundTitle.textContent='Select Your Defences';roundSub.textContent='Choose 3 defence mechanisms to deploy';statusText.textContent='System Active';gameoverOverlay.classList.add('hidden');resultOverlay.classList.add('hidden');wheelOverlay.classList.add('hidden');$('zoom-reveal').classList.add('hidden');$('zoom-reveal').classList.remove('out');renderDefences();showIntro()}
-function showIntro(){state.phase='intro';state.introPage=1;introOverlay.classList.remove('hidden');renderIntroPage()}
-function renderIntroPage(){const page=state.introPage;introPage1.classList.toggle('active',page===1);introPage2.classList.toggle('active',page===2);introPrev.style.display=page===1?'none':'';introNext.textContent=page===2?'START GAME':'Next';if(page===1){introTitle.textContent='Defence Mechanisms';$('intro-defences').innerHTML=DEFENCES.map(d=>`<div class="intro-item"><div class="icon">${d.icon}</div><div><div class="name">${d.name}</div><div class="counters">${d.desc}</div></div></div>`).join('')}else{introTitle.textContent='Attack Vectors';$('intro-attacks').innerHTML=ATTACKS.map(a=>`<div class="intro-item"><div class="icon">${a.icon}</div><div><div class="name">${a.name}</div><div class="counters">${a.desc}</div></div></div>`).join('')}}
-function startRound(){state.phase='running';state.timer=state.timerTotal;updateTimerDisplay();renderDefences();audio.currentTime=0;audio.play().catch(()=>{});startTimer();statusText.textContent='Timer Running — Select Defences'}
 
-// Socket.IO
-const socket = io();
-let playerId = null;
-
-socket.on('connect', () => {
-  connDot.className = 'conn-dot ready';
-  connMsg.textContent = 'Connected! Enter your name to begin.';
-});
-
-socket.on('disconnect', () => {
-  connDot.className = 'conn-dot disconnected';
-});
-
-socket.on('joined', (data) => {
-  playerId = data.id;
-  nameOverlay.classList.add('hidden');
-  showIntro();
-});
-
-function joinGame() {
-  const name = nameInput.value.trim();
-  if (!name) { nameInput.focus(); return; }
-  nameSubBtn.disabled = true;
-  nameSubBtn.textContent = 'Joining...';
-  socket.emit('join', name);
+function updateBudgetDisplay(){
+  const pct=myData.budget/START_BUDGET;
+  const cls=pct<=0.25?'critical':pct<=0.5?'low':'ok';
+  headerBudget.textContent=`£${myData.budget.toLocaleString()}`;headerBudget.className='amount '+cls;
+  statusBudget.textContent=`£${myData.budget.toLocaleString()}`;statusBudget.className='amount '+cls;
 }
 
-nameSubBtn.addEventListener('click', joinGame);
-nameInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') joinGame(); });
+function renderDefences(){
+  if(!defenceGrid)return;
+  defenceGrid.innerHTML='';
+  const allDefences=[...myData.carriedOver,...myData.selected];
+  const maxed=myData.selected.length>=myData.maxSelect;
+  DEFENCES.forEach(d=>{
+    const card=document.createElement('div');
+    const isCarried=myData.carriedOver.includes(d.id);
+    const isSelected=myData.selected.includes(d.id);
+    card.className='defence-card';
+    if(isCarried)card.classList.add('carried');
+    else if(isSelected)card.classList.add('selected');
+    else if(maxed)card.classList.add('locked');
+    card.dataset.id=d.id;
+    card.innerHTML=`<div class="defence-icon">${d.icon}</div><div class="defence-name">${d.name}</div><div class="defence-counters">${d.desc}</div>`;
+    if(!isCarried){
+      card.addEventListener('click',()=>{
+        ensureAudio();
+        if(isSelected){socket.emit('deselect-defence',d.id)}
+        else if(!maxed){socket.emit('select-defence',d.id);playSelectBeep()}
+      });
+    }
+    defenceGrid.appendChild(card);
+  });
+}
 
-introNext.addEventListener('click',()=>{ensureAudio();if(state.introPage===1){state.introPage=2;renderIntroPage()}else{introOverlay.classList.add('hidden');startRound()}});
-introPrev.addEventListener('click',()=>{ensureAudio();if(state.introPage===2){state.introPage=1;renderIntroPage()}});
-timerDec.addEventListener('click',()=>{if(state.phase==='running'){state.timer=Math.max(1,state.timer-30);updateTimerDisplay()}});
-timerInc.addEventListener('click',()=>{if(state.phase==='running'){state.timer=Math.min(600,state.timer+30);updateTimerDisplay()}});
-$('zoom-btn').addEventListener('click',()=>{const zr=$('zoom-reveal');zr.classList.add('out');setTimeout(()=>{zr.classList.add('hidden');zr.classList.remove('out');wheelOverlay.classList.add('hidden');launchConfetti();setTimeout(showResult,500)},350)});
-resultBtn.addEventListener('click',()=>{resultOverlay.classList.add('hidden');reportToServer();nextRound()});
-goRestart.addEventListener('click',resetGame);
-document.addEventListener('keydown',e=>{if(e.key==='f'||e.key==='F'){if(!document.fullscreenElement)document.documentElement.requestFullscreen().catch(()=>{});else document.exitFullscreen()}if(e.key==='n'||e.key==='N'||e.key==='Escape'){if(!resultOverlay.classList.contains('hidden'))resultBtn.click();else if(!gameoverOverlay.classList.contains('hidden'))goRestart.click();else if(!introOverlay.classList.contains('hidden'))introNext.click();else if(!$('zoom-reveal').classList.contains('hidden'))$('zoom-btn').click()}});
+function hideAllOverlays(){
+  wheelOverlay.classList.add('hidden');
+  zoomReveal.classList.add('hidden');zoomReveal.classList.remove('out');
+  resultOverlay.classList.add('hidden');
+  gameoverOverlay.classList.add('hidden');
+  waitingOverlay.classList.add('hidden');
+}
+
+function renderPhase(gs){
+  const phase=gs.phase;
+  hideAllOverlays();
+  if(phase==='lobby'||phase==='intro'){
+    defenceGrid.style.display='none';
+    timerSection.style.display='none';
+    roundTitle.textContent='';
+    roundSub.textContent='';
+    showIntroPage(2);
+  }else if(phase==='selecting'){
+    defenceGrid.style.display='grid';
+    timerSection.style.display='flex';
+    roundTitle.textContent='Select Your Defences';
+    const maxDesc=['','Choose 3 defence mechanisms to deploy','- Previous carried over — select 2 more','- Previous carried over — select 1 more'];
+    roundSub.textContent=maxDesc[gs.round]||'';
+    roundBadge.textContent=`ROUND ${gs.round}`;
+    statusText.textContent='Timer Running — Select Defences';
+    audio.currentTime=0;audio.play().catch(()=>{});
+    renderDefences();
+    waitingOverlay.classList.add('hidden');
+  }else if(phase==='spinning'){
+    defenceGrid.style.display='none';
+    timerSection.style.display='none';
+    roundTitle.textContent='';
+    roundSub.textContent='';
+    audio.pause();audio.currentTime=0;
+    if(currentAttack){
+      wheelOverlay.classList.remove('hidden');
+      wheelLabel.textContent='Incoming Attack...';
+      playDrumroll();
+      spinWheel(ATTACKS.indexOf(currentAttack));
+    }
+  }else if(phase==='reveal'){
+    if(currentAttack){
+      zrIcon.textContent=currentAttack.icon;
+      zrName.textContent=currentAttack.name;
+      zrExample.textContent='e.g. '+currentAttack.example;
+      zoomReveal.classList.remove('hidden');
+    }
+  }else if(phase==='gameover'){
+    goBlocked.textContent=myData.blocked;
+    goBreaches.textContent=myData.breaches;
+    const b=myData.budget;
+    goBudget.textContent=`£${b.toLocaleString()}`;
+    goBudget.className='value'+(b>START_BUDGET*.5?' green':b>0?' blue':' red');
+    goTitle.textContent=b>0?'Mission Complete':'System Compromised';
+    goSub.textContent=b>0?'Your defences held strong':'Budget depleted — too many breaches';
+    gameoverOverlay.classList.remove('hidden');
+  }
+}
+
+function showIntroPage(page){
+  introOverlay.classList.remove('hidden');
+  introPage1.classList.toggle('active',page===1);
+  introPage2.classList.toggle('active',page===2);
+  introPrev.style.display=page===1?'none':'';
+  if(page===1){
+    introTitle.textContent='Defence Mechanisms';
+    introNext.textContent='Next';
+    introNext.style.display='';
+    $('intro-defences').innerHTML=DEFENCES.map(d=>`<div class="intro-item"><div class="icon">${d.icon}</div><div><div class="name">${d.name}</div><div class="counters">${d.desc}</div></div></div>`).join('');
+  }else{
+    introTitle.textContent='Attack Vectors';
+    introNext.textContent='Waiting...';
+    introNext.style.display='none';
+    $('intro-attacks').innerHTML=ATTACKS.map(a=>`<div class="intro-item"><div class="icon">${a.icon}</div><div><div class="name">${a.name}</div><div class="counters">${a.desc}</div></div></div>`).join('');
+  }
+  introPrev.addEventListener('click',()=>{
+    if(page===2)showIntroPage(1);
+  },{once:true});
+  introNext.addEventListener('click',()=>{
+    if(page===1)showIntroPage(2);
+  },{once:true});
+}
+
+function spinWheel(targetIdx){
+  const ih=window.innerWidth<=480?64:96,cycles=5;
+  slotTrack.innerHTML='';
+  for(let c=0;c<cycles+1;c++)ATTACKS.forEach(a=>{
+    const d=document.createElement('div');d.className='slot-item';
+    d.innerHTML='<span class="si-icon">'+a.icon+'</span><span class="si-name">'+a.name+'</span>';
+    slotTrack.appendChild(d);
+  });
+  ATTACKS.slice(0,2).forEach(a=>{
+    const d=document.createElement('div');d.className='slot-item';
+    d.innerHTML='<span class="si-icon">'+a.icon+'</span><span class="si-name">'+a.name+'</span>';
+    slotTrack.appendChild(d);
+  });
+  const tgi=cycles*ATTACKS.length+targetIdx,endY=(tgi-1)*ih,duration=10000,st=performance.now();
+  function eo(t){return 1-Math.pow(1-t,3)}
+  function an(now){
+    const elapsed=now-st,progress=Math.min(elapsed/duration,1),cur=eo(progress)*endY;
+    slotTrack.style.transform='translateY(-'+cur+'px)';
+    if(progress<1)requestAnimationFrame(an);
+  }
+  requestAnimationFrame(an);
+}
+
+function launchConfetti(){
+  confettiCanvas.width=window.innerWidth;confettiCanvas.height=window.innerHeight;
+  const particles=[],colors=['#2563eb','#3b82f6','#10b981','#f59e0b','#ef4444','#8b5cf6','#ec4899'];
+  for(let i=0;i<180;i++)particles.push({x:confettiCanvas.width/2,y:confettiCanvas.height/2,vx:(Math.random()-.5)*20,vy:(Math.random()-.5)*20-8,color:colors[Math.floor(Math.random()*colors.length)],size:Math.random()*8+4,rotation:Math.random()*360,rotSpeed:(Math.random()-.5)*10,life:1});
+  function update(){
+    confettiCtx.clearRect(0,0,confettiCanvas.width,confettiCanvas.height);let alive=false;
+    particles.forEach(p=>{if(p.life<=0)return;alive=true;p.x+=p.vx;p.y+=p.vy;p.vy+=.3;p.rotation+=p.rotSpeed;p.life-=.008;confettiCtx.save();confettiCtx.translate(p.x,p.y);confettiCtx.rotate(p.rotation*Math.PI/180);confettiCtx.globalAlpha=p.life;confettiCtx.fillStyle=p.color;confettiCtx.fillRect(-p.size/2,-p.size/2,p.size,p.size);confettiCtx.restore()});
+    if(alive)requestAnimationFrame(update);else confettiCtx.clearRect(0,0,confettiCanvas.width,confettiCanvas.height);
+  }
+  requestAnimationFrame(update);
+}
+
+function showResult(){
+  const la=myData.lastAttack;
+  if(!la)return;
+  if(myData.lastResult==='blocked')playTrumpet();else playFail();
+  resultTitle.textContent=`ROUND ${myData.blocked+myData.breaches} — ${myData.lastResult==='blocked'?'DEFENDED':'BREACHED'}`;
+  resultSub.textContent=`ROUND ${myData.blocked+myData.breaches} OF ${MAX_ROUNDS}`;
+  aIcon.textContent=la.icon;aName.textContent=la.name;aDesc.textContent=la.desc;
+  if(myData.lastResult==='blocked'){
+    verdict.className='verdict blocked';
+    vIcon.textContent='🛡️';vLabel.textContent='THREAT NEUTRALISED';
+    vDetail.textContent=`${la.name} was blocked by ${la.blockedBy||'your defences'}`;
+    if(vPrevent)vPrevent.style.display='none';
+  }else{
+    verdict.className='verdict breached';
+    vIcon.textContent='💥';vLabel.textContent='BREACH DETECTED';
+    vDetail.textContent=`${la.name} exploited a gap in your defences`;
+    if(vPrevent){vPrevent.style.display='';vPrevent.textContent=(myData.preventInfo)||'Could have been prevented by deploying the right defences'}
+  }
+  ddList.innerHTML=myData.defences.map(id=>{const d=DEFENCES.find(x=>x.id===id);return d?`<span class="dd-item">${d.icon} ${d.name}</span>`:''}).join('');
+  const cost=myData.lastResult==='blocked'?0:ATTACK_COST;
+  biImpact.textContent=cost===0?'£0':`−£${cost.toLocaleString()}`;
+  biImpact.className='value'+(cost>0?' negative':'');
+  biRemaining.textContent=`£${myData.budget.toLocaleString()}`;
+  resultOverlay.classList.remove('hidden');
+}
+
+// Socket events
+socket.on('connect',()=>{connDot.className='conn-dot ready';connMsg.textContent='Connected! Enter your name to begin.'});
+socket.on('disconnect',()=>{connDot.className='conn-dot disconnected'});
+
+socket.on('joined',(data)=>{
+  playerId=data.id;
+  nameOverlay.classList.add('hidden');
+  showIntroPage(1);
+});
+
+socket.on('game-state',(gs)=>{
+  if(gs.phase==='selecting'){
+    hideAllOverlays();
+    renderPhase(gs);
+  }else if(gs.phase==='spinning'){
+    currentAttack=gs.currentAttack;
+    renderPhase(gs);
+  }else if(gs.phase==='reveal'){
+    currentAttack=gs.currentAttack||currentAttack;
+    renderPhase(gs);
+  }else if(gs.phase==='gameover'){
+    renderPhase(gs);
+  }else if(gs.phase==='lobby'){
+    hideAllOverlays();
+    defenceGrid.style.display='none';
+    timerSection.style.display='none';
+    roundTitle.textContent='';
+    roundSub.textContent='';
+    showIntroPage(2);
+    gameoverOverlay.classList.add('hidden');
+  }
+});
+
+socket.on('players-update',(players)=>{
+  const me=players.find(p=>p.id===playerId);
+  if(!me)return;
+  myData=me;
+  updateBudgetDisplay();
+  if(defenceGrid.style.display!=='none'){
+    renderDefences();
+  }
+});
+
+socket.on('timer-update',(remaining)=>{
+  timerDisplay.textContent=formatTime(remaining);
+  timerDisplay.className='timer-display'+(remaining<=10?' danger':remaining<=30?' warning':'');
+  if(remaining<=10&&remaining>0)playBeep();
+});
+
+// UI events
+function joinGame(){
+  const name=nameInput.value.trim();
+  if(!name){nameInput.focus();return}
+  nameSubBtn.disabled=true;nameSubBtn.textContent='Joining...';
+  socket.emit('join',name);
+}
+nameSubBtn.addEventListener('click',joinGame);
+nameInput.addEventListener('keydown',e=>{if(e.key==='Enter')joinGame()});
+
+zoomBtn.addEventListener('click',()=>{
+  zoomReveal.classList.add('out');
+  setTimeout(()=>{
+    zoomReveal.classList.add('hidden');zoomReveal.classList.remove('out');
+    wheelOverlay.classList.add('hidden');
+    launchConfetti();
+    setTimeout(showResult,500);
+  },350);
+});
+
+resultBtn.addEventListener('click',()=>{
+  resultOverlay.classList.add('hidden');
+  waitingOverlay.classList.remove('hidden');
+});
+
+document.addEventListener('keydown',e=>{
+  if(e.key==='f'||e.key==='F'){
+    if(!document.fullscreenElement)document.documentElement.requestFullscreen().catch(()=>{});
+    else document.exitFullscreen();
+  }
+  if(e.key==='n'||e.key==='N'||e.key==='Escape'){
+    if(!resultOverlay.classList.contains('hidden'))resultBtn.click();
+    else if(!zoomReveal.classList.contains('hidden'))zoomBtn.click();
+    else if(!gameoverOverlay.classList.contains('hidden')){}
+  }
+});
 
 updateBudgetDisplay();
-updateTimerDisplay();
-renderDefences();
 </script>
 </body>
 </html>
