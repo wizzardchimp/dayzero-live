@@ -98,14 +98,14 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .wheel-overlay{position:fixed;inset:0;z-index:95;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,0,0,.5);backdrop-filter:blur(8px);animation:alertPulse 2s ease-in-out infinite alternate}
 @keyframes alertPulse{0%{background:rgba(0,0,0,.5)}100%{background:rgba(160,0,0,.7)}}
 .wheel-overlay.hidden{display:none}
-.slot-machine{background:var(--bg2);border-radius:var(--radius);padding:24px 32px;box-shadow:var(--shadow-lg)}
-.slot-window{position:relative;height:288px;overflow:hidden;border-radius:var(--radius-sm);background:var(--bg3);border:2px solid var(--border)}
+.slot-machine{background:var(--bg2);border-radius:var(--radius);padding:24px 20px;box-shadow:var(--shadow-lg)}
+.slot-window{position:relative;height:432px;overflow:hidden;border-radius:var(--radius-sm);background:var(--bg3);border:2px solid var(--border)}
 .slot-window::before{content:'';position:absolute;inset:0;z-index:2;pointer-events:none;background:linear-gradient(to bottom,var(--bg3) 0%,transparent 28%,transparent 72%,var(--bg3) 100%)}
 .slot-track{will-change:transform}
-.slot-item{height:96px;display:flex;align-items:center;justify-content:center;gap:16px;font-size:20px;font-weight:700;color:var(--text);border-bottom:1px solid var(--border)}
-.slot-item .si-icon{font-size:28px}
-.slot-item .si-name{color:var(--text2)}
-.wheel-label{color:#fff;font-size:20px;font-weight:700;margin-bottom:24px;text-align:center}
+.slot-item{height:144px;display:flex;align-items:center;justify-content:center;gap:16px;font-size:24px;font-weight:700;color:var(--text);border-bottom:1px solid var(--border)}
+.slot-item .si-icon{font-size:40px}
+.slot-item .si-name{color:var(--text2);font-size:22px}
+.wheel-label{color:#fff;font-size:24px;font-weight:700;margin-bottom:24px;text-align:center}
 #confettiCanvas{position:fixed;inset:0;z-index:96;pointer-events:none}
 .zoom-reveal{position:fixed;inset:0;z-index:97;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,0,0,.88);animation:zrIn .6s ease-out both}
 .zoom-reveal.hidden{display:none}.zoom-reveal.out{animation:zrOut .3s ease-in both}
@@ -154,6 +154,15 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .go-stat .value.green{color:var(--green)}
 .go-stat .value.red{color:var(--red)}
 .go-stat .value.blue{color:var(--accent)}
+.go-def-tags{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin-bottom:8px}
+.go-def-tag{background:var(--accent-light);color:var(--accent);padding:4px 10px;border-radius:12px;font-size:11px;font-weight:600}
+.go-section-title{font-size:12px;color:var(--text3);font-weight:600;letter-spacing:1px;margin-bottom:6px;text-transform:uppercase}
+.go-history-row{display:flex;align-items:center;gap:8px;background:var(--bg3);border-radius:var(--radius-sm);padding:8px 12px;margin-bottom:4px;font-size:13px}
+.go-history-row .hr-icon{font-size:16px;width:24px;text-align:center}
+.go-history-row .hr-name{flex:1;font-weight:600;text-align:left;font-size:13px}
+.go-history-row .hr-result{font-size:10px;font-weight:700;padding:2px 8px;border-radius:6px;letter-spacing:1px}
+.go-history-row .hr-result.blocked{background:var(--green-light);color:var(--green)}
+.go-history-row .hr-result.breached{background:var(--red-light);color:var(--red)}
 .name-overlay{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.5);backdrop-filter:blur(12px)}
 .name-overlay.hidden{display:none}
 .name-card{background:var(--bg2);border-radius:var(--radius);padding:40px;box-shadow:var(--shadow-lg);text-align:center;max-width:400px;width:90%}
@@ -170,7 +179,7 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .waiting-overlay .wo-text{font-size:20px;font-weight:700;color:var(--text2)}
 .waiting-overlay .wo-sub{font-size:14px;color:var(--text3);margin-top:8px}
 @media(max-width:768px){.header{padding:12px 16px}.header h1{font-size:16px}.header-right{gap:12px}.round-badge{padding:4px 12px;font-size:12px}.main{top:60px;bottom:40px;padding:16px}.main.selecting{padding:12px 12px 80px}.round-title{font-size:22px;margin-bottom:4px}.round-sub{font-size:14px;margin-bottom:16px}.defence-grid{gap:10px}.defence-card{padding:14px}.defence-icon{font-size:24px;width:32px}.defence-name{font-size:16px}.defence-counters{font-size:13px}.timer-display{font-size:36px;min-width:90px}.timer-section{margin-bottom:16px}.status-bar{padding:8px 16px;font-size:12px}.intro{padding:24px}.intro h2{font-size:20px}.intro-grid{grid-template-columns:1fr}.result-card{padding:24px}.result-title{font-size:18px}.go-stats{gap:8px}.go-stat{padding:12px}.go-stat .value{font-size:22px}}
-@media(max-width:480px){.header{padding:8px 12px}.header h1{font-size:14px}.header-right{gap:8px}.header-budget{gap:4px;font-size:12px}.header-budget .amount{font-size:13px}.round-badge{padding:3px 8px;font-size:10px}.main{top:52px;bottom:36px;padding:12px}.main.selecting{padding:8px 8px 70px}.round-title{font-size:20px}.round-sub{font-size:14px;margin-bottom:12px}.defence-grid{gap:8px;max-width:100%}.defence-card{padding:12px;gap:12px}.defence-card.carried::after{font-size:8px;padding:2px 6px;top:4px;right:4px}.defence-icon{font-size:20px;width:28px}.defence-name{font-size:15px}.defence-counters{font-size:13px}.timer-display{font-size:26px;min-width:60px}.timer-section{gap:6px;margin-bottom:12px}.status-bar{display:none}.wheel-label{font-size:16px;margin-bottom:16px}.slot-machine{padding:16px 20px}.slot-window{height:192px}.slot-item{height:64px;font-size:15px;gap:10px}.slot-item .si-icon{font-size:24px}.intro{padding:16px}.intro h2{font-size:18px;margin-bottom:16px}.intro-item{padding:10px}.intro-item .icon{font-size:20px}.intro-item .name{font-size:14px}.intro-item .counters{font-size:12px}.intro-btn{padding:10px 24px;font-size:13px}.result-card{padding:20px}.result-title{font-size:16px}.result-sub{font-size:12px;margin-bottom:16px}.verdict{padding:16px}.verdict .v-icon{font-size:36px}.verdict .v-label{font-size:15px}.verdict .v-detail{font-size:13px}.attack-info{padding:12px}.budget-item .value{font-size:16px}.defences-deployed .dd-item{font-size:10px;padding:4px 8px}.result-btn{width:100%;padding:12px 20px;font-size:14px}.zr-icon{font-size:80px}.zr-name{font-size:32px}.zr-example{font-size:16px}.game-over h2{font-size:24px}.game-over .go-sub{font-size:14px;margin-bottom:20px}.go-stats{gap:6px}.go-stat{padding:10px}.go-stat .label{font-size:10px}.go-stat .value{font-size:18px}.name-card{padding:24px}.name-card h2{font-size:22px}.name-input{font-size:16px;padding:12px}.priority-item{padding:14px}.priority-item .p-rank{font-size:18px;width:28px}.priority-item .p-icon{font-size:20px;width:28px}.priority-item .p-name{font-size:15px}.drag-handle{font-size:18px}}
+@media(max-width:480px){.header{padding:8px 12px}.header h1{font-size:14px}.header-right{gap:8px}.header-budget{gap:4px;font-size:12px}.header-budget .amount{font-size:13px}.round-badge{padding:3px 8px;font-size:10px}.main{top:52px;bottom:36px;padding:12px}.main.selecting{padding:8px 8px 70px}.round-title{font-size:20px}.round-sub{font-size:14px;margin-bottom:12px}.defence-grid{gap:8px;max-width:100%}.defence-card{padding:12px;gap:12px}.defence-card.carried::after{font-size:8px;padding:2px 6px;top:4px;right:4px}.defence-icon{font-size:20px;width:28px}.defence-name{font-size:15px}.defence-counters{font-size:13px}.timer-display{font-size:26px;min-width:60px}.timer-section{gap:6px;margin-bottom:12px}.status-bar{display:none}.wheel-label{font-size:20px;margin-bottom:16px}.slot-machine{padding:16px 12px}.slot-window{height:288px}.slot-item{height:96px;font-size:20px;gap:12px}.slot-item .si-icon{font-size:32px}.slot-item .si-name{font-size:18px}.intro{padding:16px}.intro h2{font-size:18px;margin-bottom:16px}.intro-item{padding:10px}.intro-item .icon{font-size:20px}.intro-item .name{font-size:14px}.intro-item .counters{font-size:12px}.intro-btn{padding:10px 24px;font-size:13px}.result-card{padding:20px}.result-title{font-size:16px}.result-sub{font-size:12px;margin-bottom:16px}.verdict{padding:16px}.verdict .v-icon{font-size:36px}.verdict .v-label{font-size:15px}.verdict .v-detail{font-size:13px}.attack-info{padding:12px}.budget-item .value{font-size:16px}.defences-deployed .dd-item{font-size:10px;padding:4px 8px}.result-btn{width:100%;padding:12px 20px;font-size:14px}.zr-icon{font-size:80px}.zr-name{font-size:32px}.zr-example{font-size:16px}.game-over h2{font-size:24px}.game-over .go-sub{font-size:14px;margin-bottom:20px}.go-stats{gap:6px}.go-stat{padding:10px}.go-stat .label{font-size:10px}.go-stat .value{font-size:18px}.name-card{padding:24px}.name-card h2{font-size:22px}.name-input{font-size:16px;padding:12px}.priority-item{padding:14px}.priority-item .p-rank{font-size:18px;width:28px}.priority-item .p-icon{font-size:20px;width:28px}.priority-item .p-name{font-size:15px}.drag-handle{font-size:18px}}
 </style>
 </head>
 <body>
@@ -224,7 +233,6 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 </div>
 <div class="zoom-reveal hidden" id="zoom-reveal">
   <div class="zr-content"><div class="zr-icon" id="zr-icon"></div><div class="zr-name" id="zr-name"></div><div class="zr-example" id="zr-example"></div></div>
-  <button class="skip-btn" id="zoom-btn" style="margin-top:40px">Continue</button>
 </div>
 <canvas id="confettiCanvas"></canvas>
 <div class="result-overlay hidden" id="result-overlay">
@@ -250,7 +258,9 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
       <div class="go-stat"><div class="label">Breaches</div><div class="value red" id="go-breaches">0</div></div>
       <div class="go-stat"><div class="label">Final Budget</div><div class="value blue" id="go-budget">£0</div></div>
     </div>
-    <div id="go-award" style="margin-bottom:16px;text-align:center"></div>
+    <div id="go-award" style="margin-bottom:12px;text-align:center"></div>
+    <div id="go-defences" style="margin-bottom:12px"></div>
+    <div id="go-history" style="margin-bottom:16px"></div>
     <div class="waiting-text" style="color:var(--text3);font-size:14px">Game session ended — return to lobby to play again</div>
   </div>
 </div>
@@ -287,13 +297,15 @@ const MAX_ROUNDS=3,ATTACK_COST=100000,START_BUDGET=300000;
 const socket=io();
 let playerId=null;
 let prioritySubmitted=false;
+let lastGameState=null;
+let revealTimer=null;
 
 const connDot=$('conn-dot'),nameOverlay=$('name-overlay'),nameInput=$('name-input'),nameSubBtn=$('name-sub-btn'),connMsg=$('connecting-msg');
 const defenceGrid=$('defence-grid'),roundTitle=$('round-title'),roundSub=$('round-sub'),roundBadge=$('round-badge');
 const timerDisplay=$('timer-display'),timerSection=$('timer-section');
 const headerBudget=$('header-budget'),statusText=$('status-text'),statusBudget=$('status-budget');
 const wheelOverlay=$('wheel-overlay'),wheelLabel=$('wheel-label');
-const zoomReveal=$('zoom-reveal'),zrIcon=$('zr-icon'),zrName=$('zr-name'),zrExample=$('zr-example'),zoomBtn=$('zoom-btn');
+const zoomReveal=$('zoom-reveal'),zrIcon=$('zr-icon'),zrName=$('zr-name'),zrExample=$('zr-example');
 const confettiCanvas=$('confettiCanvas'),confettiCtx=confettiCanvas.getContext('2d');
 const resultOverlay=$('result-overlay'),resultTitle=$('result-title'),resultSub=$('result-sub'),verdict=$('verdict'),vIcon=verdict.querySelector('.v-icon'),vLabel=verdict.querySelector('.v-label'),vDetail=verdict.querySelector('.v-detail'),vPrevent=verdict.querySelector('.v-prevent');
 const aIcon=$('a-icon'),aName=$('a-name'),aDesc=$('a-desc'),biImpact=$('bi-impact'),biRemaining=$('bi-remaining'),ddList=$('dd-list'),resultBtn=$('result-btn');
@@ -388,9 +400,18 @@ prioritySubBtn.addEventListener('click',()=>{
   socket.emit('set-priority',priorityOrder);
   priorityOverlay.classList.add('hidden');
   prioritySubmitted=true;
-  waitingOverlay.classList.remove('hidden');
-  woText.textContent='Waiting for game to start...';
-  woSub.textContent='The dashboard operator will start the game shortly';
+  if(lastGameState&&lastGameState.phase==='selecting'){
+    // Game already in selecting phase — jump straight to defence grid
+    renderPhase(lastGameState);
+  }else if(lastGameState&&lastGameState.phase!=='lobby'){
+    waitingOverlay.classList.remove('hidden');
+    woText.textContent='Game in progress — waiting...';
+    woSub.textContent='You may not be able to select defences this round';
+  }else{
+    waitingOverlay.classList.remove('hidden');
+    woText.textContent='Waiting for game to start...';
+    woSub.textContent='The dashboard operator will start the game shortly';
+  }
 });
 
 function defName(id){const d=DEFENCES.find(x=>x.id===id);return d?d.name:id}
@@ -471,11 +492,21 @@ function renderPhase(gs){
       spinWheel(ATTACKS.indexOf(currentAttack));
     }
   }else if(phase==='reveal'){
-    if(currentAttack){
+    clearTimeout(revealTimer);
+    if(currentAttack&&!zoomReveal.classList.contains('hidden')&&zoomReveal.classList.contains('out')){}else{
       zrIcon.textContent=currentAttack.icon;
       zrName.textContent=currentAttack.name;
       zrExample.textContent='e.g. '+currentAttack.example;
-      zoomReveal.classList.remove('hidden');
+      zoomReveal.classList.remove('hidden');zoomReveal.classList.remove('out');
+      revealTimer=setTimeout(()=>{
+        zoomReveal.classList.add('out');
+        setTimeout(()=>{
+          zoomReveal.classList.add('hidden');zoomReveal.classList.remove('out');
+          wheelOverlay.classList.add('hidden');
+          launchConfetti();
+          setTimeout(showResult,500);
+        },350);
+      },3000);
     }
   }else if(phase==='gameover'){
     goBlocked.textContent=myData.blocked;
@@ -486,21 +517,45 @@ function renderPhase(gs){
     goTitle.textContent=b>0?'Mission Complete':'System Compromised';
     goSub.textContent=b>0?'Your defences held strong':'Budget depleted — too many breaches';
     const awardEl=$('go-award');
+    const defEl=$('go-defences');
+    const histEl=$('go-history');
+    const priEmojis={'Money':'💰','Data':'💾','Maintain Services':'⚙️'};
     if(myData.award){
       const awardIcons={'Gold':'🏆','Silver':'🥈','Bronze':'🥉'};
       const awardColors={'Gold':'#f59e0b','Silver':'#94a3b8','Bronze':'#cd7f32'};
       const pri=myData.priority&&myData.priority[0]||'—';
-      const priEmojis={'Money':'💰','Data':'💾','Maintain Services':'⚙️'};
       awardEl.innerHTML=`<div style="font-size:48px;margin-bottom:8px">${awardIcons[myData.award]||'—'}</div><div style="font-size:20px;font-weight:900;color:${awardColors[myData.award]||'var(--text2)'}">${myData.award}</div><div style="font-size:14px;color:var(--text3);margin-top:4px">${priEmojis[pri]||''} Priority: ${pri} · Score: ${myData.score||0}</div>`;
     }else{
       awardEl.innerHTML='';
     }
+    // Defences deployed
+    const allDefs=[...myData.carriedOver,...myData.selected,...(myData.defences||[])];
+    const uniDefs=[...new Set(allDefs)];
+    if(uniDefs.length){
+      defEl.innerHTML=`<div class="go-section-title">Defences Deployed</div><div class="go-def-tags">${uniDefs.map(id=>{const d=DEFENCES.find(x=>x.id===id);return d?`<span class="go-def-tag">${d.icon} ${d.name}</span>`:''}).join('')}</div>`;
+    }else defEl.innerHTML='';
+    // Attack history
+    const history=myData.roundHistory||[];
+    if(history.length){
+      const atkIcons={'phishing':'🎣','malware':'🦠','ransomware':'🔒','ddos':'🌊','sql_injection':'💉','mitm':'👤','zero_day':'⚡','insider':'🏢','data_exfil':'📤','social_eng':'🎭'};
+      const atkNames={'phishing':'Phishing','malware':'Malware','ransomware':'Ransomware','ddos':'DDoS','sql_injection':'SQL Injection','mitm':'MITM','zero_day':'Zero-Day','insider':'Insider Threat','data_exfil':'Data Exfiltration','social_eng':'Social Engineering'};
+      const priAttackMap=myData.priority&&myData.priority[0]?{'Money':['ransomware','insider','social_eng'],'Data':['phishing','sql_injection','mitm','data_exfil'],'Maintain Services':['malware','ddos','zero_day']}[myData.priority[0]]||[]:[];
+      histEl.innerHTML='<div class="go-section-title">Attacks Faced</div>'+
+        history.map((r,i)=>{
+          const icon=atkIcons[r.attackId]||'🔓';
+          const name=atkNames[r.attackId]||r.attackId;
+          const cls=r.blocked?'blocked':'breached';
+          const label=r.blocked?'BLOCKED':'BREACHED';
+          const isPri=priAttackMap.includes(r.attackId);
+          return `<div class="go-history-row"><span class="hr-icon">${icon}</span><span class="hr-name">${name}${isPri?' <span style="color:var(--accent);font-size:10px">[PRIORITY]</span>':''}</span><span class="hr-result ${cls}">${label}</span></div>`;
+        }).join('');
+    }else histEl.innerHTML='';
     gameoverOverlay.classList.remove('hidden');
   }
 }
 
 function spinWheel(targetIdx){
-  const ih=window.innerWidth<=480?64:96,cycles=5;
+  const ih=window.innerWidth<=480?96:144,cycles=5;
   slotTrack.innerHTML='';
   for(let c=0;c<cycles+1;c++)ATTACKS.forEach(a=>{
     const d=document.createElement('div');d.className='slot-item';
@@ -572,6 +627,8 @@ socket.on('joined',(data)=>{
 });
 
 socket.on('game-state',(gs)=>{
+  lastGameState=gs;
+  clearTimeout(revealTimer);
   if(gs.phase==='selecting'){
     hideAllOverlays();
     renderPhase(gs);
@@ -632,16 +689,6 @@ function joinGame(){
 nameSubBtn.addEventListener('click',joinGame);
 nameInput.addEventListener('keydown',e=>{if(e.key==='Enter')joinGame()});
 
-zoomBtn.addEventListener('click',()=>{
-  zoomReveal.classList.add('out');
-  setTimeout(()=>{
-    zoomReveal.classList.add('hidden');zoomReveal.classList.remove('out');
-    wheelOverlay.classList.add('hidden');
-    launchConfetti();
-    setTimeout(showResult,500);
-  },350);
-});
-
 resultBtn.addEventListener('click',()=>{
   resultOverlay.classList.add('hidden');
   waitingOverlay.classList.remove('hidden');
@@ -654,7 +701,6 @@ document.addEventListener('keydown',e=>{
   }
   if(e.key==='n'||e.key==='N'||e.key==='Escape'){
     if(!resultOverlay.classList.contains('hidden'))resultBtn.click();
-    else if(!zoomReveal.classList.contains('hidden'))zoomBtn.click();
     else if(!gameoverOverlay.classList.contains('hidden')){}
   }
 });
