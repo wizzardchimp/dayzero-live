@@ -22,12 +22,12 @@ const ATTACKS = [
 ];
 const DEFENCES = [
   {id:'firewall',name:'Firewall',icon:'🛡️',desc:'Monitors and controls network traffic',counters:['phishing','ddos']},
-  {id:'endpoint',name:'Endpoint Protection',icon:'💻',desc:'Secures devices from malicious software',counters:['malware','ransomware']},
+   {id:'endpoint',name:'Endpoint Protection',icon:'💻',desc:'secure individual devices',counters:['malware','ransomware']},
   {id:'mfa',name:'Multi-Factor Auth',icon:'🔐',desc:'Requires multiple verification methods',counters:['insider','social_eng']},
   {id:'encryption',name:'Encryption',icon:'🔒',desc:'Scrambles data to prevent unauthorised access',counters:['data_exfil','mitm']},
    {id:'seg',name:'Network Segmentation',icon:'🔀',desc:'seperates the network into departmental areas',counters:['sql_injection','insider']},
   {id:'backup',name:'Backup & Recovery',icon:'💾',desc:'Restores data after loss or attack',counters:['ransomware','ddos']},
-  {id:'threat',name:'Threat Detection',icon:'👁️',desc:'Identifies suspicious activity in real time',counters:['zero_day','phishing']},
+   {id:'threat',name:'Threat Detection',icon:'👁️',desc:'uses AI to monitor network usage of individuals',counters:['zero_day','phishing']},
   {id:'passwords',name:'Improved User Passwords',icon:'🔑',desc:'Enforces strong password policies',counters:['sql_injection','mitm']},
   {id:'training',name:'Security Training',icon:'📚',desc:'Educates users to recognise threats',counters:['malware','social_eng']},
   {id:'monitoring',name:'Continuous Monitoring',icon:'📊',desc:'Tracks systems for unusual behaviour',counters:['data_exfil','zero_day']}

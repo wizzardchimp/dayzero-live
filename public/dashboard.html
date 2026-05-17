@@ -104,8 +104,28 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
   display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;padding:12px;background:var(--card2);border-radius:var(--radius-sm);justify-content:center
 }
 .dg-title{font-size:16px;font-weight:700;margin-bottom:8px;color:var(--text2);text-align:center}
-.ranking-container{max-width:900px;width:100%;margin:24px auto 0}
-.ranking-title{font-size:28px;font-weight:900;margin-bottom:24px;text-align:center;color:#fff}
+.winner-section{text-align:center;margin-bottom:32px}
+.winner-trophy{font-size:72px;margin-bottom:8px}
+.winner-label{font-size:14px;color:var(--text3);font-weight:600;letter-spacing:3px;text-transform:uppercase;margin-bottom:8px}
+.winner-name{font-size:48px;font-weight:900;color:#fff;margin-bottom:4px;text-shadow:0 0 40px rgba(37,99,235,.4)}
+.winner-award{font-size:24px;font-weight:800;margin-bottom:8px}
+.winner-details{display:flex;justify-content:center;gap:24px;flex-wrap:wrap;margin:8px 0 16px}
+.winner-detail{background:rgba(255,255,255,.05);border-radius:var(--radius-sm);padding:10px 20px;text-align:center;min-width:120px}
+.winner-detail .wd-label{font-size:10px;color:var(--text3);font-weight:600;letter-spacing:1px;text-transform:uppercase}
+.winner-detail .wd-value{font-size:18px;font-weight:800;color:#fff;margin-top:2px}
+.winner-defences{margin:12px auto 24px;max-width:600px;text-align:center}
+.winner-defences .wd-title{font-size:13px;color:var(--text3);font-weight:600;letter-spacing:1px;margin-bottom:8px}
+.winner-defences .wd-tags{display:flex;flex-wrap:wrap;justify-content:center;gap:6px}
+.winner-defences .wd-tag{background:rgba(37,99,235,.15);color:var(--accent2);border-radius:8px;padding:4px 12px;font-size:12px;font-weight:500}
+.winner-rounds{max-width:500px;margin:0 auto 24px}
+.winner-round{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.04);border-radius:var(--radius-sm);padding:8px 16px;margin-bottom:6px;font-size:14px}
+.winner-round .wr-icon{font-size:20px;width:28px;text-align:center}
+.winner-round .wr-name{flex:1;font-weight:600;color:rgba(255,255,255,.8)}
+.winner-round .wr-result{font-size:11px;font-weight:700;padding:3px 10px;border-radius:6px;letter-spacing:1px}
+.winner-round .wr-result.blocked{background:rgba(16,185,129,.2);color:var(--green)}
+.winner-round .wr-result.breached{background:rgba(239,68,68,.2);color:var(--red)}
+.ranking-container{max-width:900px;width:100%;margin:0 auto}
+.ranking-title{font-size:22px;font-weight:900;margin-bottom:20px;text-align:center;color:rgba(255,255,255,.7)}
 .podium{display:flex;align-items:flex-end;justify-content:center;gap:16px;margin-bottom:32px}
 .podium-item{text-align:center;border-radius:var(--radius);padding:20px 24px;min-width:180px;transition:all .3s}
 .podium-item.gold{background:linear-gradient(135deg,#f59e0b,#d97706);order:2;padding-bottom:32px}
@@ -131,7 +151,7 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 <body>
 <div class="header">
   <div class="header-left"><h1>DAY ZERO LIVE</h1></div>
-  <div class="header-center"><img src="rock.png" alt="Rock" class="header-rock" id="header-rock" onerror="this.style.display='none'"></div>
+  <div class="header-center"><img src="rocu.png" alt="RocU" class="header-rock" id="header-rock" onerror="this.style.display='none'"></div>
   <div class="header-right">
     <span class="phase-indicator" id="phase-indicator"><span class="phase-dot orange" id="phase-dot"></span><span id="phase-label">Lobby</span></span>
     <span>Players: <span class="player-count" id="player-count">0</span></span>
@@ -181,11 +201,17 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
   </div>
 </div>
 <div class="reveal-overlay hidden" id="gameover-reveal" style="background:rgba(0,0,0,.88);overflow-y:auto">
-  <div class="rev-icon">🏁</div>
-  <div class="rev-name" id="gov-name">Game Over</div>
-  <div class="rev-example" id="gov-sub" style="font-style:normal;color:rgba(255,255,255,.7)">All rounds complete</div>
+  <div class="winner-section" id="winner-section">
+    <div class="winner-trophy" id="winner-trophy">🏆</div>
+    <div class="winner-label">WINNER</div>
+    <div class="winner-name" id="winner-name">—</div>
+    <div class="winner-award" id="winner-award"></div>
+    <div class="winner-details" id="winner-details"></div>
+    <div class="winner-defences" id="winner-defences"></div>
+    <div class="winner-rounds" id="winner-rounds"></div>
+  </div>
   <div class="ranking-container" id="ranking-container">
-    <div class="ranking-title">🏆 Final Rankings</div>
+    <div class="ranking-title">Final Standings</div>
     <div class="podium" id="podium"></div>
     <div class="ranking-table" id="ranking-table"></div>
   </div>
@@ -217,12 +243,12 @@ const ATTACK_DATA=[
 ];
 const DEFENCE_DATA=[
   {id:'firewall',name:'Firewall',icon:'🛡️',desc:'Monitors and controls network traffic'},
-  {id:'endpoint',name:'Endpoint Protection',icon:'💻',desc:'Secures devices from malicious software'},
+   {id:'endpoint',name:'Endpoint Protection',icon:'💻',desc:'secure individual devices'},
   {id:'mfa',name:'Multi-Factor Auth',icon:'🔐',desc:'Requires multiple verification methods'},
   {id:'encryption',name:'Encryption',icon:'🔒',desc:'Scrambles data to prevent unauthorised access'},
    {id:'seg',name:'Network Segmentation',icon:'🔀',desc:'seperates the network into departmental areas'},
   {id:'backup',name:'Backup & Recovery',icon:'💾',desc:'Restores data after loss or attack'},
-  {id:'threat',name:'Threat Detection',icon:'👁️',desc:'Identifies suspicious activity in real time'},
+   {id:'threat',name:'Threat Detection',icon:'👁️',desc:'uses AI to monitor network usage of individuals'},
   {id:'passwords',name:'Improved User Passwords',icon:'🔑',desc:'Enforces strong password policies'},
   {id:'training',name:'Security Training',icon:'📚',desc:'Educates users to recognise threats'},
   {id:'monitoring',name:'Continuous Monitoring',icon:'📊',desc:'Tracks systems for unusual behaviour'}
@@ -250,6 +276,8 @@ let introPage=1;
 let lastPlayers=[];
 
 const PRIORITY_EMOJIS={'Money':'💰','Data':'💾','Maintain Services':'⚙️'};
+const ATTACK_NAMES={phishing:'Phishing',malware:'Malware',ransomware:'Ransomware',ddos:'DDoS',sql_injection:'SQL Injection',mitm:'MITM',zero_day:'Zero-Day',insider:'Insider Threat',data_exfil:'Data Exfiltration',social_eng:'Social Engineering'};
+const ATTACK_ICONS={phishing:'🎣',malware:'🦠',ransomware:'🔒',ddos:'🌊',sql_injection:'💉',mitm:'👤',zero_day:'⚡',insider:'🏢',data_exfil:'📤',social_eng:'🎭'};
 
 function stopAllAudio(){
   dashMusic.pause();dashMusic.currentTime=0;
@@ -413,10 +441,58 @@ function showReveal(attack){
   revealOverlay.classList.remove('hidden');
 }
 
-function renderRanking(players){
-  if(!players||players.length===0){$('podium').innerHTML='';$('ranking-table').innerHTML='<div style="text-align:center;padding:32px;color:rgba(255,255,255,.4)">No players to rank</div>';return}
+function renderWinner(players){
+  if(!players||players.length===0){
+    $('winner-section').style.display='none';
+    $('podium').innerHTML='';$('ranking-table').innerHTML='<div style="text-align:center;padding:32px;color:rgba(255,255,255,.4)">No players</div>';
+    return;
+  }
+  $('winner-section').style.display='';
   const sorted=[...players].sort((a,b)=>(b.score||0)-(a.score||0));
+  const winner=sorted[0];
   const top3=sorted.slice(0,3);
+
+  // Winner section
+  const awardColors={'Gold':'#f59e0b','Silver':'#94a3b8','Bronze':'#cd7f32'};
+  const awardIcons={'Gold':'🏆','Silver':'🥈','Bronze':'🥉'};
+  const awardLabels={'Gold':'GOLD','Silver':'SILVER','Bronze':'BRONZE'};
+  const pri=winner.priority&&winner.priority[0]||'—';
+  const priEmoji=PRIORITY_EMOJIS[pri]||'';
+
+  $('winner-trophy').textContent=awardIcons[winner.award]||'🏆';
+  $('winner-name').textContent=winner.name;
+  const awardEl=$('winner-award');
+  awardEl.textContent=`${awardLabels[winner.award]||winner.award} AWARD`;
+  awardEl.style.color=awardColors[winner.award]||'#fff';
+
+  $('winner-details').innerHTML=
+    `<div class="winner-detail"><div class="wd-label">Priority</div><div class="wd-value">${priEmoji} ${pri}</div></div>`+
+    `<div class="winner-detail"><div class="wd-label">Score</div><div class="wd-value">${winner.score||0}</div></div>`+
+    `<div class="winner-detail"><div class="wd-label">Budget</div><div class="wd-value">£${(winner.budget||0).toLocaleString()}</div></div>`+
+    `<div class="winner-detail"><div class="wd-label">Blocked</div><div class="wd-value" style="color:var(--green)">${winner.blocked||0}/${(winner.blocked||0)+(winner.breaches||0)}</div></div>`;
+
+  // Winner defence choices
+  const defsEl=$('winner-defences');
+  const defs=winner.defences||[];
+  if(defs.length){
+    defsEl.innerHTML=`<div class="wd-title">DEFENCES DEPLOYED</div><div class="wd-tags">${defs.map(d=>`<span class="wd-tag">${DEFENCE_NAMES[d]||d}</span>`).join('')}</div>`;
+  }else defsEl.innerHTML='';
+
+  // Winner round history
+  const roundsEl=$('winner-rounds');
+  const history=winner.roundHistory||[];
+  if(history.length){
+    roundsEl.innerHTML='<div class="wd-title" style="margin-bottom:10px">ATTACKS FACED</div>'+
+      history.map((r,i)=>{
+        const icon=ATTACK_ICONS[r.attackId]||'🔓';
+        const name=ATTACK_NAMES[r.attackId]||r.attackId;
+        const cls=r.blocked?'blocked':'breached';
+        const label=r.blocked?'BLOCKED':'BREACHED';
+        return `<div class="winner-round"><span class="wr-icon">${icon}</span><span class="wr-name">${name}</span><span class="wr-result ${cls}">${label}</span></div>`;
+      }).join('');
+  }else roundsEl.innerHTML='';
+
+  // Podium
   const podiumEl=$('podium');
   podiumEl.innerHTML='';
   const rankLabels=['🥇','🥈','🥉'];
@@ -424,8 +500,8 @@ function renderRanking(players){
   top3.forEach((p,i)=>{
     const div=document.createElement('div');
     div.className='podium-item '+rankClasses[i];
-    const pri=p.priority&&p.priority[0]?`${PRIORITY_EMOJIS[p.priority[0]]||''} ${p.priority[0]}`:'—';
-    div.innerHTML=`<div class="podium-rank">${rankLabels[i]}</div><div class="podium-name">${p.name}</div><div class="podium-priority">${pri}</div><div class="podium-score">Score: ${p.score||0}</div><div class="podium-budget">£${(p.budget||0).toLocaleString()}</div><div class="podium-award">${p.award==='Gold'?'🏆':p.award==='Silver'?'🥈':p.award==='Bronze'?'🥉':'—'}</div>`;
+    const pr=p.priority&&p.priority[0]?`${PRIORITY_EMOJIS[p.priority[0]]||''} ${p.priority[0]}`:'—';
+    div.innerHTML=`<div class="podium-rank">${rankLabels[i]}</div><div class="podium-name">${p.name}</div><div class="podium-priority">${pr}</div><div class="podium-score">Score: ${p.score||0}</div><div class="podium-budget">£${(p.budget||0).toLocaleString()}</div><div class="podium-award">${p.award==='Gold'?'🏆':p.award==='Silver'?'🥈':p.award==='Bronze'?'🥉':'—'}</div>`;
     podiumEl.appendChild(div);
   });
   if(podiumEl.children.length<3){
@@ -436,13 +512,15 @@ function renderRanking(players){
       podiumEl.appendChild(div);
     }
   }
+
+  // Full ranking table
   const tableEl=$('ranking-table');
   tableEl.innerHTML='<div class="ranking-row header"><span class="rr-rank">Rank</span><span class="rr-name">Name</span><span class="rr-priority">Priority</span><span class="rr-budget">Budget</span><span class="rr-award">Award</span></div>';
   sorted.forEach((p,i)=>{
     const row=document.createElement('div');
     row.className='ranking-row';
-    const pri=p.priority&&p.priority.length>0?p.priority.map((x,i)=>`${PRIORITY_EMOJIS[x]||''}${i+1}st:${x}`).join(' | '):'—';
-    row.innerHTML=`<span class="rr-rank">#${i+1}</span><span class="rr-name">${p.name}</span><span class="rr-priority">${pri}</span><span class="rr-budget">£${(p.budget||0).toLocaleString()}</span><span class="rr-award">${p.award==='Gold'?'🏆 Gold':p.award==='Silver'?'🥈 Silver':p.award==='Bronze'?'🥉 Bronze':'—'}</span>`;
+    const pr=p.priority&&p.priority.length>0?p.priority.map((x,i)=>`${PRIORITY_EMOJIS[x]||''}${i+1}st:${x}`).join(' | '):'—';
+    row.innerHTML=`<span class="rr-rank">#${i+1}</span><span class="rr-name">${p.name}</span><span class="rr-priority">${pr}</span><span class="rr-budget">£${(p.budget||0).toLocaleString()}</span><span class="rr-award">${p.award==='Gold'?'🏆 Gold':p.award==='Silver'?'🥈 Silver':p.award==='Bronze'?'🥉 Bronze':'—'}</span>`;
     tableEl.appendChild(row);
   });
 }
@@ -450,7 +528,7 @@ function renderRanking(players){
 function showGameOver(){
   slotOverlay.classList.add('hidden');
   revealOverlay.classList.add('hidden');
-  renderRanking(lastPlayers);
+  renderWinner(lastPlayers);
   gameoverReveal.classList.remove('hidden');
 }
 
@@ -492,7 +570,7 @@ socket.on('game-state',(gs)=>{
 socket.on('players-update',(players)=>{
   lastPlayers=players;
   renderCards(players);
-  if(currentPhase==='gameover')renderRanking(players);
+  if(currentPhase==='gameover')renderWinner(players);
 });
 
 socket.on('timer-update',(remaining)=>{
