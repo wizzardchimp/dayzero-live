@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Day Zero — Live Dashboard</title>
+<script src="/socket.io/socket.io.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0f1117;--card:#1a1d28;--card2:#232738;--accent:#2563eb;--accent2:#3b82f6;--green:#10b981;--orange:#f59e0b;--red:#ef4444;--purple:#8b5cf6;--text:#e2e8f0;--text2:#94a3b8;--text3:#64748b;--border:#2d3142;--radius:14px;--radius-sm:8px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+.header{display:flex;align-items:center;justify-content:space-between;padding:20px 32px;border-bottom:1px solid var(--border)}
+.header h1{font-size:22px;font-weight:900;background:linear-gradient(135deg,var(--accent),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.header-right{display:flex;align-items:center;gap:16px;font-size:14px;color:var(--text2)}
+.player-count{font-weight:700;color:var(--accent2);font-size:18px}
+.main{padding:24px 32px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px}
+.card{background:var(--card);border-radius:var(--radius);border:1px solid var(--border);padding:20px;position:relative;overflow:hidden;transition:border-color .3s}
+.card.playing{border-color:var(--accent)}
+.card.done{border-color:var(--green)}
+.card.bankrupt{border-color:var(--red)}
+.card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.card-name{font-size:20px;font-weight:800}
+.card-status{font-size:11px;font-weight:600;padding:4px 10px;border-radius:12px;letter-spacing:1px;text-transform:uppercase}
+.card-status.playing{background:rgba(37,99,235,.15);color:var(--accent2)}
+.card-status.done{background:rgba(16,185,129,.15);color:var(--green)}
+.card-status.intro{background:rgba(148,163,184,.15);color:var(--text2)}
+.card-body{display:flex;flex-direction:column;gap:12px}
+.stat-row{display:flex;gap:12px}
+.stat-box{flex:1;background:var(--card2);border-radius:var(--radius-sm);padding:12px;text-align:center}
+.stat-box .label{font-size:10px;color:var(--text3);font-weight:600;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+.stat-box .value{font-size:20px;font-weight:900}
+.stat-box .value.green{color:var(--green)}
+.stat-box .value.red{color:var(--red)}
+.stat-box .value.blue{color:var(--accent2)}
+.budget-bar{height:6px;background:var(--card2);border-radius:3px;overflow:hidden;margin-top:4px}
+.budget-bar-fill{height:100%;border-radius:3px;transition:width .5s,background .5s}
+.budget-bar-fill.ok{background:var(--green)}
+.budget-bar-fill.low{background:var(--orange)}
+.budget-bar-fill.critical{background:var(--red)}
+.defence-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
+.defence-tag{background:rgba(37,99,235,.12);color:var(--accent2);padding:2px 8px;border-radius:10px;font-size:11px;font-weight:500}
+.attack-line{display:flex;align-items:center;gap:8px;background:var(--card2);border-radius:var(--radius-sm);padding:8px 12px;font-size:13px;margin-top:4px}
+.attack-line .a-icon{font-size:18px}
+.attack-line .a-name{font-weight:600;flex:1}
+.attack-line .a-result{font-size:11px;font-weight:700;padding:2px 8px;border-radius:8px}
+.attack-line .a-result.blocked{background:rgba(16,185,129,.15);color:var(--green)}
+.attack-line .a-result.breached{background:rgba(239,68,68,.15);color:var(--red)}
+.round-dots{display:flex;gap:6px;margin-top:8px;justify-content:center}
+.round-dot{width:10px;height:10px;border-radius:50%;background:var(--card2);transition:all .3s}
+.round-dot.blocked{background:var(--green);box-shadow:0 0 6px rgba(16,185,129,.5)}
+.round-dot.breached{background:var(--red);box-shadow:0 0 6px rgba(239,68,68,.5)}
+.round-dot.future{background:var(--border)}
+.empty-state{text-align:center;padding:80px 20px;color:var(--text3)}
+.empty-state .big-icon{font-size:64px;margin-bottom:16px;opacity:.4}
+.empty-state h2{font-size:20px;font-weight:700;color:var(--text2);margin-bottom:8px}
+.empty-state p{font-size:14px;max-width:400px;margin:0 auto}
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>DAY ZERO LIVE</h1>
+  <div class="header-right">
+    <span>Players: <span class="player-count" id="player-count">0</span></span>
+  </div>
+</div>
+<div class="main">
+  <div class="grid" id="grid"></div>
+</div>
+<script>
+const socket = io();
+
+const ATTACKS = {
+  phishing: '🎣', malware: '🦠', ransomware: '🔒', ddos: '🌊',
+  sql_injection: '💉', mitm: '👤', zero_day: '⚡', insider: '🏢',
+  data_exfil: '📤', social_eng: '🎭'
+};
+const DEFENCE_ICONS = {
+  firewall: '🛡️', endpoint: '💻', mfa: '🔐', encryption: '🔒',
+  seg: '🔀', backup: '💾', threat: '👁️', passwords: '🔑',
+  training: '📚', monitoring: '📊'
+};
+
+function statusLabel(p) {
+  if (p.phase === 'gameover' || p.round >= 3) return 'Done';
+  if (p.phase === 'intro') return 'Waiting';
+  return 'Playing';
+}
+
+function statusClass(s) {
+  return s === 'Done' ? 'done' : s === 'Playing' ? 'playing' : 'intro';
+}
+
+function budgetPct(budget) {
+  return Math.max(0, Math.min(100, (budget / 300000) * 100));
+}
+
+function budgetClass(budget) {
+  const pct = budget / 300000;
+  return pct <= 0.25 ? 'critical' : pct <= 0.5 ? 'low' : 'ok';
+}
+
+function renderCard(p) {
+  const r = p.round || 0;
+  const status = statusLabel(p);
+  const bp = budgetPct(p.budget);
+  const bc = budgetClass(p.budget);
+  const attack = p.lastAttack;
+  const result = p.lastResult;
+  const defences = p.defences || [];
+  const dots = [];
+  for (let i = 0; i < 3; i++) {
+    if (i < r) {
+      dots.push(`<div class="round-dot blocked" title="Round ${i+1}"></div>`);
+    } else if (i === r && status === 'Playing' && attack) {
+      dots.push(`<div class="round-dot breached" title="Round ${i+1} in progress"></div>`);
+    } else {
+      dots.push(`<div class="round-dot future" title="Round ${i+1}"></div>`);
+    }
+  }
+
+  return `<div class="card ${status === 'Done' ? 'done' : status === 'Playing' ? 'playing' : ''}">
+    <div class="card-header">
+      <div class="card-name">${p.name}</div>
+      <div class="card-status ${statusClass(status)}">${status}</div>
+    </div>
+    <div class="card-body">
+      <div class="stat-row">
+        <div class="stat-box"><div class="label">Blocked</div><div class="value green">${p.blocked || 0}</div></div>
+        <div class="stat-box"><div class="label">Breaches</div><div class="value red">${p.breaches || 0}</div></div>
+        <div class="stat-box"><div class="label">Budget</div><div class="value ${bc}">£${(p.budget || 0).toLocaleString()}</div></div>
+      </div>
+      <div>
+        <div class="budget-bar"><div class="budget-bar-fill ${bc}" style="width:${bp}%"></div></div>
+      </div>
+      ${defences.length > 0 ? `<div class="defence-tags">${defences.map(d => `<span class="defence-tag">${DEFENCE_ICONS[d]||''} ${d}</span>`).join('')}</div>` : ''}
+      ${attack ? `<div class="attack-line"><span class="a-icon">${ATTACKS[attack.id]||'🔓'}</span><span class="a-name">${attack.name}</span><span class="a-result ${result && result.blocked ? 'blocked' : 'breached'}">${result && result.blocked ? 'BLOCKED' : 'BREACHED'}</span></div>` : ''}
+      <div class="round-dots">${dots.join('')}</div>
+    </div>
+  </div>`;
+}
+
+function renderDashboard(players) {
+  const grid = document.getElementById('grid');
+  document.getElementById('player-count').textContent = players.length;
+  if (players.length === 0) {
+    grid.innerHTML = `<div class="empty-state"><div class="big-icon">📡</div><h2>Waiting for players</h2><p>Share the link with your team and their cards will appear here as they join.</p></div>`;
+    return;
+  }
+  grid.innerHTML = players.map(renderCard).join('');
+}
+
+socket.on('players-update', renderDashboard);
+
+socket.on('connect', () => { console.log('Dashboard connected'); });
+</script>
+</body>
+</html>

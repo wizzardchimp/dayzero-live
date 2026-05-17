@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Day Zero — Player</title>
+<script src="/socket.io/socket.io.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f0f2f5;--bg2:#ffffff;--bg3:#f8f9fa;--accent:#2563eb;--accent2:#3b82f6;--accent-light:#dbeafe;--green:#10b981;--green-light:#d1fae5;--orange:#f59e0b;--orange-light:#fef3c7;--red:#ef4444;--red-light:#fee2e2;--purple:#8b5cf6;--purple-light:#ede9fe;--text:#1e293b;--text2:#475569;--text3:#94a3b8;--border:#e2e8f0;--shadow:0 4px 24px rgba(0,0,0,.06);--shadow-lg:0 8px 40px rgba(0,0,0,.1);--radius:16px;--radius-sm:10px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',system-ui,sans-serif;background:linear-gradient(135deg,#f0f2f5 0%,#e8ecf1 50%,#f0f2f5 100%);color:var(--text);min-height:100vh;overflow:hidden}
+button{font-family:inherit;cursor:pointer;border:none;outline:none}
+button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.header{position:fixed;top:0;left:0;right:0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:16px 32px;background:rgba(255,255,255,.8);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+.header h1{font-size:20px;font-weight:800;background:linear-gradient(135deg,var(--accent),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.header-right{display:flex;align-items:center;gap:24px}
+.conn-dot{width:8px;height:8px;border-radius:50%;background:#94a3b8;transition:background .3s}
+.conn-dot.connected{background:var(--green)}
+.conn-dot.disconnected{background:var(--red)}
+.header-budget{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600}
+.header-budget .label{color:var(--text3);font-weight:500}
+.header-budget .amount{font-weight:800;font-size:18px}
+.header-budget .amount.ok{color:var(--green)}
+.header-budget .amount.low{color:var(--orange)}
+.header-budget .amount.critical{color:var(--red)}
+.round-badge{background:var(--accent-light);color:var(--accent);padding:6px 16px;border-radius:20px;font-weight:700;font-size:14px}
+.main{position:fixed;top:72px;left:0;right:0;bottom:48px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;overflow:hidden}
+.round-title{font-size:28px;font-weight:800;margin-bottom:8px;text-align:center}
+.round-sub{font-size:16px;color:var(--text2);margin-bottom:24px;text-align:center}
+.defence-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;max-width:1000px;width:100%;margin-bottom:24px}
+.defence-card{background:var(--bg2);border:2px solid var(--border);border-radius:var(--radius);padding:20px;text-align:center;transition:all .2s;cursor:pointer;position:relative;overflow:hidden}
+.defence-card:hover:not(.carried):not(.locked){transform:translateY(-2px);box-shadow:var(--shadow);border-color:var(--accent2)}
+.defence-card.selected{border-color:var(--accent);background:var(--accent-light)}
+.defence-card.carried{border-color:var(--green);background:var(--green-light);cursor:default}
+.defence-card.carried::after{content:'DEPLOYED';position:absolute;top:8px;right:8px;background:var(--green);color:#fff;font-size:10px;font-weight:700;padding:3px 8px;border-radius:12px;letter-spacing:1px}
+.defence-card.locked{opacity:.5;cursor:not-allowed}
+.defence-icon{font-size:32px;margin-bottom:8px}
+.defence-name{font-weight:700;font-size:15px;margin-bottom:4px}
+.defence-counters{font-size:13px;color:var(--text3);line-height:1.4}
+.timer-section{display:flex;align-items:center;gap:16px;margin-bottom:24px}
+.timer-btn{width:40px;height:40px;border-radius:50%;background:var(--bg3);border:1px solid var(--border);font-size:20px;font-weight:600;color:var(--text2);transition:all .2s}
+.timer-btn:hover{background:var(--accent-light);color:var(--accent);border-color:var(--accent2)}
+.timer-display{font-size:48px;font-weight:900;font-variant-numeric:tabular-nums;min-width:120px;text-align:center}
+.timer-display.warning{color:var(--orange)}
+.timer-display.danger{color:var(--red);animation:pulse .5s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+.skip-btn{padding:14px 40px;border-radius:var(--radius-sm);font-size:16px;font-weight:700;letter-spacing:1px;transition:all .2s;background:linear-gradient(135deg,var(--accent),var(--purple));color:#fff;box-shadow:0 4px 20px rgba(37,99,235,.3)}
+.skip-btn:hover{transform:translateY(-2px);box-shadow:0 6px 28px rgba(37,99,235,.4)}
+.status-bar{position:fixed;bottom:0;left:0;right:0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:12px 32px;background:rgba(255,255,255,.8);backdrop-filter:blur(12px);border-top:1px solid var(--border);font-size:13px}
+.status-left{display:flex;align-items:center;gap:8px}
+.status-dot{width:8px;height:8px;border-radius:50%;background:var(--green);animation:blink 2s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.status-text{color:var(--text2);font-weight:500}
+.status-budget{display:flex;align-items:center;gap:12px}
+.status-budget .label{color:var(--text3);font-weight:500}
+.status-budget .amount{font-weight:800;font-size:16px}
+.status-budget .amount.ok{color:var(--green)}
+.status-budget .amount.low{color:var(--orange)}
+.status-budget .amount.critical{color:var(--red)}
+.overlay{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.4);backdrop-filter:blur(8px);opacity:1;transition:opacity .3s}
+.overlay.hidden{opacity:0;pointer-events:none}
+.intro{max-width:800px;width:90%;background:var(--bg2);border-radius:var(--radius);padding:40px;box-shadow:var(--shadow-lg);max-height:90vh;overflow-y:auto}
+.intro h2{font-size:24px;font-weight:800;margin-bottom:24px;text-align:center}
+.intro-page{display:none}
+.intro-page.active{display:block}
+.intro-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:24px}
+.intro-item{background:var(--bg3);border-radius:var(--radius-sm);padding:16px;display:flex;align-items:center;gap:12px}
+.intro-item .icon{font-size:24px}
+.intro-item .name{font-weight:700;font-size:14px}
+.intro-item .counters{font-size:12px;color:var(--text3);margin-top:2px}
+.intro-nav{display:flex;justify-content:center;gap:12px;margin-top:8px}
+.intro-btn{padding:12px 32px;border-radius:var(--radius-sm);font-weight:700;font-size:14px;transition:all .2s}
+.intro-btn.primary{background:linear-gradient(135deg,var(--accent),var(--purple));color:#fff}
+.intro-btn.primary:hover{transform:translateY(-2px);box-shadow:0 4px 20px rgba(37,99,235,.3)}
+.intro-btn.secondary{background:var(--bg3);color:var(--text2);border:1px solid var(--border)}
+.intro-btn.secondary:hover{background:var(--accent-light);color:var(--accent)}
+.wheel-overlay{position:fixed;inset:0;z-index:95;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,0,0,.5);backdrop-filter:blur(8px);animation:alertPulse 2s ease-in-out infinite alternate}
+@keyframes alertPulse{0%{background:rgba(0,0,0,.5)}100%{background:rgba(160,0,0,.7)}}
+.wheel-overlay.hidden{display:none}
+.slot-machine{background:var(--bg2);border-radius:var(--radius);padding:24px 32px;box-shadow:var(--shadow-lg)}
+.slot-window{position:relative;height:288px;overflow:hidden;border-radius:var(--radius-sm);background:var(--bg3);border:2px solid var(--border)}
+.slot-window::before{content:'';position:absolute;inset:0;z-index:2;pointer-events:none;background:linear-gradient(to bottom,var(--bg3) 0%,transparent 28%,transparent 72%,var(--bg3) 100%)}
+.slot-track{will-change:transform}
+.slot-item{height:96px;display:flex;align-items:center;justify-content:center;gap:16px;font-size:20px;font-weight:700;color:var(--text);border-bottom:1px solid var(--border)}
+.slot-item .si-icon{font-size:28px}
+.slot-item .si-name{color:var(--text2)}
+.wheel-label{color:#fff;font-size:20px;font-weight:700;margin-bottom:24px;text-align:center}
+#confettiCanvas{position:fixed;inset:0;z-index:96;pointer-events:none}
+.zoom-reveal{position:fixed;inset:0;z-index:97;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,0,0,.88);animation:zrIn .6s ease-out both}
+.zoom-reveal.hidden{display:none}.zoom-reveal.out{animation:zrOut .3s ease-in both}
+@keyframes zrIn{0%{transform:scale(.15);opacity:0}100%{transform:scale(1);opacity:1}}
+@keyframes zrOut{0%{transform:scale(1);opacity:1}100%{transform:scale(1.5);opacity:0}}
+.zr-content{text-align:center}.zr-icon{font-size:120px;margin-bottom:16px}.zr-name{font-size:48px;font-weight:900;color:#fff}
+.zr-example{font-size:18px;color:rgba(255,255,255,.7);margin-top:12px;max-width:600px;text-align:center;font-style:italic;padding:0 20px}
+.result-overlay{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.5);backdrop-filter:blur(8px)}
+.result-overlay.hidden{display:none}
+.result-card{max-width:600px;width:90%;background:var(--bg2);border-radius:var(--radius);padding:40px;box-shadow:var(--shadow-lg);text-align:center}
+.result-title{font-size:22px;font-weight:800;margin-bottom:4px}
+.result-sub{font-size:14px;color:var(--text3);margin-bottom:24px}
+.verdict{padding:24px;border-radius:var(--radius-sm);margin-bottom:24px}
+.verdict.blocked{background:var(--green-light);border:1px solid var(--green)}
+.verdict.breached{background:var(--red-light);border:1px solid var(--red)}
+.verdict .v-icon{font-size:48px;margin-bottom:8px}
+.verdict .v-label{font-size:18px;font-weight:800;letter-spacing:1px}
+.verdict.blocked .v-label{color:var(--green)}
+.verdict.breached .v-label{color:var(--red)}
+.verdict .v-detail{font-size:15px;margin-top:6px;color:var(--text2)}
+.verdict .v-prevent{font-size:14px;margin-top:10px;color:var(--orange);font-weight:600}
+.attack-info{background:var(--bg3);border-radius:var(--radius-sm);padding:16px;margin-bottom:20px;text-align:left}
+.attack-info .a-header{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+.attack-info .a-icon{font-size:28px}
+.attack-info .a-name{font-weight:700;font-size:16px}
+.attack-info .a-desc{font-size:13px;color:var(--text2)}
+.budget-impact{display:flex;justify-content:space-around;margin-bottom:24px}
+.budget-item{text-align:center}
+.budget-item .label{font-size:12px;color:var(--text3);font-weight:500;margin-bottom:4px}
+.budget-item .value{font-size:20px;font-weight:800}
+.budget-item .value.negative{color:var(--red)}
+.budget-item .value.positive{color:var(--green)}
+.defences-deployed{margin-bottom:24px}
+.defences-deployed .dd-label{font-size:13px;color:var(--text3);font-weight:600;margin-bottom:8px;letter-spacing:1px}
+.defences-deployed .dd-list{display:flex;flex-wrap:wrap;justify-content:center;gap:8px}
+.defences-deployed .dd-item{background:var(--accent-light);color:var(--accent);padding:6px 12px;border-radius:20px;font-size:12px;font-weight:600}
+.result-btn{padding:14px 40px;border-radius:var(--radius-sm);font-size:16px;font-weight:700;background:linear-gradient(135deg,var(--accent),var(--purple));color:#fff;transition:all .2s}
+.result-btn:hover{transform:translateY(-2px);box-shadow:0 4px 20px rgba(37,99,235,.3)}
+.game-over{text-align:center}
+.game-over h2{font-size:32px;font-weight:900;margin-bottom:8px}
+.game-over .go-sub{font-size:16px;color:var(--text2);margin-bottom:32px}
+.go-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:32px}
+.go-stat{background:var(--bg3);border-radius:var(--radius-sm);padding:20px}
+.go-stat .label{font-size:12px;color:var(--text3);font-weight:600;letter-spacing:1px;margin-bottom:4px}
+.go-stat .value{font-size:28px;font-weight:900}
+.go-stat .value.green{color:var(--green)}
+.go-stat .value.red{color:var(--red)}
+.go-stat .value.blue{color:var(--accent)}
+.name-overlay{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.5);backdrop-filter:blur(12px)}
+.name-overlay.hidden{display:none}
+.name-card{background:var(--bg2);border-radius:var(--radius);padding:40px;box-shadow:var(--shadow-lg);text-align:center;max-width:400px;width:90%}
+.name-card h2{font-size:28px;font-weight:900;margin-bottom:8px;background:linear-gradient(135deg,var(--accent),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.name-card p{color:var(--text2);font-size:14px;margin-bottom:24px}
+.name-input{width:100%;padding:14px 16px;font-size:18px;font-weight:600;border:2px solid var(--border);border-radius:var(--radius-sm);outline:none;text-align:center;font-family:inherit;transition:border-color .2s}
+.name-input:focus{border-color:var(--accent)}
+.name-card .name-sub-btn{margin-top:16px;width:100%;padding:14px;font-size:16px;font-weight:700;border-radius:var(--radius-sm);background:linear-gradient(135deg,var(--accent),var(--purple));color:#fff}
+.name-card .name-sub-btn:hover{transform:translateY(-2px);box-shadow:0 4px 20px rgba(37,99,235,.3)}
+.name-card .connecting{color:var(--text3);font-size:13px;margin-top:12px}
+@media(max-width:768px){.header{padding:12px 16px}.header h1{font-size:16px}.header-right{gap:12px}.round-badge{padding:4px 12px;font-size:12px}.main{top:60px;bottom:40px;padding:16px}.round-title{font-size:22px;margin-bottom:4px}.round-sub{font-size:14px;margin-bottom:16px}.defence-grid{grid-template-columns:repeat(3,1fr);gap:10px;max-width:600px}.defence-card{padding:14px}.defence-icon{font-size:24px;margin-bottom:4px}.defence-name{font-size:13px}.defence-counters{font-size:11px}.timer-display{font-size:36px;min-width:90px}.timer-section{margin-bottom:16px}.skip-btn{padding:12px 28px;font-size:14px}.status-bar{padding:8px 16px;font-size:12px}.intro{padding:24px}.intro h2{font-size:20px}.intro-grid{grid-template-columns:1fr}.result-card{padding:24px}.result-title{font-size:18px}.go-stats{gap:8px}.go-stat{padding:12px}.go-stat .value{font-size:22px}}
+@media(max-width:480px){.header{padding:8px 12px}.header h1{font-size:14px}.header-right{gap:8px}.header-budget{gap:4px;font-size:12px}.header-budget .amount{font-size:13px}.round-badge{padding:3px 8px;font-size:10px}.main{top:52px;bottom:36px;padding:12px}.round-title{font-size:20px}.round-sub{font-size:14px;margin-bottom:12px}.defence-grid{grid-template-columns:repeat(2,1fr);gap:8px;max-width:400px}.defence-card{padding:10px}.defence-card.carried::after{font-size:8px;padding:2px 6px;top:4px;right:4px}.defence-icon{font-size:20px}.defence-name{font-size:13px}.defence-counters{font-size:11px}.timer-display{font-size:26px;min-width:60px}.timer-btn{width:34px;height:34px;font-size:16px}.timer-section{gap:6px;margin-bottom:12px}.skip-btn{padding:10px 20px;font-size:14px}.status-bar{display:none}.wheel-label{font-size:16px;margin-bottom:16px}.slot-machine{padding:16px 20px}.slot-window{height:192px}.slot-item{height:64px;font-size:15px;gap:10px}.slot-item .si-icon{font-size:24px}.intro{padding:16px}.intro h2{font-size:18px;margin-bottom:16px}.intro-item{padding:10px}.intro-item .icon{font-size:20px}.intro-item .name{font-size:14px}.intro-item .counters{font-size:12px}.intro-btn{padding:10px 24px;font-size:13px}.result-card{padding:20px}.result-title{font-size:16px}.result-sub{font-size:12px;margin-bottom:16px}.verdict{padding:16px}.verdict .v-icon{font-size:36px}.verdict .v-label{font-size:15px}.verdict .v-detail{font-size:13px}.attack-info{padding:12px}.budget-item .value{font-size:16px}.defences-deployed .dd-item{font-size:10px;padding:4px 8px}.result-btn{width:100%;padding:12px 20px;font-size:14px}.zr-icon{font-size:80px}.zr-name{font-size:32px}.zr-example{font-size:16px}.game-over h2{font-size:24px}.game-over .go-sub{font-size:14px;margin-bottom:20px}.go-stats{gap:6px}.go-stat{padding:10px}.go-stat .label{font-size:10px}.go-stat .value{font-size:18px}.name-card{padding:24px}.name-card h2{font-size:22px}.name-input{font-size:16px;padding:12px}}
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>DAY ZERO</h1>
+  <div class="header-right">
+    <div class="header-budget"><span class="label">Budget</span><span class="amount ok" id="header-budget">£300,000</span></div>
+    <div class="round-badge" id="round-badge">ROUND 1</div>
+    <div class="conn-dot" id="conn-dot"></div>
+  </div>
+</div>
+<div class="main">
+  <div class="round-title" id="round-title">Select Your Defences</div>
+  <div class="round-sub" id="round-sub">Choose 3 defence mechanisms to deploy</div>
+  <div class="defence-grid" id="defence-grid"></div>
+  <div class="timer-section">
+    <button class="timer-btn" id="timer-dec">−</button>
+    <div class="timer-display" id="timer-display">01:00</div>
+    <button class="timer-btn" id="timer-inc">+</button>
+  </div>
+</div>
+<div class="status-bar">
+  <div class="status-left"><div class="status-dot"></div><span class="status-text" id="status-text">System Active</span></div>
+  <div class="status-budget"><span class="label">Budget</span><span class="amount ok" id="status-budget">£300,000</span></div>
+</div>
+<div class="name-overlay" id="name-overlay">
+  <div class="name-card">
+    <h2>Day Zero</h2>
+    <p>Enter your callsign to join the live session</p>
+    <input class="name-input" id="name-input" type="text" placeholder="Your name" maxlength="20" autofocus>
+    <button class="name-sub-btn" id="name-sub-btn">Join Game</button>
+    <div class="connecting" id="connecting-msg">Connecting to server...</div>
+  </div>
+</div>
+<div class="overlay" id="intro-overlay">
+  <div class="intro">
+    <h2 id="intro-title">Defence Mechanisms</h2>
+    <div class="intro-page active" id="intro-page-1"><div class="intro-grid" id="intro-defences"></div></div>
+    <div class="intro-page" id="intro-page-2"><div class="intro-grid" id="intro-attacks"></div></div>
+    <div class="intro-nav">
+      <button class="intro-btn secondary" id="intro-prev" style="display:none">Previous</button>
+      <button class="intro-btn primary" id="intro-next">Next</button>
+    </div>
+  </div>
+</div>
+<div class="wheel-overlay hidden" id="wheel-overlay">
+  <div class="wheel-label" id="wheel-label">Incoming Attack...</div>
+  <div class="slot-machine"><div class="slot-window"><div class="slot-track" id="slot-track"></div></div></div>
+</div>
+<div class="zoom-reveal hidden" id="zoom-reveal">
+  <div class="zr-content"><div class="zr-icon" id="zr-icon"></div><div class="zr-name" id="zr-name"></div><div class="zr-example" id="zr-example"></div></div>
+  <button class="skip-btn" id="zoom-btn" style="margin-top:40px">Continue</button>
+</div>
+<canvas id="confettiCanvas"></canvas>
+<div class="result-overlay hidden" id="result-overlay">
+  <div class="result-card">
+    <div class="result-title" id="result-title">ROUND 1 — BREACHED</div>
+    <div class="result-sub" id="result-sub">ROUND 1 OF 3</div>
+    <div class="verdict" id="verdict"><div class="v-icon">💥</div><div class="v-label">BREACH DETECTED</div><div class="v-detail">Attack exploited a gap in your defences</div></div>
+    <div class="attack-info"><div class="a-header"><div class="a-icon" id="a-icon">🔓</div><div><div class="a-name" id="a-name">Attack Name</div><div class="a-desc" id="a-desc">Description</div></div></div></div>
+    <div class="budget-impact">
+      <div class="budget-item"><div class="label">Impact</div><div class="value negative" id="bi-impact">−£100,000</div></div>
+      <div class="budget-item"><div class="label">Remaining</div><div class="value" id="bi-remaining">£200,000</div></div>
+    </div>
+    <div class="defences-deployed"><div class="dd-label">ACTIVE DEFENCES</div><div class="dd-list" id="dd-list"></div></div>
+    <button class="result-btn" id="result-btn">Continue</button>
+  </div>
+</div>
+<div class="overlay hidden" id="gameover-overlay">
+  <div class="intro game-over">
+    <h2 id="go-title">Game Over</h2>
+    <div class="go-sub" id="go-sub">Final Results</div>
+    <div class="go-stats">
+      <div class="go-stat"><div class="label">Attacks Blocked</div><div class="value green" id="go-blocked">0</div></div>
+      <div class="go-stat"><div class="label">Breaches</div><div class="value red" id="go-breaches">0</div></div>
+      <div class="go-stat"><div class="label">Final Budget</div><div class="value blue" id="go-budget">£0</div></div>
+    </div>
+    <button class="intro-btn primary" id="go-restart">Play Again</button>
+  </div>
+</div>
+<audio id="audio" loop src="music.mp3"></audio>
+<script>
+const $=id=>document.getElementById(id);
+const DEFENCES=[
+  {id:'firewall',name:'Firewall',icon:'🛡️',desc:'Monitors and controls network traffic',counters:['phishing','ddos']},
+  {id:'endpoint',name:'Endpoint Protection',icon:'💻',desc:'Secures devices from malicious software',counters:['malware','ransomware']},
+  {id:'mfa',name:'Multi-Factor Auth',icon:'🔐',desc:'Requires multiple verification methods',counters:['insider','social_eng']},
+  {id:'encryption',name:'Encryption',icon:'🔒',desc:'Scrambles data to prevent unauthorised access',counters:['data_exfil','mitm']},
+  {id:'seg',name:'Network Segmentation',icon:'🔀',desc:'Divides networks to contain breaches',counters:['sql_injection','insider']},
+  {id:'backup',name:'Backup & Recovery',icon:'💾',desc:'Restores data after loss or attack',counters:['ransomware','ddos']},
+  {id:'threat',name:'Threat Detection',icon:'👁️',desc:'Identifies suspicious activity in real time',counters:['zero_day','phishing']},
+  {id:'passwords',name:'Improved User Passwords',icon:'🔑',desc:'Enforces strong password policies',counters:['sql_injection','mitm']},
+  {id:'training',name:'Security Training',icon:'📚',desc:'Educates users to recognise threats',counters:['malware','social_eng']},
+  {id:'monitoring',name:'Continuous Monitoring',icon:'📊',desc:'Tracks systems for unusual behaviour',counters:['data_exfil','zero_day']}
+];
+const ATTACKS=[
+  {id:'phishing',name:'Phishing',icon:'🎣',desc:'Deceptive emails to steal credentials',example:'An email from your "CEO" requests urgent gift card purchases'},
+  {id:'malware',name:'Malware',icon:'🦠',desc:'Malicious software to compromise systems',example:'An innocent-looking PDF attachment installs a keylogger'},
+  {id:'ransomware',name:'Ransomware',icon:'🔒',desc:'Encrypts data and demands payment',example:'All company files encrypted — pay 10 BTC within 48 hours'},
+  {id:'ddos',name:'DDoS',icon:'🌊',desc:'Overwhelming traffic to disrupt services',example:'Website returns 503 errors under 500Gbps traffic flood'},
+  {id:'sql_injection',name:'SQL Injection',icon:'💉',desc:'Database manipulation via input fields',example:'Login form accepts "\' OR 1=1 —" as valid credentials'},
+  {id:'mitm',name:'Man-in-the-Middle',icon:'👤',desc:'Intercepting communications between parties',example:'Coffee-shop WiFi injects malicious code into every page you load'},
+  {id:'zero_day',name:'Zero-Day Exploit',icon:'⚡',desc:'Attacking unknown vulnerabilities',example:'An unpatched router vulnerability gives attackers full network access'},
+  {id:'insider',name:'Insider Threat',icon:'🏢',desc:'Malicious or negligent internal actors',example:'A departing employee copies the entire client database before leaving'},
+  {id:'data_exfil',name:'Data Exfiltration',icon:'📤',desc:'Stealing sensitive data from systems',example:'Sensitive spreadsheets are uploaded to a personal cloud account'},
+  {id:'social_eng',name:'Social Engineering',icon:'🎭',desc:'Psychological manipulation to gain access',example:'Caller posing as IT support asks you to "verify" your password'}
+];
+const EFFECTIVENESS={};DEFENCES.forEach(d=>{EFFECTIVENESS[d.id]=d.counters});
+const MAX_ROUNDS=3,ATTACK_COST=100000,START_BUDGET=300000;
+const WHEEL_COLORS=['#2563eb','#3b82f6','#60a5fa','#93c5fd','#1d4ed8','#2563eb','#3b82f6','#60a5fa','#93c5fd','#1d4ed8'];
+const state={phase:'intro',round:0,selected:[],carriedOver:[],maxSelect:3,timer:60,timerTotal:60,timerInterval:null,budget:START_BUDGET,usedAttacks:[],blocked:0,breaches:0,currentAttack:null,currentResult:null,introPage:1};
+let audioCtx=null,audioUnlocked=false;
+function ensureAudio(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();if(audioCtx.state==='suspended')audioCtx.resume();if(!audioUnlocked){audioUnlocked=true;const src=audioCtx.createBufferSource();src.buffer=audioCtx.createBuffer(1,1,audioCtx.sampleRate);src.connect(audioCtx.destination);src.start();src.stop()}}
+let drumrollAudio=null,winAudio=null,loseAudio=null;
+function playSelectBeep(){ensureAudio();if(!audioCtx)return;const t=audioCtx.currentTime;const osc=audioCtx.createOscillator(),g=audioCtx.createGain();osc.connect(g);g.connect(audioCtx.destination);osc.type='triangle';osc.frequency.setValueAtTime(1200,t);osc.frequency.exponentialRampToValueAtTime(600,t+.05);g.gain.setValueAtTime(.4,t);g.gain.exponentialRampToValueAtTime(.001,t+.08);osc.start(t);osc.stop(t+.1)}
+function playBeep(){ensureAudio();if(!audioCtx)return;const t=audioCtx.currentTime;for(let i=0;i<3;i++){const osc=audioCtx.createOscillator(),g=audioCtx.createGain();osc.connect(g);g.connect(audioCtx.destination);osc.type='sine';osc.frequency.setValueAtTime(880,t+i*.25);osc.frequency.setValueAtTime(1100,t+i*.25+.05);g.gain.setValueAtTime(.35,t+i*.25);g.gain.setValueAtTime(.35,t+i*.25+.15);g.gain.exponentialRampToValueAtTime(.001,t+i*.25+.25);osc.start(t+i*.25);osc.stop(t+i*.25+.3)}}
+function playDrumroll(){if(!drumrollAudio)drumrollAudio=new Audio('drumroll.mp3');drumrollAudio.currentTime=0;drumrollAudio.play().catch(()=>{})}
+function playTrumpet(){if(!winAudio)winAudio=new Audio('win.mp3');winAudio.currentTime=0;winAudio.play().catch(()=>{})}
+function playFail(){if(!loseAudio)loseAudio=new Audio('lose.mp3');loseAudio.currentTime=0;loseAudio.play().catch(()=>{})}
+const introOverlay=$('intro-overlay'),introTitle=$('intro-title'),introPage1=$('intro-page-1'),introPage2=$('intro-page-2'),introPrev=$('intro-prev'),introNext=$('intro-next');
+const defenceGrid=$('defence-grid'),roundTitle=$('round-title'),roundSub=$('round-sub'),roundBadge=$('round-badge');
+const timerDisplay=$('timer-display'),timerDec=$('timer-dec'),timerInc=$('timer-inc');
+const headerBudget=$('header-budget'),statusText=$('status-text'),statusBudget=$('status-budget');
+const wheelOverlay=$('wheel-overlay'),wheelLabel=$('wheel-label');
+const resultOverlay=$('result-overlay'),resultTitle=$('result-title'),resultSub=$('result-sub'),verdict=$('verdict'),aIcon=$('a-icon'),aName=$('a-name'),aDesc=$('a-desc'),biImpact=$('bi-impact'),biRemaining=$('bi-remaining'),ddList=$('dd-list'),resultBtn=$('result-btn');
+const gameoverOverlay=$('gameover-overlay'),goTitle=$('go-title'),goSub=$('go-sub'),goBlocked=$('go-blocked'),goBreaches=$('go-breaches'),goBudget=$('go-budget'),goRestart=$('go-restart');
+const audio=$('audio');const confettiCanvas=$('confettiCanvas'),confettiCtx=confettiCanvas.getContext('2d');
+const nameOverlay=$('name-overlay'),nameInput=$('name-input'),nameSubBtn=$('name-sub-btn'),connDot=$('conn-dot'),connMsg=$('connecting-msg');
+function defName(id){const d=DEFENCES.find(x=>x.id===id);return d?d.name:id}
+function attackName(id){const a=ATTACKS.find(x=>x.id===id);return a?a.name:id}
+function formatTime(s){const m=Math.floor(s/60),sec=s%60;return `${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`}
+function updateBudgetDisplay(){const pct=state.budget/START_BUDGET;const cls=pct<=0.25?'critical':pct<=0.5?'low':'ok';headerBudget.textContent=`£${state.budget.toLocaleString()}`;headerBudget.className='amount '+cls;statusBudget.textContent=`£${state.budget.toLocaleString()}`;statusBudget.className='amount '+cls}
+function updateTimerDisplay(){timerDisplay.textContent=formatTime(state.timer);timerDisplay.className='timer-display'+(state.timer<=10?' danger':state.timer<=30?' warning':'');if(state.timer<=10&&state.timer>0&&state.phase==='running')playBeep()}
+function renderDefences(){defenceGrid.innerHTML='';DEFENCES.forEach(d=>{const card=document.createElement('div');card.className='defence-card';card.dataset.id=d.id;const isCarried=state.carriedOver.includes(d.id),isSelected=state.selected.includes(d.id);if(isCarried)card.classList.add('carried');else if(isSelected)card.classList.add('selected');else if(state.selected.length>=state.maxSelect)card.classList.add('locked');card.innerHTML=`<div class="defence-icon">${d.icon}</div><div class="defence-name">${d.name}</div><div class="defence-counters">${d.desc}</div>`;if(!isCarried)card.addEventListener('click',()=>toggleDefence(d.id));defenceGrid.appendChild(card)})}
+function toggleDefence(id){if(state.phase!=='idle'&&state.phase!=='running')return;const idx=state.selected.indexOf(id);if(idx>=0)state.selected.splice(idx,1);else if(state.selected.length<state.maxSelect){state.selected.push(id);playSelectBeep()}renderDefences();if(state.selected.length>=state.maxSelect)endRound()}
+function startTimer(){clearInterval(state.timerInterval);state.timerInterval=setInterval(()=>{state.timer--;updateTimerDisplay();if(state.timer<=0){clearInterval(state.timerInterval);endRound()}},1000)}
+function endRound(){if(state.phase!=='running')return;state.phase='result';audio.pause();audio.currentTime=0;clearInterval(state.timerInterval);const attack=selectAttack();state.currentAttack=attack;const blockedBy=findBlocker(attack);const blocked=!!blockedBy;if(blocked)state.blocked++;else{state.breaches++;state.budget-=ATTACK_COST;updateBudgetDisplay()}state.currentResult={round:state.round,attack,blocked,blockedBy:defName(blockedBy),defences:[...state.selected]};setTimeout(()=>{wheelOverlay.classList.remove('hidden');playDrumroll();spinWheel(ATTACKS.indexOf(attack))},300)}
+function selectAttack(){const available=ATTACKS.filter(a=>!state.usedAttacks.includes(a.id));if(available.length===0)return ATTACKS[0];const pick=available[Math.floor(Math.random()*available.length)];state.usedAttacks.push(pick.id);return pick}
+function findBlocker(attack){for(const defId of state.selected)if(EFFECTIVENESS[defId]&&EFFECTIVENESS[defId].includes(attack.id))return defId;return null}
+function spinWheel(targetIdx){const track=$('slot-track'),ih=window.innerWidth<=480?64:96,cycles=5;track.innerHTML='';for(let c=0;c<cycles+1;c++)ATTACKS.forEach(a=>{const d=document.createElement('div');d.className='slot-item';d.innerHTML='<span class="si-icon">'+a.icon+'</span><span class="si-name">'+a.name+'</span>';track.appendChild(d)});ATTACKS.slice(0,2).forEach(a=>{const d=document.createElement('div');d.className='slot-item';d.innerHTML='<span class="si-icon">'+a.icon+'</span><span class="si-name">'+a.name+'</span>';track.appendChild(d)});const tgi=cycles*ATTACKS.length+targetIdx,endY=(tgi-1)*ih,duration=10000,st=performance.now();function eo(t){return 1-Math.pow(1-t,3)}function an(now){const elapsed=now-st,progress=Math.min(elapsed/duration,1),cur=eo(progress)*endY;track.style.transform='translateY(-'+cur+'px)';if(progress<1)requestAnimationFrame(an);else{const a=ATTACKS[targetIdx];$('zr-icon').textContent=a.icon;$('zr-name').textContent=a.name;$('zr-example').textContent='e.g. '+a.example;$('zoom-reveal').classList.remove('hidden')}}requestAnimationFrame(an)}
+function launchConfetti(){confettiCanvas.width=window.innerWidth;confettiCanvas.height=window.innerHeight;const particles=[],colors=['#2563eb','#3b82f6','#10b981','#f59e0b','#ef4444','#8b5cf6','#ec4899'];for(let i=0;i<180;i++)particles.push({x:confettiCanvas.width/2,y:confettiCanvas.height/2,vx:(Math.random()-.5)*20,vy:(Math.random()-.5)*20-8,color:colors[Math.floor(Math.random()*colors.length)],size:Math.random()*8+4,rotation:Math.random()*360,rotSpeed:(Math.random()-.5)*10,life:1});function update(){confettiCtx.clearRect(0,0,confettiCanvas.width,confettiCanvas.height);let alive=false;particles.forEach(p=>{if(p.life<=0)return;alive=true;p.x+=p.vx;p.y+=p.vy;p.vy+=.3;p.rotation+=p.rotSpeed;p.life-=.008;confettiCtx.save();confettiCtx.translate(p.x,p.y);confettiCtx.rotate(p.rotation*Math.PI/180);confettiCtx.globalAlpha=p.life;confettiCtx.fillStyle=p.color;confettiCtx.fillRect(-p.size/2,-p.size/2,p.size,p.size);confettiCtx.restore()});if(alive)requestAnimationFrame(update);else confettiCtx.clearRect(0,0,confettiCanvas.width,confettiCanvas.height)}requestAnimationFrame(update)}
+function reportToServer(){const defenceIds=state.carriedOver.length>0?[...state.carriedOver,...state.selected.filter(id=>!state.carriedOver.includes(id))]:[...state.selected];socket.emit('report-result',{round:state.round,budget:state.budget,blocked:state.blocked,breaches:state.breaches,defences:defenceIds,lastAttack:state.currentAttack?{id:state.currentAttack.id,name:state.currentAttack.name,icon:state.currentAttack.icon}:null,lastResult:state.currentResult})}
+function showResult(){const r=state.currentResult;if(r.blocked)playTrumpet();else playFail();resultTitle.textContent=`ROUND ${r.round+1} — ${r.blocked?'DEFENDED':'BREACHED'}`;resultSub.textContent=`ROUND ${r.round+1} OF ${MAX_ROUNDS}`;aIcon.textContent=r.attack.icon;aName.textContent=r.attack.name;aDesc.textContent=r.attack.desc;if(r.blocked){verdict.className='verdict blocked';verdict.innerHTML=`<div class="v-icon">🛡️</div><div class="v-label">THREAT NEUTRALISED</div><div class="v-detail">${r.attack.name} was blocked by ${r.blockedBy}</div>`}else{const preventers=Object.entries(EFFECTIVENESS).filter(([,attacks])=>attacks.includes(r.attack.id)).map(([defId])=>defName(defId));verdict.className='verdict breached';verdict.innerHTML=`<div class="v-icon">💥</div><div class="v-label">BREACH DETECTED</div><div class="v-detail">${r.attack.name} exploited a gap in your defences</div><div class="v-prevent">Could have been prevented by: ${preventers.join(', ')}</div>`}ddList.innerHTML=r.defences.map(id=>{const d=DEFENCES.find(x=>x.id===id);return d?`<span class="dd-item">${d.icon} ${d.name}</span>`:''}).join('');biImpact.textContent=r.blocked?'£0':`−£${ATTACK_COST.toLocaleString()}`;biImpact.className='value'+(r.blocked?'':' negative');biRemaining.textContent=`£${state.budget.toLocaleString()}`;biRemaining.className='value'+(state.budget<=0?' negative':state.budget<=START_BUDGET*.5?'':' positive');resultOverlay.classList.remove('hidden')}
+function nextRound(){state.round++;if(state.round>=MAX_ROUNDS||state.budget<=0){showGameOver();return}state.carriedOver=[...state.selected];state.selected=[...state.carriedOver];state.maxSelect=state.round===1?5:6;state.timer=state.timerTotal;updateTimerDisplay();roundTitle.textContent='Select Your Defences';roundSub.textContent=state.round===1?'Previous 3 carried over — select 2 more':'Previous 5 carried over — select 1 more';roundBadge.textContent=`ROUND ${state.round+1}`;statusText.textContent='System Active';renderDefences();state.phase='running';audio.currentTime=0;audio.play().catch(()=>{});startTimer();statusText.textContent='Timer Running — Select Defences'}
+function showGameOver(){state.phase='gameover';reportToServer();goBlocked.textContent=state.blocked;goBreaches.textContent=state.breaches;goBudget.textContent=`£${state.budget.toLocaleString()}`;goBudget.className='value'+(state.budget>START_BUDGET*.5?' green':state.budget>0?' blue':' red');goTitle.textContent=state.budget>0?'Mission Complete':'System Compromised';goSub.textContent=state.budget>0?'Your defences held strong':'Budget depleted — too many breaches';gameoverOverlay.classList.remove('hidden')}
+function resetGame(){state.phase='intro';state.round=0;state.selected=[];state.carriedOver=[];state.maxSelect=3;state.timer=60;state.timerTotal=60;state.budget=START_BUDGET;state.usedAttacks=[];state.blocked=0;state.breaches=0;state.currentAttack=null;state.currentResult=null;state.introPage=1;updateBudgetDisplay();updateTimerDisplay();roundBadge.textContent='ROUND 1';roundTitle.textContent='Select Your Defences';roundSub.textContent='Choose 3 defence mechanisms to deploy';statusText.textContent='System Active';gameoverOverlay.classList.add('hidden');resultOverlay.classList.add('hidden');wheelOverlay.classList.add('hidden');$('zoom-reveal').classList.add('hidden');$('zoom-reveal').classList.remove('out');renderDefences();showIntro()}
+function showIntro(){state.phase='intro';state.introPage=1;introOverlay.classList.remove('hidden');renderIntroPage()}
+function renderIntroPage(){const page=state.introPage;introPage1.classList.toggle('active',page===1);introPage2.classList.toggle('active',page===2);introPrev.style.display=page===1?'none':'';introNext.textContent=page===2?'START GAME':'Next';if(page===1){introTitle.textContent='Defence Mechanisms';$('intro-defences').innerHTML=DEFENCES.map(d=>`<div class="intro-item"><div class="icon">${d.icon}</div><div><div class="name">${d.name}</div><div class="counters">${d.desc}</div></div></div>`).join('')}else{introTitle.textContent='Attack Vectors';$('intro-attacks').innerHTML=ATTACKS.map(a=>`<div class="intro-item"><div class="icon">${a.icon}</div><div><div class="name">${a.name}</div><div class="counters">${a.desc}</div></div></div>`).join('')}}
+function startRound(){state.phase='running';state.timer=state.timerTotal;updateTimerDisplay();renderDefences();audio.currentTime=0;audio.play().catch(()=>{});startTimer();statusText.textContent='Timer Running — Select Defences'}
+
+// Socket.IO
+const socket = io();
+let playerId = null;
+
+socket.on('connect', () => {
+  connDot.className = 'conn-dot ready';
+  connMsg.textContent = 'Connected! Enter your name to begin.';
+});
+
+socket.on('disconnect', () => {
+  connDot.className = 'conn-dot disconnected';
+});
+
+socket.on('joined', (data) => {
+  playerId = data.id;
+  nameOverlay.classList.add('hidden');
+  showIntro();
+});
+
+function joinGame() {
+  const name = nameInput.value.trim();
+  if (!name) { nameInput.focus(); return; }
+  nameSubBtn.disabled = true;
+  nameSubBtn.textContent = 'Joining...';
+  socket.emit('join', name);
+}
+
+nameSubBtn.addEventListener('click', joinGame);
+nameInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') joinGame(); });
+
+introNext.addEventListener('click',()=>{ensureAudio();if(state.introPage===1){state.introPage=2;renderIntroPage()}else{introOverlay.classList.add('hidden');startRound()}});
+introPrev.addEventListener('click',()=>{ensureAudio();if(state.introPage===2){state.introPage=1;renderIntroPage()}});
+timerDec.addEventListener('click',()=>{if(state.phase==='running'){state.timer=Math.max(1,state.timer-30);updateTimerDisplay()}});
+timerInc.addEventListener('click',()=>{if(state.phase==='running'){state.timer=Math.min(600,state.timer+30);updateTimerDisplay()}});
+$('zoom-btn').addEventListener('click',()=>{const zr=$('zoom-reveal');zr.classList.add('out');setTimeout(()=>{zr.classList.add('hidden');zr.classList.remove('out');wheelOverlay.classList.add('hidden');launchConfetti();setTimeout(showResult,500)},350)});
+resultBtn.addEventListener('click',()=>{resultOverlay.classList.add('hidden');reportToServer();nextRound()});
+goRestart.addEventListener('click',resetGame);
+document.addEventListener('keydown',e=>{if(e.key==='f'||e.key==='F'){if(!document.fullscreenElement)document.documentElement.requestFullscreen().catch(()=>{});else document.exitFullscreen()}if(e.key==='n'||e.key==='N'||e.key==='Escape'){if(!resultOverlay.classList.contains('hidden'))resultBtn.click();else if(!gameoverOverlay.classList.contains('hidden'))goRestart.click();else if(!introOverlay.classList.contains('hidden'))introNext.click();else if(!$('zoom-reveal').classList.contains('hidden'))$('zoom-btn').click()}});
+
+updateBudgetDisplay();
+updateTimerDisplay();
+renderDefences();
+</script>
+</body>
+</html>

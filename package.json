@@ -1,0 +1,12 @@
+{
+  "name": "dayzero-live",
+  "version": "1.0.0",
+  "description": "Multiplayer live dashboard for Day Zero cyber defence game",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "socket.io": "^4.7.2"
+  }
+}
