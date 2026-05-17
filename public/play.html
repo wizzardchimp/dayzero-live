@@ -236,7 +236,7 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
     <div class="waiting-text" style="color:var(--text3);font-size:14px">Game session ended — return to lobby to play again</div>
   </div>
 </div>
-<audio id="audio" loop src="music.mp3"></audio>
+
 <script>
 const $=id=>document.getElementById(id);
 const DEFENCES=[
@@ -281,17 +281,12 @@ const resultOverlay=$('result-overlay'),resultTitle=$('result-title'),resultSub=
 const aIcon=$('a-icon'),aName=$('a-name'),aDesc=$('a-desc'),biImpact=$('bi-impact'),biRemaining=$('bi-remaining'),ddList=$('dd-list'),resultBtn=$('result-btn');
 const gameoverOverlay=$('gameover-overlay'),goTitle=$('go-title'),goSub=$('go-sub'),goBlocked=$('go-blocked'),goBreaches=$('go-breaches'),goBudget=$('go-budget');
 const waitingOverlay=$('waiting-overlay'),woText=$('wo-text'),woSub=$('wo-sub');
-const audio=$('audio');
 const slotTrack=$('slot-track');
 
 let audioCtx=null,audioUnlocked=false;
 function ensureAudio(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();if(audioCtx.state==='suspended')audioCtx.resume();if(!audioUnlocked){audioUnlocked=true;const src=audioCtx.createBufferSource();src.buffer=audioCtx.createBuffer(1,1,audioCtx.sampleRate);src.connect(audioCtx.destination);src.start();src.stop()}}
-let drumrollAudio=null,winAudio=null,loseAudio=null;
 function playSelectBeep(){ensureAudio();if(!audioCtx)return;const t=audioCtx.currentTime;const osc=audioCtx.createOscillator(),g=audioCtx.createGain();osc.connect(g);g.connect(audioCtx.destination);osc.type='triangle';osc.frequency.setValueAtTime(1200,t);osc.frequency.exponentialRampToValueAtTime(600,t+.05);g.gain.setValueAtTime(.4,t);g.gain.exponentialRampToValueAtTime(.001,t+.08);osc.start(t);osc.stop(t+.1)}
 function playBeep(){ensureAudio();if(!audioCtx)return;const t=audioCtx.currentTime;for(let i=0;i<3;i++){const osc=audioCtx.createOscillator(),g=audioCtx.createGain();osc.connect(g);g.connect(audioCtx.destination);osc.type='sine';osc.frequency.setValueAtTime(880,t+i*.25);osc.frequency.setValueAtTime(1100,t+i*.25+.05);g.gain.setValueAtTime(.35,t+i*.25);g.gain.setValueAtTime(.35,t+i*.25+.15);g.gain.exponentialRampToValueAtTime(.001,t+i*.25+.25);osc.start(t+i*.25);osc.stop(t+i*.25+.3)}}
-function playDrumroll(){if(!drumrollAudio)drumrollAudio=new Audio('drumroll.mp3');drumrollAudio.currentTime=0;drumrollAudio.play().catch(()=>{})}
-function playTrumpet(){if(!winAudio)winAudio=new Audio('win.mp3');winAudio.currentTime=0;winAudio.play().catch(()=>{})}
-function playFail(){if(!loseAudio)loseAudio=new Audio('lose.mp3');loseAudio.currentTime=0;loseAudio.play().catch(()=>{})}
 
 let myData={selected:[],carriedOver:[],maxSelect:3,budget:START_BUDGET,blocked:0,breaches:0,lastAttack:null,lastResult:null,defences:[]};
 let currentAttack=null;
@@ -343,13 +338,17 @@ function hideAllOverlays(){
 function renderPhase(gs){
   const phase=gs.phase;
   hideAllOverlays();
-  if(phase==='lobby'||phase==='intro'){
+  if(phase==='lobby'){
     defenceGrid.style.display='none';
     timerSection.style.display='none';
     roundTitle.textContent='';
     roundSub.textContent='';
-    showIntroPage(2);
+    waitingOverlay.classList.remove('hidden');
+    woText.textContent='Waiting for game to start...';
+    woSub.textContent='The dashboard operator will start the game shortly';
   }else if(phase==='selecting'){
+    introOverlay.classList.add('hidden');
+    waitingOverlay.classList.add('hidden');
     defenceGrid.style.display='grid';
     timerSection.style.display='flex';
     roundTitle.textContent='Select Your Defences';
@@ -357,19 +356,15 @@ function renderPhase(gs){
     roundSub.textContent=maxDesc[gs.round]||'';
     roundBadge.textContent=`ROUND ${gs.round}`;
     statusText.textContent='Timer Running — Select Defences';
-    audio.currentTime=0;audio.play().catch(()=>{});
     renderDefences();
-    waitingOverlay.classList.add('hidden');
   }else if(phase==='spinning'){
     defenceGrid.style.display='none';
     timerSection.style.display='none';
     roundTitle.textContent='';
     roundSub.textContent='';
-    audio.pause();audio.currentTime=0;
     if(currentAttack){
       wheelOverlay.classList.remove('hidden');
       wheelLabel.textContent='Incoming Attack...';
-      playDrumroll();
       spinWheel(ATTACKS.indexOf(currentAttack));
     }
   }else if(phase==='reveal'){
@@ -453,7 +448,6 @@ function launchConfetti(){
 function showResult(){
   const la=myData.lastAttack;
   if(!la)return;
-  if(myData.lastResult==='blocked')playTrumpet();else playFail();
   resultTitle.textContent=`ROUND ${myData.blocked+myData.breaches} — ${myData.lastResult==='blocked'?'DEFENDED':'BREACHED'}`;
   resultSub.textContent=`ROUND ${myData.blocked+myData.breaches} OF ${MAX_ROUNDS}`;
   aIcon.textContent=la.icon;aName.textContent=la.name;aDesc.textContent=la.desc;
@@ -483,7 +477,10 @@ socket.on('disconnect',()=>{connDot.className='conn-dot disconnected'});
 socket.on('joined',(data)=>{
   playerId=data.id;
   nameOverlay.classList.add('hidden');
-  showIntroPage(1);
+  introOverlay.classList.add('hidden');
+  waitingOverlay.classList.remove('hidden');
+  woText.textContent='Waiting for game to start...';
+  woSub.textContent='The dashboard operator will start the game shortly';
 });
 
 socket.on('game-state',(gs)=>{
@@ -504,7 +501,9 @@ socket.on('game-state',(gs)=>{
     timerSection.style.display='none';
     roundTitle.textContent='';
     roundSub.textContent='';
-    showIntroPage(2);
+    waitingOverlay.classList.remove('hidden');
+    woText.textContent='Waiting for game to start...';
+    woSub.textContent='The dashboard operator will start the game shortly';
     gameoverOverlay.classList.add('hidden');
   }
 });
