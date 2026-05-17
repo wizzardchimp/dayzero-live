@@ -177,7 +177,8 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .name-card .connecting{color:var(--text3);font-size:13px;margin-top:12px}
 .waiting-overlay{position:fixed;inset:0;z-index:80;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(255,255,255,.85);backdrop-filter:blur(4px)}
 .waiting-overlay.hidden{display:none}
-.waiting-overlay .wo-icon{font-size:48px;margin-bottom:16px}
+.waiting-overlay .wo-icon{font-size:48px;margin-bottom:16px;animation:waitPulse 2s ease-in-out infinite;display:inline-block}
+@keyframes waitPulse{0%{transform:scale(.9);opacity:.6}50%{transform:scale(1.1);opacity:1}100%{transform:scale(.9);opacity:.6}}
 .waiting-overlay .wo-text{font-size:20px;font-weight:700;color:var(--text2)}
 .waiting-overlay .wo-sub{font-size:14px;color:var(--text3);margin-top:8px}
 @media(max-width:768px){.header{padding:12px 16px}.header h1{font-size:16px}.header-right{gap:12px}.round-badge{padding:4px 12px;font-size:12px}.main{top:60px;bottom:40px;padding:16px}.main.selecting{padding:12px 12px 80px}.round-title{font-size:22px;margin-bottom:4px}.round-sub{font-size:14px;margin-bottom:16px}.defence-grid{gap:10px}.defence-card{padding:14px}.defence-icon{font-size:24px;width:32px}.defence-name{font-size:16px}.defence-counters{font-size:13px}.timer-display{font-size:36px;min-width:90px}.timer-section{margin-bottom:16px}.status-bar{padding:8px 16px;font-size:12px}.intro{padding:24px}.intro h2{font-size:20px}.intro-grid{grid-template-columns:1fr}.result-card{padding:24px}.result-title{font-size:18px}.go-stats{gap:8px}.go-stat{padding:12px}.go-stat .value{font-size:22px}}
@@ -408,16 +409,7 @@ prioritySubBtn.addEventListener('click',()=>{
   priorityOverlay.classList.add('hidden');
   prioritySubmitted=true;
   if(lastGameState&&lastGameState.phase==='selecting'){
-    // Game already in selecting phase — jump straight to defence grid
     renderPhase(lastGameState);
-  }else if(lastGameState&&lastGameState.phase!=='lobby'){
-    waitingOverlay.classList.remove('hidden');
-    woText.textContent='Game in progress — waiting...';
-    woSub.textContent='You may not be able to select defences this round';
-  }else{
-    waitingOverlay.classList.remove('hidden');
-    woText.textContent='Waiting for game to start...';
-    woSub.textContent='The dashboard operator will start the game shortly';
   }
 });
 
@@ -604,9 +596,15 @@ socket.on('disconnect',()=>{connDot.className='conn-dot disconnected'});
 socket.on('joined',(data)=>{
   playerId=data.id;
   nameOverlay.classList.add('hidden');
-  priorityOrder=['Money','Data','Maintain Services'];
-  renderPriority();
-  priorityOverlay.classList.remove('hidden');
+  if(lastGameState&&lastGameState.phase==='selecting'){
+    priorityOrder=['Money','Data','Maintain Services'];
+    renderPriority();
+    priorityOverlay.classList.remove('hidden');
+  }else{
+    waitingOverlay.classList.remove('hidden');
+    woText.textContent='Waiting for game to start...';
+    woSub.textContent='The dashboard operator will start the game shortly';
+  }
 });
 
 socket.on('game-state',(gs)=>{
@@ -614,7 +612,13 @@ socket.on('game-state',(gs)=>{
   clearTimeout(revealTimer);
   if(gs.phase==='selecting'){
     hideAllOverlays();
-    renderPhase(gs);
+    if(!prioritySubmitted){
+      priorityOrder=['Money','Data','Maintain Services'];
+      renderPriority();
+      priorityOverlay.classList.remove('hidden');
+    }else{
+      renderPhase(gs);
+    }
   }else if(gs.phase==='spinning'){
     document.querySelector('.main').classList.remove('selecting');
     currentAttack=gs.currentAttack;
@@ -634,15 +638,11 @@ socket.on('game-state',(gs)=>{
     roundSub.textContent='';
     document.querySelector('.main').classList.remove('selecting');
     gameoverOverlay.classList.add('hidden');
-    if(prioritySubmitted){
-      priorityOrder=['Money','Data','Maintain Services'];prioritySubmitted=false;
-      prioritySubBtn.disabled=false;prioritySubBtn.textContent='Submit Priority';
-      renderPriority();priorityOverlay.classList.remove('hidden');
-    }else{
-      waitingOverlay.classList.remove('hidden');
-      woText.textContent='Waiting for game to start...';
-      woSub.textContent='The dashboard operator will start the game shortly';
-    }
+    prioritySubmitted=false;
+    prioritySubBtn.disabled=false;prioritySubBtn.textContent='Submit Priority';
+    waitingOverlay.classList.remove('hidden');
+    woText.textContent='Waiting for game to start...';
+    woSub.textContent='The dashboard operator will start the game shortly';
   }
 });
 
