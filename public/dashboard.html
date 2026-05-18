@@ -544,6 +544,7 @@ function hideAll(){
 socket.on('connect',()=>console.log('Dashboard connected'));
 
 socket.on('game-state',(gs)=>{
+  const prevPhase=currentPhase;
   currentPhase=gs.phase;
   currentAttack=gs.currentAttack;
   updatePhase(gs);
@@ -554,7 +555,7 @@ socket.on('game-state',(gs)=>{
   }else if(gs.phase==='selecting'){
     hideAll();
     dashTimer.className='dash-timer';
-    playMusic();
+    if(prevPhase!=='selecting')playMusic();
   }else if(gs.phase==='spinning'){
     showSlotMachine(gs.currentAttack);
     stopAllAudio();
