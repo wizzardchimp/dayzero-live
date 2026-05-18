@@ -268,12 +268,12 @@ io.on('connection', (socket) => {
       return;
     }
     const cleanName = sanitise(name);
-    const existing = Object.values(players).find(p => p.name === cleanName);
+    const existing = Object.values(players).find(p => p.name === cleanName && p.id !== null);
     if (existing) {
+      delete players[existing.id];
       existing.id = socket.id;
       existing.connected = true;
       players[socket.id] = existing;
-      delete players[existing.id];
       socket.emit('joined', { id: socket.id });
       broadcast();
       return;
