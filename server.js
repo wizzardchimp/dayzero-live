@@ -202,7 +202,7 @@ function startRound() {
   Object.values(players).forEach(p => {
     p.carriedOver = [...p.carriedOver, ...p.selected];
     p.selected = [];
-    p.maxSelect = game.round === 1 ? 3 : game.round === 2 ? 5 : 6;
+    p.maxSelect = game.round === 1 ? 3 : game.round === 2 ? 2 : 1;
     p.lastAttack = null;
     p.lastResult = null;
     p.preventInfo = null;
