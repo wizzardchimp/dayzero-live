@@ -62,6 +62,13 @@ const game = {
 };
 const players = {};
 
+process.on('uncaughtException', (err) => {
+  console.error('UNCAUGHT EXCEPTION:', err.message, err.stack);
+});
+process.on('unhandledRejection', (err) => {
+  console.error('UNHANDLED REJECTION:', err.message, err.stack);
+});
+
 function sanitise(name) {
   return name.trim().slice(0, 20) || 'Anonymous';
 }
@@ -268,11 +275,22 @@ io.on('connection', (socket) => {
       return;
     }
     const cleanName = sanitise(name);
-    const existing = Object.values(players).find(p => p.name === cleanName && p.id !== null);
+    const existing = Object.values(players).find(p => p.name === cleanName);
     if (existing) {
       delete players[existing.id];
       existing.id = socket.id;
       existing.connected = true;
+      existing.selected = [];
+      existing.carriedOver = [];
+      existing.budget = START_BUDGET;
+      existing.blocked = 0;
+      existing.breaches = 0;
+      existing.lastAttack = null;
+      existing.lastResult = null;
+      existing.preventInfo = null;
+      existing.maxSelect = 3;
+      existing.roundHistory = [];
+      existing.priority = [];
       players[socket.id] = existing;
       socket.emit('joined', { id: socket.id });
       broadcast();
@@ -351,7 +369,6 @@ io.on('connection', (socket) => {
     if (p) {
       console.log(`${p.name} disconnected`);
       p.connected = false;
-      p.id = null;
     }
     broadcast();
   });
