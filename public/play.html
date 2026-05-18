@@ -304,7 +304,9 @@ const MAX_ROUNDS=3,ATTACK_COST=100000,START_BUDGET=300000;
 
 const socket=io();
 let playerId=null;
-let prioritySubmitted=false;
+let playerName='';
+let myData=null;
+let currentAttack=null;
 let lastGameState=null;
 let revealTimer=null;
 
@@ -590,7 +592,15 @@ function showResult(){
 }
 
 // Socket events
-socket.on('connect',()=>{connDot.className='conn-dot ready';connMsg.textContent='Connected! Enter your name to begin.'});
+socket.on('connect',()=>{
+  connDot.className='conn-dot ready';
+  if(playerName){
+    connMsg.textContent='Reconnected! Joining session...';
+    socket.emit('join',playerName);
+  }else{
+    connMsg.textContent='Connected! Enter your name to begin.';
+  }
+});
 socket.on('disconnect',()=>{connDot.className='conn-dot disconnected'});
 
 socket.on('joined',(data)=>{
@@ -664,10 +674,10 @@ socket.on('timer-update',(remaining)=>{
 
 // UI events
 function joinGame(){
-  const name=nameInput.value.trim();
-  if(!name){nameInput.focus();return}
+  playerName=nameInput.value.trim();
+  if(!playerName){nameInput.focus();return}
   nameSubBtn.disabled=true;nameSubBtn.textContent='Joining...';
-  socket.emit('join',name);
+  socket.emit('join',playerName);
 }
 nameSubBtn.addEventListener('click',joinGame);
 nameInput.addEventListener('keydown',e=>{if(e.key==='Enter')joinGame()});
