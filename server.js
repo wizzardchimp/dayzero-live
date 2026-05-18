@@ -339,6 +339,15 @@ io.on('connection', (socket) => {
     resetGame();
   });
 
+  socket.on('flush-players', () => {
+    Object.keys(players).forEach(key => {
+      const p = players[key];
+      if (p) io.to(key).emit('flushed');
+      delete players[key];
+    });
+    broadcast();
+  });
+
   socket.on('select-defence', (defenceId) => {
     const p = players[socket.id];
     if (!p || game.phase !== 'selecting') return;

@@ -455,6 +455,7 @@ function hideAllOverlays(){
   resultOverlay.classList.add('hidden');
   gameoverOverlay.classList.add('hidden');
   waitingOverlay.classList.add('hidden');
+  priorityOverlay.classList.add('hidden');
 }
 
 function renderPhase(gs){
@@ -668,6 +669,15 @@ socket.on('timer-update',(remaining)=>{
   timerDisplay.textContent=formatTime(remaining);
   timerDisplay.className='timer-display'+(remaining<=10?' danger':remaining<=30?' warning':'');
   if(remaining<=10&&remaining>0)playBeep();
+});
+
+socket.on('flushed',()=>{
+  hideAllOverlays();
+  playerName='';playerId=null;myData=null;lastGameState=null;prioritySubmitted=false;
+  prioritySubBtn.disabled=false;prioritySubBtn.textContent='Submit Priority';
+  nameInput.value='';nameSubBtn.disabled=false;nameSubBtn.textContent='Join Game';
+  nameOverlay.classList.remove('hidden');
+  connMsg.textContent='Connected! Enter your name to begin.';
 });
 
 // UI events

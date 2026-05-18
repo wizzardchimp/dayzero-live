@@ -171,6 +171,7 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
   </div>
   <div class="controls-right">
     <button class="ctrl-btn primary" id="btn-start-game" style="display:none">Start Game</button>
+    <button class="ctrl-btn danger" id="btn-flush-players" style="display:none">Flush Players</button>
     <button class="ctrl-btn secondary" id="btn-force-end" style="display:none">Force End Round</button>
     <button class="ctrl-btn primary" id="btn-next-round" style="display:none">Start Next Round</button>
   </div>
@@ -247,7 +248,7 @@ const DEFENCE_NAMES={
 const $=id=>document.getElementById(id);
 const grid=$('grid'),playerCount=$('player-count');
 const dashTimer=$('dash-timer'),timerDec=$('timer-dec'),timerInc=$('timer-inc');
-const btnStartGame=$('btn-start-game'),btnForceEnd=$('btn-force-end'),btnNextRound=$('btn-next-round');
+const btnStartGame=$('btn-start-game'),btnFlush=$('btn-flush-players'),btnForceEnd=$('btn-force-end'),btnNextRound=$('btn-next-round');
 const slotOverlay=$('slot-overlay'),dashSlotTrack=$('dash-slot-track'),slotLabel=$('slot-label');
 const revealOverlay=$('reveal-overlay'),revIcon=$('rev-icon'),revName=$('rev-name'),revExample=$('rev-example'),btnRevealNext=$('btn-reveal-next');
 const gameoverReveal=$('gameover-reveal'),govName=$('gov-name'),govSub=$('gov-sub'),btnGovLobby=$('btn-gov-lobby');
@@ -504,6 +505,7 @@ socket.on('game-state',(gs)=>{
   currentAttack=gs.currentAttack;
   updatePhase(gs);
   updateButtons(gs);
+  btnFlush.style.display=gs.phase==='lobby'?'':'none';
   if(gs.phase==='lobby'){
     hideAll();
     stopAllAudio();
@@ -544,6 +546,12 @@ btnStartGame.addEventListener('click',()=>{
 
 btnForceEnd.addEventListener('click',()=>{
   socket.emit('adjust-timer',-9999);
+});
+
+btnFlush.addEventListener('click',()=>{
+  if(confirm('Remove all players from the lobby?')){
+    socket.emit('flush-players');
+  }
 });
 
 btnNextRound.addEventListener('click',()=>{
