@@ -5,7 +5,10 @@ const path = require('path');
 
 const app = express();
 const server = http.createServer(app);
-const io = new Server(server);
+const io = new Server(server, {
+  pingTimeout: 120000,
+  pingInterval: 30000,
+});
 app.use(express.static(path.join(__dirname, 'public')));
 
 const ATTACKS = [
@@ -264,9 +267,20 @@ io.on('connection', (socket) => {
       socket.emit('joined', { id: socket.id, error: 'Game already in progress' });
       return;
     }
+    const cleanName = sanitise(name);
+    const existing = Object.values(players).find(p => p.name === cleanName);
+    if (existing) {
+      existing.id = socket.id;
+      existing.connected = true;
+      players[socket.id] = existing;
+      delete players[existing.id];
+      socket.emit('joined', { id: socket.id });
+      broadcast();
+      return;
+    }
     players[socket.id] = {
       id: socket.id,
-      name: sanitise(name),
+      name: cleanName,
       connected: true,
       selected: [],
       carriedOver: [],
@@ -334,8 +348,11 @@ io.on('connection', (socket) => {
 
   socket.on('disconnect', () => {
     const p = players[socket.id];
-    if (p) console.log(`${p.name} disconnected`);
-    delete players[socket.id];
+    if (p) {
+      console.log(`${p.name} disconnected`);
+      p.connected = false;
+      p.id = null;
+    }
     broadcast();
   });
 });

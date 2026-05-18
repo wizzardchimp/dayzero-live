@@ -28,6 +28,7 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .card-status.playing{background:rgba(37,99,235,.15);color:var(--accent2)}
 .card-status.done{background:rgba(16,185,129,.15);color:var(--green)}
 .card-status.intro{background:rgba(148,163,184,.15);color:var(--text2)}
+.dc-badge{font-size:9px;font-weight:700;color:var(--red);letter-spacing:1px}
 .card-body{display:flex;flex-direction:column;gap:8px}
 .stat-row{display:flex;gap:8px}
 .stat-box{flex:1;background:var(--card2);border-radius:var(--radius-sm);padding:10px;text-align:center}
@@ -309,7 +310,7 @@ function renderCards(players){
     return `<div class="card ${currentPhase==='selecting'?'playing':currentPhase==='gameover'?(p.budget>0?'done':'bankrupt'):''}">
       <div class="card-header">
         <div class="card-name">${p.name}</div>
-        <div class="card-status playing">${p.selected.length}/${p.maxSelect}</div>
+        <div class="card-status playing">${p.selected.length}/${p.maxSelect}</div>${!p.connected?'<div class="dc-badge">DISCONNECTED</div>':''}
       </div>
       <div class="card-body">
         <div class="stat-row">
