@@ -59,8 +59,13 @@ const game = {
   timerInterval: null,
   currentAttack: null,
   usedAttacks: [],
+  sessionCode: '',
 };
 const players = {};
+
+function genCode(){
+  return String(Math.floor(100 + Math.random() * 900));
+}
 
 function sanitise(name) {
   return name.trim().slice(0, 20) || 'Anonymous';
@@ -91,6 +96,7 @@ function getGameState() {
     timerDuration: game.timerDuration,
     currentAttack: game.currentAttack,
     usedAttacks: game.usedAttacks,
+    sessionCode: game.sessionCode,
   };
 }
 
@@ -220,6 +226,7 @@ function startGame() {
   game.round = 0;
   game.usedAttacks = [];
   game.currentAttack = null;
+  game.sessionCode = genCode();
   Object.values(players).forEach(p => {
     p.selected = [];
     p.carriedOver = [];
@@ -243,6 +250,7 @@ function resetGame() {
   game.timerRemaining = game.timerDuration;
   game.currentAttack = null;
   game.usedAttacks = [];
+  game.sessionCode = genCode();
   Object.values(players).forEach(p => {
     p.selected = [];
     p.carriedOver = [];
@@ -262,9 +270,13 @@ function resetGame() {
 io.on('connection', (socket) => {
   console.log(`Client connected: ${socket.id}`);
 
-  socket.on('join', (name) => {
+  socket.on('join', (code, name) => {
     if (game.phase !== 'lobby') {
       socket.emit('joined', { id: socket.id, error: 'Game already in progress' });
+      return;
+    }
+    if (code !== game.sessionCode) {
+      socket.emit('joined', { id: socket.id, error: 'Invalid session code' });
       return;
     }
     const cleanName = sanitise(name);
