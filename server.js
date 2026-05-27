@@ -59,7 +59,7 @@ const game = {
   timerInterval: null,
   currentAttack: null,
   usedAttacks: [],
-  sessionCode: '',
+  sessionCode: genCode(),
 };
 const players = {};
 
