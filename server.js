@@ -269,6 +269,7 @@ function resetGame() {
 
 io.on('connection', (socket) => {
   console.log(`Client connected: ${socket.id}`);
+  socket.emit('game-state', getGameState());
 
   socket.on('join', (code, name) => {
     if (code !== game.sessionCode) {
