@@ -80,15 +80,15 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .priority-card{background:var(--bg2);border-radius:var(--radius);padding:32px;box-shadow:var(--shadow-lg);text-align:center;max-width:420px;width:90%}
 .priority-card h2{font-size:22px;font-weight:800;margin-bottom:8px;background:linear-gradient(135deg,var(--accent),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .priority-card .p-intro{color:var(--text2);font-size:14px;margin-bottom:24px;line-height:1.5}
-#priority-list{display:flex;flex-direction:column;gap:8px;margin-bottom:24px;min-height:180px}
-.priority-item{background:var(--bg3);border:2px solid var(--border);border-radius:var(--radius-sm);padding:16px;display:flex;align-items:center;gap:14px;cursor:grab;transition:all .2s;user-select:none;-webkit-user-select:none;touch-action:none}
-.priority-item:active{cursor:grabbing}
-.priority-item.dragging{opacity:.5;border-style:dashed}
-.priority-item.drag-over{border-color:var(--accent);background:var(--accent-light)}
-.drag-handle{font-size:20px;color:var(--text3);flex-shrink:0;line-height:1}
+#priority-list{display:flex;flex-direction:column;gap:8px;margin-bottom:24px}
+.priority-item{background:var(--bg3);border:2px solid var(--border);border-radius:var(--radius-sm);padding:16px;display:flex;align-items:center;gap:14px;transition:all .2s;user-select:none}
 .priority-item .p-icon{font-size:24px;width:32px;flex-shrink:0}
 .priority-item .p-name{flex:1;font-weight:700;font-size:16px;text-align:left}
 .priority-item .p-rank{font-size:20px;font-weight:900;color:var(--accent);width:32px;text-align:center;flex-shrink:0}
+.prio-arrows{display:flex;flex-direction:column;gap:2px;flex-shrink:0}
+.prio-arrow{background:var(--bg2);border:1px solid var(--border);border-radius:6px;width:28px;height:22px;display:flex;align-items:center;justify-content:center;font-size:12px;cursor:pointer;color:var(--text2);transition:all .15s;line-height:1;padding:0}
+.prio-arrow:hover{background:var(--accent-light);border-color:var(--accent);color:var(--accent)}
+.prio-arrow:disabled{opacity:.25;cursor:default;background:var(--bg3);border-color:var(--border);color:var(--text3)}
 .priority-sub-btn{width:100%;padding:14px;font-size:16px;font-weight:700;border-radius:var(--radius-sm);background:linear-gradient(135deg,var(--accent),var(--purple));color:#fff;transition:all .2s}
 .priority-sub-btn:hover{transform:translateY(-2px);box-shadow:0 4px 20px rgba(37,99,235,.3)}
 .priority-sub-btn:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
@@ -183,7 +183,7 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .waiting-overlay .wo-sub{font-size:14px;color:var(--text3);margin-top:8px}
 @media(max-width:768px){.header{padding:12px 16px}.header h1{font-size:16px}.header-right{gap:12px}.round-badge{padding:4px 12px;font-size:12px}.main{top:60px;bottom:40px;padding:16px}.main.selecting{padding:12px 12px 80px}.round-title{font-size:22px;margin-bottom:4px}.round-sub{font-size:14px;margin-bottom:16px}.defence-grid{gap:10px}.defence-card{padding:14px}.defence-icon{font-size:24px;width:32px}.defence-name{font-size:16px}.defence-counters{font-size:13px}.timer-display{font-size:36px;min-width:90px}.timer-section{margin-bottom:16px}.status-bar{padding:8px 16px;font-size:12px}.intro{padding:24px}.intro h2{font-size:20px}.intro-grid{grid-template-columns:1fr}.result-card{padding:24px}.result-title{font-size:18px}.go-stats{gap:8px}.go-stat{padding:12px}.go-stat .value{font-size:22px}}
 @media(max-width:480px){.header{padding:8px 12px}.header h1{font-size:14px}.header-right{gap:8px}.header-budget{gap:4px;font-size:12px}.header-budget .amount{font-size:13px}.round-badge{padding:3px 8px;font-size:10px}.main{top:52px;bottom:36px;padding:12px}.main.selecting{padding:8px 8px 70px}.round-title{font-size:20px}.round-sub{font-size:14px;margin-bottom:12px}.defence-grid{gap:8px;max-width:100%}.defence-card{padding:12px;gap:12px}.defence-card.carried::after{font-size:8px;padding:2px 6px;top:4px;right:4px}.defence-icon{font-size:20px;width:28px}.defence-name{font-size:15px}.defence-counters{font-size:13px}.timer-display{font-size:26px;min-width:60px}.timer-section{gap:6px;margin-bottom:12px}.status-bar{display:none}.wheel-label{font-size:20px;margin-bottom:16px}.ws-icon{font-size:60px}.ws-text{font-size:16px}.intro{padding:16px}.intro h2{font-size:18px;margin-bottom:16px}.intro-item{padding:10px}.intro-item .icon{font-size:20px}.intro-item .name{font-size:14px}.intro-item .counters{font-size:12px}.intro-btn{padding:10px 24px;font-size:13px}.result-card{padding:20px}.result-title{font-size:16px}.result-sub{font-size:12px;margin-bottom:16px}.verdict{padding:16px}.verdict .v-icon{font-size:36px}.verdict .v-label{font-size:15px}.verdict .v-detail{font-size:13px}.attack-info{padding:12px}.budget-item .value{font-size:16px}.defences-deployed .dd-item{font-size:10px;padding:4px 8px}
-.defences-deployed .dd-item.glow{box-shadow:0 0 12px rgba(16,185,129,.4)}.result-btn{width:100%;padding:12px 20px;font-size:14px}.zr-icon{font-size:80px}.zr-name{font-size:32px}.zr-example{font-size:16px}.game-over h2{font-size:24px}.game-over .go-sub{font-size:14px;margin-bottom:20px}.go-stats{gap:6px}.go-stat{padding:10px}.go-stat .label{font-size:10px}.go-stat .value{font-size:18px}.name-card{padding:24px}.name-card h2{font-size:22px}.name-input{font-size:16px;padding:12px}.priority-item{padding:14px}.priority-item .p-rank{font-size:18px;width:28px}.priority-item .p-icon{font-size:20px;width:28px}.priority-item .p-name{font-size:15px}.drag-handle{font-size:18px}}
+.defences-deployed .dd-item.glow{box-shadow:0 0 12px rgba(16,185,129,.4)}.result-btn{width:100%;padding:12px 20px;font-size:14px}.zr-icon{font-size:80px}.zr-name{font-size:32px}.zr-example{font-size:16px}.game-over h2{font-size:24px}.game-over .go-sub{font-size:14px;margin-bottom:20px}.go-stats{gap:6px}.go-stat{padding:10px}.go-stat .label{font-size:10px}.go-stat .value{font-size:18px}.name-card{padding:24px}.name-card h2{font-size:22px}.name-input{font-size:16px;padding:12px}.priority-item{padding:14px}.priority-item .p-rank{font-size:18px;width:28px}.priority-item .p-icon{font-size:20px;width:28px}.priority-item .p-name{font-size:15px}.prio-arrow{width:24px;height:18px;font-size:10px}}
 </style>
 </head>
 <body>
@@ -220,7 +220,7 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 <div class="priority-overlay hidden" id="priority-overlay">
   <div class="priority-card">
     <h2>Your Priority</h2>
-    <p class="p-intro">What is your first priority for the function of your organisation?<br>Drag into order of priority</p>
+    <p class="p-intro">What is your first priority for the function of your organisation?<br>Use the arrows to order your priorities</p>
     <div id="priority-list"></div>
     <button class="priority-sub-btn" id="priority-sub-btn">Submit Priority</button>
   </div>
@@ -336,7 +336,15 @@ const PRIORITY_OPTIONS=[
   {id:'Maintain Services',icon:'⚙️',name:'Maintain Services'}
 ];
 let priorityOrder=['Money','Data','Maintain Services'];
-let dragSrcIdx=null;
+
+function movePriority(idx,dir){
+  const target=idx+dir;
+  if(target<0||target>=priorityOrder.length)return;
+  const arr=[...priorityOrder];
+  [arr[idx],arr[target]]=[arr[target],arr[idx]];
+  priorityOrder=arr;
+  renderPriority();
+}
 
 function renderPriority(){
   priorityList.innerHTML='';
@@ -346,57 +354,9 @@ function renderPriority(){
     if(!opt)return;
     const item=document.createElement('div');
     item.className='priority-item';
-    item.draggable=true;
-    item.dataset.idx=i;
-    item.dataset.priority=id;
-    item.innerHTML=`<span class="drag-handle">⠿</span><span class="p-icon">${opt.icon}</span><span class="p-name">${opt.name}</span><span class="p-rank">${ranks[i]}</span>`;
-    item.addEventListener('dragstart',(e)=>{dragSrcIdx=i;item.classList.add('dragging');e.dataTransfer.effectAllowed='move'});
-    item.addEventListener('dragend',()=>{item.classList.remove('dragging');document.querySelectorAll('.priority-item').forEach(el=>el.classList.remove('drag-over'));dragSrcIdx=null});
-    item.addEventListener('dragover',(e)=>{e.preventDefault();e.dataTransfer.dropEffect='move';document.querySelectorAll('.priority-item').forEach(el=>el.classList.remove('drag-over'));item.classList.add('drag-over')});
-    item.addEventListener('dragleave',()=>item.classList.remove('drag-over'));
-    item.addEventListener('drop',(e)=>{e.preventDefault();if(dragSrcIdx===null||dragSrcIdx===i)return;const arr=[...priorityOrder];const[dragged]=arr.splice(dragSrcIdx,1);arr.splice(i,0,dragged);priorityOrder=arr;renderPriority()});
-    // Touch support
-    let touchStartY=0,touchItemIdx=null,touchClone=null;
-    item.addEventListener('touchstart',(e)=>{
-      touchItemIdx=i;touchStartY=e.touches[0].clientY;
-      const rect=item.getBoundingClientRect();
-      touchClone=item.cloneNode(true);
-      touchClone.style.position='fixed';touchClone.style.zIndex='1000';touchClone.style.pointerEvents='none';
-      touchClone.style.opacity='.7';touchClone.style.width=rect.width+'px';
-      touchClone.style.top=rect.top+'px';touchClone.style.left=rect.left+'px';
-      touchClone.style.transform='scale(1.03)';touchClone.style.border='2px dashed var(--accent)';
-      document.body.appendChild(touchClone);
-      item.style.opacity='.4';
-    },{passive:true});
-    item.addEventListener('touchmove',(e)=>{
-      e.preventDefault();
-      const y=e.touches[0].clientY;
-      if(touchClone)touchClone.style.top=(parseInt(touchClone.style.top)+(y-touchStartY))+'px';
-      touchStartY=y;
-      // Find which item we're over
-      const items=Array.from(document.querySelectorAll('.priority-item'));
-      items.forEach(el=>el.classList.remove('drag-over'));
-      for(let k=0;k<items.length;k++){
-        const r=items[k].getBoundingClientRect();
-        if(y>=r.top&&y<=r.bottom){items[k].classList.add('drag-over');break}
-      }
-    },{passive:false});
-    item.addEventListener('touchend',()=>{
-      if(touchClone){touchClone.remove();touchClone=null}
-      document.querySelectorAll('.priority-item').forEach(el=>{el.style.opacity='';el.classList.remove('drag-over')});
-      const items=Array.from(document.querySelectorAll('.priority-item'));
-      for(let k=0;k<items.length;k++){
-        const r=items[k].getBoundingClientRect();
-        if(r.top<touchStartY&&r.bottom>touchStartY&&k!==touchItemIdx){
-          const arr=[...priorityOrder];
-          const[dragged]=arr.splice(touchItemIdx,1);
-          arr.splice(k,0,dragged);
-          priorityOrder=arr;
-          renderPriority();
-          break;
-        }
-      }
-      touchItemIdx=null;
+    item.innerHTML=`<div class="prio-arrows"><button class="prio-arrow" data-idx="${i}" data-dir="-1" ${i===0?'disabled':''}>▲</button><button class="prio-arrow" data-idx="${i}" data-dir="1" ${i===priorityOrder.length-1?'disabled':''}>▼</button></div><span class="p-icon">${opt.icon}</span><span class="p-name">${opt.name}</span><span class="p-rank">${ranks[i]}</span>`;
+    item.querySelectorAll('.prio-arrow').forEach(btn=>{
+      btn.addEventListener('click',()=>movePriority(parseInt(btn.dataset.idx),parseInt(btn.dataset.dir)));
     });
     priorityList.appendChild(item);
   });
