@@ -271,10 +271,6 @@ io.on('connection', (socket) => {
   console.log(`Client connected: ${socket.id}`);
 
   socket.on('join', (code, name) => {
-    if (game.phase !== 'lobby') {
-      socket.emit('joined', { id: socket.id, error: 'Game already in progress' });
-      return;
-    }
     if (code !== game.sessionCode) {
       socket.emit('joined', { id: socket.id, error: 'Invalid session code' });
       return;
@@ -285,20 +281,13 @@ io.on('connection', (socket) => {
       delete players[existing.id];
       existing.id = socket.id;
       existing.connected = true;
-      existing.selected = [];
-      existing.carriedOver = [];
-      existing.budget = START_BUDGET;
-      existing.blocked = 0;
-      existing.breaches = 0;
-      existing.lastAttack = null;
-      existing.lastResult = null;
-      existing.preventInfo = null;
-      existing.maxSelect = 3;
-      existing.roundHistory = [];
-      existing.priority = [];
       players[socket.id] = existing;
       socket.emit('joined', { id: socket.id });
       broadcast();
+      return;
+    }
+    if (game.phase !== 'lobby') {
+      socket.emit('joined', { id: socket.id, error: 'Game already in progress' });
       return;
     }
     players[socket.id] = {

@@ -590,10 +590,17 @@ socket.on('joined',(data)=>{
   }
   playerId=data.id;
   nameOverlay.classList.add('hidden');
-  if(lastGameState&&lastGameState.phase==='selecting'){
+  const gs=lastGameState;
+  if(gs&&gs.phase==='selecting'){
     priorityOrder=[];
     renderPriority();
     priorityOverlay.classList.remove('hidden');
+  }else if(gs&&gs.phase==='gameover'){
+    renderPhase(gs);
+  }else if(gs){
+    waitingOverlay.classList.remove('hidden');
+    woText.textContent='Reconnecting...';
+    woSub.textContent='Syncing game state';
   }else{
     waitingOverlay.classList.remove('hidden');
     woText.textContent='Waiting for game to start...';
