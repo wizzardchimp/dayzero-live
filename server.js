@@ -62,13 +62,6 @@ const game = {
 };
 const players = {};
 
-process.on('uncaughtException', (err) => {
-  console.error('UNCAUGHT EXCEPTION:', err.message, err.stack);
-});
-process.on('unhandledRejection', (err) => {
-  console.error('UNHANDLED REJECTION:', err.message, err.stack);
-});
-
 function sanitise(name) {
   return name.trim().slice(0, 20) || 'Anonymous';
 }
