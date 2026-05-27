@@ -226,7 +226,6 @@ function startGame() {
   game.round = 0;
   game.usedAttacks = [];
   game.currentAttack = null;
-  game.sessionCode = genCode();
   Object.values(players).forEach(p => {
     p.selected = [];
     p.carriedOver = [];
