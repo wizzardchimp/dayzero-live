@@ -21,11 +21,14 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
 .card{background:var(--card);border-radius:var(--radius);border:1px solid var(--border);padding:16px;transition:border-color .3s}
 .card.playing{border-color:var(--accent)}
-.card.ready{border-color:var(--green);background:rgba(16,185,129,.04)}
+.card.ready{border-color:var(--green);border-width:3px;background:rgba(16,185,129,.04)}
 .card.done{border-color:var(--green)}
 .card.bankrupt{border-color:var(--red)}
 .card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.card-header-left{display:flex;align-items:center;gap:8px}
 .card-name{font-size:18px;font-weight:800}
+.card-remove{background:none;border:none;color:var(--text3);font-size:16px;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s}
+.card-remove:hover{background:rgba(239,68,68,.15);color:var(--red)}
 .card-status{font-size:10px;font-weight:600;padding:3px 8px;border-radius:10px;letter-spacing:1px;text-transform:uppercase}
 .card-status.playing{background:rgba(37,99,235,.15);color:var(--accent2)}
 .card-status.done{background:rgba(16,185,129,.15);color:var(--green)}
@@ -44,8 +47,10 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .budget-bar-fill.ok{background:var(--green)}
 .budget-bar-fill.low{background:var(--orange)}
 .budget-bar-fill.critical{background:var(--red)}
-.defence-tags{display:flex;flex-wrap:wrap;gap:3px;margin-top:2px}
-.defence-tag{background:rgba(37,99,235,.12);color:var(--accent2);padding:2px 7px;border-radius:8px;font-size:10px;font-weight:500}
+.defence-list{display:flex;flex-direction:column;gap:4px;margin-top:4px}
+.defence-item{display:flex;align-items:center;gap:8px;background:var(--card2);border-radius:8px;padding:6px 10px}
+.defence-item .di-icon{font-size:22px;width:28px;text-align:center;flex-shrink:0}
+.defence-item .di-name{font-size:13px;font-weight:600;color:var(--text)}
 .attack-line{display:flex;align-items:center;gap:6px;background:var(--card2);border-radius:var(--radius-sm);padding:6px 10px;font-size:12px;margin-top:2px}
 .attack-line .a-icon{font-size:16px}
 .attack-line .a-name{font-weight:600;flex:1}
@@ -246,6 +251,11 @@ const DEFENCE_NAMES={
   seg:'Network Segmentation',backup:'Backup & Recovery',threat:'Threat Detection',
   passwords:'Improved Passwords',training:'Security Training',monitoring:'Continuous Monitoring'
 };
+const DEFENCE_ICONS={
+  firewall:'🛡️',endpoint:'💻',mfa:'🔐',encryption:'🔒',
+  seg:'🔀',backup:'💾',threat:'👁️',
+  passwords:'🔑',training:'📚',monitoring:'📊'
+};
 
 const $=id=>document.getElementById(id);
 const grid=$('grid'),playerCount=$('player-count'),sessionCode=$('session-code');
@@ -292,7 +302,8 @@ function renderCards(players){
     grid.innerHTML=`<div class="empty-state"><div class="big-icon">📡</div><h2>Waiting for players</h2><p>Share the link with your team and their cards will appear here as they join.</p></div>`;
     return;
   }
-  grid.innerHTML=players.map(p=>{
+  const sorted = currentPhase==='lobby' ? players : [...players].sort((a,b)=>b.budget-a.budget);
+  grid.innerHTML=sorted.map(p=>{
     const r=currentPhase==='reveal'||currentPhase==='gameover'?3:(currentPhase==='selecting'?p.defences.length:0);
     const dots='';
     let dotsHtml='<div class="round-dots">';
@@ -311,10 +322,13 @@ function renderCards(players){
     const atk=p.lastAttack;
     const bc=budgetClass(p.budget);
     const readyClass=currentPhase==='selecting'&&p.selected&&p.selected.length>=p.maxSelect?' ready':'';
-    return `<div class="card ${currentPhase==='selecting'?'playing':currentPhase==='gameover'?(p.budget>0?'done':'bankrupt'):''}${readyClass}">
+    return `<div class="card ${currentPhase==='selecting'?'playing':currentPhase==='gameover'?(p.budget>0?'done':'bankrupt'):''}${readyClass}" data-id="${p.id}">
       <div class="card-header">
-        <div class="card-name">${p.name}</div>
-        <div class="card-status playing">${p.selected.length}/${p.maxSelect}</div>${!p.connected?'<div class="dc-badge">DISCONNECTED</div>':''}
+        <div class="card-header-left">
+          <div class="card-name">${p.name}</div>
+          <div class="card-status playing">${p.selected.length}/${p.maxSelect}</div>${!p.connected?'<div class="dc-badge">DISCONNECTED</div>':''}
+        </div>
+        <button class="card-remove" data-id="${p.id}" title="Remove player">✕</button>
       </div>
       <div class="card-body">
         <div class="stat-row">
@@ -323,7 +337,7 @@ function renderCards(players){
           <div class="stat-box"><div class="label">Budget</div><div class="value ${bc}">£${(p.budget||0).toLocaleString()}</div></div>
         </div>
         <div><div class="budget-bar"><div class="budget-bar-fill ${bc}" style="width:${budgetPct(p.budget)}%"></div></div></div>
-        ${defs.length?`<div class="defence-tags">${defs.map(d=>`<span class="defence-tag">${DEFENCE_NAMES[d]||d}</span>`).join('')}</div>`:''}
+        ${defs.length?`<div class="defence-list">${defs.map(d=>`<div class="defence-item"><span class="di-icon">${DEFENCE_ICONS[d]||'🛡️'}</span><span class="di-name">${DEFENCE_NAMES[d]||d}</span></div>`).join('')}</div>`:''}
         ${atk?`<div class="attack-line"><span class="a-icon">${ATTACKS[atk.id]||'🔓'}</span><span class="a-name">${atk.name}</span><span class="a-result ${p.lastResult||'blocked'}">${(p.lastResult||'ok').toUpperCase()}</span></div>`:''}
         ${p.priority&&p.priority.length?`<div style="font-size:11px;color:var(--text3);margin-top:4px;text-align:center">Priority: ${p.priority.map((x,i)=>`${PRIORITY_EMOJIS[x]||''} ${i+1}st:${x}`).join(' · ')}</div>`:''}
         ${p.award?`<div style="font-size:13px;font-weight:700;text-align:center;margin-top:4px;color:${p.award==='Gold'?'#f59e0b':p.award==='Silver'?'#94a3b8':'#cd7f32'}">${p.award==='Gold'?'🏆':p.award==='Silver'?'🥈':'🥉'} ${p.award}</div>`:''}
@@ -572,6 +586,16 @@ btnRevealNext.addEventListener('click',()=>{
 
 btnGovLobby.addEventListener('click',()=>{
   socket.emit('reset-game');
+});
+
+// Remove player via delegated click on grid
+grid.addEventListener('click',(e)=>{
+  const btn=e.target.closest('.card-remove');
+  if(!btn)return;
+  const id=btn.dataset.id;
+  if(confirm('Remove this player? They can rejoin with the same session code.')){
+    socket.emit('remove-player',id);
+  }
 });
 
 timerDec.addEventListener('click',()=>socket.emit('adjust-timer',-30));

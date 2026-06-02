@@ -339,7 +339,17 @@ io.on('connection', (socket) => {
       if (p) io.to(key).emit('flushed');
       delete players[key];
     });
+    game.sessionCode = genCode();
     broadcast();
+  });
+
+  socket.on('remove-player', (playerId) => {
+    const p = players[playerId];
+    if (p) {
+      io.to(playerId).emit('flushed');
+      delete players[playerId];
+      broadcast();
+    }
   });
 
   socket.on('select-defence', (defenceId) => {
