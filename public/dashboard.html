@@ -217,6 +217,7 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 <audio id="dash-win" src="win.mp3"></audio>
 <audio id="dash-lose" src="lose.mp3"></audio>
 <audio id="dash-ding" src="Ding.mp3"></audio>
+<audio id="dash-chime" src="chime.mp3"></audio>
 <script>
 const socket=io();
 
@@ -270,7 +271,7 @@ const gameoverReveal=$('gameover-reveal'),govName=$('gov-name'),govSub=$('gov-su
 const phaseIndicator=$('phase-indicator'),phaseDot=$('phase-dot'),phaseLabel=$('phase-label');
 const roundAttacksBar=$('round-attacks-bar'),btnToggleTiles=$('btn-toggle-tiles');
 
-const dashMusic=$('dash-music'),dashDrumroll=$('dash-drumroll'),dashWin=$('dash-win'),dashLose=$('dash-lose'),dashDing=$('dash-ding');
+const dashMusic=$('dash-music'),dashDrumroll=$('dash-drumroll'),dashWin=$('dash-win'),dashLose=$('dash-lose'),dashDing=$('dash-ding'),dashChime=$('dash-chime');
 
 let currentPhase='lobby';
 let currentRound=0;
@@ -539,6 +540,7 @@ socket.on('game-state',(gs)=>{
   }else if(gs.phase==='reveal'){
     showReveal(gs.currentAttack);
     stopAllAudio();
+    dashChime.currentTime=0;dashChime.play().catch(()=>{});
   }else if(gs.phase==='gameover'){
     showGameOver();
     stopAllAudio();
