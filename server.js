@@ -349,6 +349,15 @@ io.on('connection', (socket) => {
     broadcast();
   });
 
+  socket.on('hard-reset', () => {
+    Object.keys(players).forEach(key => {
+      const p = players[key];
+      if (p) io.to(key).emit('flushed');
+      delete players[key];
+    });
+    resetGame();
+  });
+
   socket.on('remove-player', (playerId) => {
     const p = players[playerId];
     if (p) {
