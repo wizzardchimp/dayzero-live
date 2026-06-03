@@ -49,7 +49,7 @@ const PRIORITY_EMOJIS = {'Money':'💰','Data':'💾','Maintain Services':'⚙�
 const ATTACK_COST = 100000;
 const START_BUDGET = 300000;
 const MAX_ROUNDS = 3;
-const SPIN_DURATION = 10000;
+const SPIN_DURATION = 7000;
 
 const game = {
   phase: 'lobby',

@@ -408,7 +408,7 @@ function showSlotMachine(attack){
     d.innerHTML='<span class="dsi-icon">'+a.icon+'</span><span class="dsi-name">'+a.name+'</span>';
     dashSlotTrack.appendChild(d);
   });
-  const tgi=cycles*atts.length+targetIdx,endY=(tgi-1)*ih,duration=10000,st=performance.now();
+  const tgi=cycles*atts.length+targetIdx,endY=(tgi-1)*ih,duration=7000,st=performance.now();
   function eo(t){return 1-Math.pow(1-t,3)}
   function an(now){
     const elapsed=now-st,progress=Math.min(elapsed/duration,1),cur=eo(progress)*endY;
