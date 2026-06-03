@@ -386,9 +386,9 @@ prioritySubBtn.addEventListener('click',()=>{
   socket.emit('set-priority',priorityOrder);
   priorityOverlay.classList.add('hidden');
   prioritySubmitted=true;
-  if(lastGameState&&lastGameState.phase==='selecting'){
-    renderPhase(lastGameState);
-  }
+  waitingOverlay.classList.remove('hidden');
+  woText.textContent='Priority Submitted';
+  woSub.textContent='Waiting for the round to start...';
 });
 
 function defName(id){const d=DEFENCES.find(x=>x.id===id);return d?d.name:id}
@@ -403,7 +403,11 @@ function updateBudgetDisplay(){
 }
 
 function renderDefences(){
-  if(!defenceGrid||!myData)return;
+  if(!defenceGrid)return;
+  if(!myData){
+    defenceGrid.innerHTML='<div style="text-align:center;padding:32px;color:var(--text3)">Loading defences...</div>';
+    return;
+  }
   defenceGrid.innerHTML='';
   const allDefences=[...myData.carriedOver,...myData.selected];
   const maxed=myData.selected.length>=myData.maxSelect;
@@ -591,10 +595,16 @@ socket.on('joined',(data)=>{
   playerId=data.id;
   nameOverlay.classList.add('hidden');
   const gs=lastGameState;
-  if(gs&&gs.phase==='selecting'){
-    priorityOrder=[];
-    renderPriority();
-    priorityOverlay.classList.remove('hidden');
+  if(gs&&(gs.phase==='selecting'||gs.phase==='priority')){
+    if(!prioritySubmitted){
+      priorityOrder=[];
+      renderPriority();
+      priorityOverlay.classList.remove('hidden');
+    }else{
+      waitingOverlay.classList.remove('hidden');
+      woText.textContent=gs.phase==='priority'?'Priority Submitted':'Reconnecting...';
+      woSub.textContent=gs.phase==='priority'?'Waiting for Round 1 to begin...':'Syncing game state';
+    }
   }else if(gs&&gs.phase==='gameover'){
     renderPhase(gs);
   }else if(gs){
@@ -611,7 +621,23 @@ socket.on('joined',(data)=>{
 socket.on('game-state',(gs)=>{
   lastGameState=gs;
   clearTimeout(revealTimer);
-  if(gs.phase==='selecting'){
+  if(gs.phase==='priority'){
+    hideAllOverlays();
+    defenceGrid.style.display='none';
+    timerSection.style.display='none';
+    roundTitle.textContent='';
+    roundSub.textContent='';
+    document.querySelector('.main').classList.remove('selecting');
+    if(!prioritySubmitted){
+      priorityOrder=[];
+      renderPriority();
+      priorityOverlay.classList.remove('hidden');
+    }else{
+      waitingOverlay.classList.remove('hidden');
+      woText.textContent='Priority Submitted';
+      woSub.textContent='Waiting for Round 1 to begin...';
+    }
+  }else if(gs.phase==='selecting'){
     hideAllOverlays();
     if(!prioritySubmitted){
       priorityOrder=[];

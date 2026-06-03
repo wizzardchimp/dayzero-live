@@ -222,7 +222,7 @@ function startRound() {
 }
 
 function startGame() {
-  game.phase = 'lobby';
+  game.phase = 'priority';
   game.round = 0;
   game.usedAttacks = [];
   game.currentAttack = null;
@@ -239,7 +239,7 @@ function startGame() {
     p.roundHistory = [];
     p.priority = [];
   });
-  startRound();
+  broadcast();
 }
 
 function resetGame() {
@@ -325,6 +325,12 @@ io.on('connection', (socket) => {
 
   socket.on('start-next-round', () => {
     if (game.phase === 'reveal') {
+      startRound();
+    }
+  });
+
+  socket.on('start-first-round', () => {
+    if (game.phase === 'priority') {
       startRound();
     }
   });
