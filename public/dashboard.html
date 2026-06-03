@@ -51,12 +51,6 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .defence-item{display:flex;align-items:center;gap:8px;background:var(--card2);border-radius:8px;padding:6px 10px}
 .defence-item .di-icon{font-size:22px;width:28px;text-align:center;flex-shrink:0}
 .defence-item .di-name{font-size:13px;font-weight:600;color:var(--text)}
-.attack-line{display:flex;align-items:center;gap:6px;background:var(--card2);border-radius:var(--radius-sm);padding:6px 10px;font-size:12px;margin-top:2px}
-.attack-line .a-icon{font-size:16px}
-.attack-line .a-name{font-weight:600;flex:1}
-.attack-line .a-result{font-size:10px;font-weight:700;padding:2px 6px;border-radius:6px}
-.attack-line .a-result.blocked{background:rgba(16,185,129,.15);color:var(--green)}
-.attack-line .a-result.breached{background:rgba(239,68,68,.15);color:var(--red)}
 .round-dots{display:flex;gap:5px;margin-top:6px;justify-content:center}
 .round-dot{width:8px;height:8px;border-radius:50%;background:var(--card2);transition:all .3s}
 .round-dot.blocked{background:var(--green);box-shadow:0 0 4px rgba(16,185,129,.5)}
@@ -327,7 +321,6 @@ function renderCards(players){
     }
     dotsHtml+='</div>';
     const defs=p.defences||[];
-    const atk=p.lastAttack;
     const bc=budgetClass(p.budget);
     const readyClass=currentPhase==='selecting'&&p.selected&&p.selected.length>=p.maxSelect?' ready':'';
     const priReady=currentPhase==='priority'&&p.priority&&p.priority.length===3?' ready':'';
@@ -347,7 +340,6 @@ function renderCards(players){
         </div>
         <div><div class="budget-bar"><div class="budget-bar-fill ${bc}" style="width:${budgetPct(p.budget)}%"></div></div></div>
         ${defs.length?`<div class="defence-list">${defs.map(d=>`<div class="defence-item"><span class="di-icon">${DEFENCE_ICONS[d]||'🛡️'}</span><span class="di-name">${DEFENCE_NAMES[d]||d}</span></div>`).join('')}</div>`:''}
-        ${atk?`<div class="attack-line"><span class="a-icon">${ATTACKS[atk.id]||'🔓'}</span><span class="a-name">${atk.name}</span><span class="a-result ${p.lastResult||'blocked'}">${(p.lastResult||'ok').toUpperCase()}</span></div>`:''}
         ${p.priority&&p.priority.length?`<div style="font-size:11px;color:var(--text3);margin-top:4px;text-align:center">Priority: ${p.priority.map((x,i)=>`${PRIORITY_EMOJIS[x]||''} ${i+1}st:${x}`).join(' · ')}</div>`:''}
         ${p.award?`<div style="font-size:13px;font-weight:700;text-align:center;margin-top:4px;color:${p.award==='Gold'?'#f59e0b':p.award==='Silver'?'#94a3b8':'#cd7f32'}">${p.award==='Gold'?'🏆':p.award==='Silver'?'🥈':'🥉'} ${p.award}</div>`:''}
         ${dotsHtml}
