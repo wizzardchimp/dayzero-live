@@ -444,46 +444,6 @@ function renderWinner(players){
   const sorted=[...players].sort((a,b)=>(b.score||0)-(a.score||0));
   const top3=sorted.slice(0,3);
 
-  // Winner section
-  const awardColors={'Gold':'#f59e0b','Silver':'#94a3b8','Bronze':'#cd7f32'};
-  const awardIcons={'Gold':'🏆','Silver':'🥈','Bronze':'🥉'};
-  const awardLabels={'Gold':'GOLD','Silver':'SILVER','Bronze':'BRONZE'};
-  const pri=winner.priority&&winner.priority[0]||'—';
-  const priEmoji=PRIORITY_EMOJIS[pri]||'';
-
-  $('winner-trophy').textContent=awardIcons[winner.award]||'🏆';
-  $('winner-name').textContent=winner.name;
-  const awardEl=$('winner-award');
-  awardEl.textContent=`${awardLabels[winner.award]||winner.award} AWARD`;
-  awardEl.style.color=awardColors[winner.award]||'#fff';
-
-  $('winner-details').innerHTML=
-    `<div class="winner-detail"><div class="wd-label">Priority</div><div class="wd-value">${priEmoji} ${pri}</div></div>`+
-    `<div class="winner-detail"><div class="wd-label">Score</div><div class="wd-value">${winner.score||0}</div></div>`+
-    `<div class="winner-detail"><div class="wd-label">Budget</div><div class="wd-value">£${(winner.budget||0).toLocaleString()}</div></div>`+
-    `<div class="winner-detail"><div class="wd-label">Blocked</div><div class="wd-value" style="color:var(--green)">${winner.blocked||0}/${(winner.blocked||0)+(winner.breaches||0)}</div></div>`;
-
-  // Winner defence choices
-  const defsEl=$('winner-defences');
-  const defs=winner.defences||[];
-  if(defs.length){
-    defsEl.innerHTML=`<div class="wd-title">DEFENCES DEPLOYED</div><div class="wd-tags">${defs.map(d=>`<span class="wd-tag">${DEFENCE_NAMES[d]||d}</span>`).join('')}</div>`;
-  }else defsEl.innerHTML='';
-
-  // Winner round history
-  const roundsEl=$('winner-rounds');
-  const history=winner.roundHistory||[];
-  if(history.length){
-    roundsEl.innerHTML='<div class="wd-title" style="margin-bottom:10px">ATTACKS FACED</div>'+
-      history.map((r,i)=>{
-        const icon=ATTACK_ICONS[r.attackId]||'🔓';
-        const name=ATTACK_NAMES[r.attackId]||r.attackId;
-        const cls=r.blocked?'blocked':'breached';
-        const label=r.blocked?'BLOCKED':'BREACHED';
-        return `<div class="winner-round"><span class="wr-icon">${icon}</span><span class="wr-name">${name}</span><span class="wr-result ${cls}">${label}</span></div>`;
-      }).join('');
-  }else roundsEl.innerHTML='';
-
   // Podium
   const podiumEl=$('podium');
   podiumEl.innerHTML='';
@@ -501,21 +461,9 @@ function renderWinner(players){
       const div=document.createElement('div');
       div.className='podium-item silver';div.style.background='rgba(255,255,255,.05)';
       div.innerHTML='<div class="podium-name" style="color:rgba(255,255,255,.3)">—</div>';
-    podiumEl.appendChild(div);
-  }
-  if(podiumEl.children.length<3){
-    for(let i=podiumEl.children.length;i<3;i++){
-      const div=document.createElement('div');
-      div.className='podium-item silver';div.style.background='rgba(255,255,255,.05)';
-      div.innerHTML='<div class="podium-name" style="color:rgba(255,255,255,.3)">—</div>';
       podiumEl.appendChild(div);
     }
   }
-
-  // Full ranking table
-  const tableEl=$('ranking-table');
-  tableEl.innerHTML='<div class="ranking-row header"><span class="rr-rank">Rank</span><span class="rr-name">Name</span><span class="rr-priority">Priority</span><span class="rr-budget">Budget</span><span class="rr-award">Award</span></div>';
-  sorted.forEach((p,i)=>{
 
   // Full ranking table
   const tableEl=$('ranking-table');
@@ -528,7 +476,7 @@ function renderWinner(players){
     tableEl.appendChild(row);
   });
 
-  // Attacks faced section (winner of the tournament)
+  // Attacks faced section
   const winner=sorted[0];
   const roundsEl=$('winner-rounds');
   const history=winner&&winner.roundHistory||[];
