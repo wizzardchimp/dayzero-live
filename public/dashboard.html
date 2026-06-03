@@ -214,6 +214,7 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 <audio id="dash-drumroll" src="drumroll.mp3"></audio>
 <audio id="dash-win" src="win.mp3"></audio>
 <audio id="dash-lose" src="lose.mp3"></audio>
+<audio id="dash-ding" src="Ding.mp3"></audio>
 <script>
 const socket=io();
 
@@ -267,11 +268,13 @@ const gameoverReveal=$('gameover-reveal'),govName=$('gov-name'),govSub=$('gov-su
 const phaseIndicator=$('phase-indicator'),phaseDot=$('phase-dot'),phaseLabel=$('phase-label');
 const roundAttacksBar=$('round-attacks-bar'),btnToggleTiles=$('btn-toggle-tiles');
 
-const dashMusic=$('dash-music'),dashDrumroll=$('dash-drumroll'),dashWin=$('dash-win'),dashLose=$('dash-lose');
+const dashMusic=$('dash-music'),dashDrumroll=$('dash-drumroll'),dashWin=$('dash-win'),dashLose=$('dash-lose'),dashDing=$('dash-ding');
 
 let currentPhase='lobby';
+let currentRound=0;
 let currentAttack=null;
 let roundAttacks=[];
+let dingPlayedForRound=0;
 
 let lastPlayers=[];
 
@@ -504,6 +507,7 @@ socket.on('connect',()=>console.log('Dashboard connected'));
 socket.on('game-state',(gs)=>{
   const prevPhase=currentPhase;
   currentPhase=gs.phase;
+  currentRound=gs.round||0;
   currentAttack=gs.currentAttack;
   updatePhase(gs);
   updateButtons(gs);
@@ -527,8 +531,8 @@ socket.on('game-state',(gs)=>{
   }else if(gs.phase==='spinning'){
     showSlotMachine(gs.currentAttack);
     stopAllAudio();
-    playDrumroll();
     if(gs.currentAttack){roundAttacks.push(gs.currentAttack);updateRoundAttacks()}
+    dingPlayedForRound=0;
   }else if(gs.phase==='reveal'){
     showReveal(gs.currentAttack);
     stopAllAudio();
@@ -543,6 +547,16 @@ socket.on('players-update',(players)=>{
   renderCards(players);
   if(currentPhase==='gameover')renderWinner(players);
   if(currentPhase==='priority')updateButtons({phase:'priority'});
+  if(currentPhase==='selecting'){
+    const connected=players.filter(p=>p.connected);
+    const maxSel=players[0]?players[0].maxSelect:3;
+    const allReady=connected.length>0&&connected.every(p=>p.selected&&p.selected.length>=maxSel);
+    if(allReady&&dingPlayedForRound!==currentRound){
+      dashDing.currentTime=0;
+      dashDing.play().catch(()=>{});
+      dingPlayedForRound=currentRound;
+    }
+  }
 });
 
 socket.on('timer-update',(remaining)=>{
