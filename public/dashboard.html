@@ -533,6 +533,7 @@ socket.on('game-state',(gs)=>{
   }else if(gs.phase==='spinning'){
     showSlotMachine(gs.currentAttack);
     stopAllAudio();
+    playDrumroll();
     if(gs.currentAttack){roundAttacks.push(gs.currentAttack);updateRoundAttacks()}
     dingPlayedForRound=0;
   }else if(gs.phase==='reveal'){
