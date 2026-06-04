@@ -2,6 +2,7 @@ const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
 const path = require('path');
+const { google } = require('googleapis');
 
 const app = express();
 const server = http.createServer(app);
@@ -60,6 +61,7 @@ const game = {
   currentAttack: null,
   usedAttacks: [],
   sessionCode: genCode(),
+  startTime: null,
 };
 const players = {};
 
@@ -111,6 +113,69 @@ function calculateAward(player) {
   const award = pct >= 2/3 ? 'Gold' : pct >= 1/3 ? 'Silver' : 'Bronze';
   const score = Math.round((pct * 50) + ((player.budget / START_BUDGET) * 50));
   return { award, score, priorityPct: Math.round(pct * 100) };
+}
+
+function compileGameAudit() {
+  const pArr = Object.values(players);
+  const count = pArr.length;
+  const picks = [{},{},{}];
+  pArr.forEach(p => {
+    if (p.priority) p.priority.forEach((v,i)=>{picks[i][v]=(picks[i][v]||0)+1});
+  });
+  const defCounts = {};
+  DEFENCES.forEach(d => { defCounts[d.id] = 0; });
+  pArr.forEach(p => {
+    [...(p.carriedOver||[]), ...(p.selected||[])].forEach(d => { if (defCounts[d]!==undefined) defCounts[d]++; });
+  });
+  const rounds = game.usedAttacks.map((aid,i) => {
+    const atk = ATTACKS.find(a => a.id === aid);
+    const blocked = pArr.filter(p => (p.roundHistory||[])[i]?.blocked).length;
+    return { name: atk ? atk.name : aid, blockedPct: count ? Math.round(blocked/count*100) : 0, breached: count - blocked };
+  });
+  return {
+    SessionCode: game.sessionCode,
+    Date: new Date().toISOString().slice(0,19).replace('T',' '),
+    DurationSec: game.startTime ? Math.floor((Date.now()-game.startTime)/1000) : 0,
+    PlayerCount: count,
+    RoundsPlayed: game.usedAttacks.length,
+    R1_Attack: rounds[0]?.name||'', R1_BlockedPct: rounds[0]?.blockedPct||0, R1_Breached: rounds[0]?.breached||0,
+    R2_Attack: rounds[1]?.name||'', R2_BlockedPct: rounds[1]?.blockedPct||0, R2_Breached: rounds[1]?.breached||0,
+    R3_Attack: rounds[2]?.name||'', R3_BlockedPct: rounds[2]?.blockedPct||0, R3_Breached: rounds[2]?.breached||0,
+    Pick1_Money: picks[0]['Money']||0, Pick1_Data: picks[0]['Data']||0, Pick1_Services: picks[0]['Maintain Services']||0,
+    Pick2_Money: picks[1]['Money']||0, Pick2_Data: picks[1]['Data']||0, Pick2_Services: picks[1]['Maintain Services']||0,
+    Pick3_Money: picks[2]['Money']||0, Pick3_Data: picks[2]['Data']||0, Pick3_Services: picks[2]['Maintain Services']||0,
+    ...Object.fromEntries(DEFENCES.map(d => [`Def_${d.id}`, defCounts[d.id]])),
+    AvgBudget: count ? Math.round(pArr.reduce((s,p)=>s+p.budget,0)/count) : 0,
+    ZeroBudgetCount: pArr.filter(p => p.budget <= 0).length,
+  };
+}
+
+async function logGameToSheet() {
+  if (!process.env.GOOGLE_CREDENTIALS || !process.env.SPREADSHEET_ID) return;
+  try {
+    const credentials = JSON.parse(process.env.GOOGLE_CREDENTIALS);
+    const auth = new google.auth.GoogleAuth({ credentials, scopes: ['https://www.googleapis.com/auth/spreadsheets'] });
+    const sheets = google.sheets({ version:'v4', auth });
+    const sid = process.env.SPREADSHEET_ID;
+    const row = compileGameAudit();
+    const headers = Object.keys(row);
+    const values = headers.map(h => row[h] === undefined ? '' : String(row[h]));
+    // Check if headers exist, write them if cell A1 is empty
+    const existing = await sheets.spreadsheets.values.get({ spreadsheetId: sid, range: 'Games!A1:A1' });
+    if (!existing.data.values || !existing.data.values[0] || !existing.data.values[0][0]) {
+      await sheets.spreadsheets.values.update({
+        spreadsheetId: sid, range: 'Games!A1', valueInputOption: 'USER_ENTERED',
+        resource: { values: [headers] },
+      });
+    }
+    await sheets.spreadsheets.values.append({
+      spreadsheetId: sid, range: 'Games!A:A', valueInputOption: 'USER_ENTERED',
+      resource: { values: [values] },
+    });
+    console.log('Audit logged to sheet');
+  } catch (err) {
+    console.error('Audit log failed:', err.message);
+  }
 }
 
 function getPlayersData() {
@@ -202,6 +267,7 @@ function startRound() {
   if (game.round > MAX_ROUNDS) {
     game.phase = 'gameover';
     broadcast();
+    logGameToSheet();
     return;
   }
   game.phase = 'selecting';
@@ -222,6 +288,7 @@ function startRound() {
 }
 
 function startGame() {
+  game.startTime = Date.now();
   game.phase = 'priority';
   game.round = 0;
   game.usedAttacks = [];
@@ -250,6 +317,7 @@ function resetGame() {
   game.currentAttack = null;
   game.usedAttacks = [];
   game.sessionCode = genCode();
+  game.startTime = null;
   Object.values(players).forEach(p => {
     p.selected = [];
     p.carriedOver = [];
