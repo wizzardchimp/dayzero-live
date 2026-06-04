@@ -190,6 +190,7 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
     <button class="ctrl-btn danger" id="btn-flush-players" style="display:none">Flush Players</button>
     <button class="ctrl-btn secondary" id="btn-force-end" style="display:none">Force End Round</button>
     <button class="ctrl-btn primary" id="btn-next-round" style="display:none">Start Next Round</button>
+    <button class="ctrl-btn secondary" id="btn-priority-charts" style="display:none">Priority Charts</button>
   </div>
   <div class="controls-center" id="round-attacks-bar"></div>
 </div>
@@ -284,7 +285,7 @@ const revealOverlay=$('reveal-overlay'),revIcon=$('rev-icon'),revName=$('rev-nam
 const gameoverReveal=$('gameover-reveal'),govName=$('gov-name'),govSub=$('gov-sub'),btnGovLobby=$('btn-gov-lobby');
 const phaseIndicator=$('phase-indicator'),phaseDot=$('phase-dot'),phaseLabel=$('phase-label');
 const roundAttacksBar=$('round-attacks-bar'),btnToggleTiles=$('btn-toggle-tiles');
-const priorityOverlay=$('priority-overlay'),btnHidePriority=$('btn-hide-priority');
+const priorityOverlay=$('priority-overlay'),btnHidePriority=$('btn-hide-priority'),btnPriorityCharts=$('btn-priority-charts');
 
 const dashMusic=$('dash-music'),dashDrumroll=$('dash-drumroll'),dashWin=$('dash-win'),dashLose=$('dash-lose'),dashDing=$('dash-ding'),dashChime=$('dash-chime');
 
@@ -380,6 +381,7 @@ function updateButtons(gs){
   btnStartGame.style.display='none';
   btnForceEnd.style.display='none';
   btnNextRound.style.display='none';
+  btnPriorityCharts.style.display='none';
   if(gs.phase==='lobby'){
     btnStartGame.style.display='';
     btnStartGame.disabled=false;
@@ -388,6 +390,7 @@ function updateButtons(gs){
     btnStartGame.style.display='';
     btnStartGame.disabled=lastPlayers.length===0;
     btnStartGame.textContent='Start Round 1';
+    btnPriorityCharts.style.display='';
   }else if(gs.phase==='selecting'){
     btnForceEnd.style.display='';
     btnForceEnd.textContent='Force End Round';
@@ -479,7 +482,7 @@ function svgPie(container, counts, colors, size=180){
 function renderPriorityCharts(players){
   const allConnected=players.filter(p=>p.connected);
   const readyPlayers=allConnected.filter(p=>p.priority&&p.priority.length===3);
-  if(allConnected.length===0||readyPlayers.length!==allConnected.length){priorityOverlay.classList.add('hidden');return}
+  if(allConnected.length===0||readyPlayers.length!==allConnected.length){return}
   const charts=$('po-charts');charts.innerHTML='';
   const labels=['1st Priority','2nd Priority','3rd Priority'];
   const colors={'Money':'#f59e0b','Data':'#3b82f6','Maintain Services':'#8b5cf6'};
@@ -494,7 +497,6 @@ function renderPriorityCharts(players){
     readyPlayers.forEach(p=>{const v=p.priority[i];if(counts[v]!==undefined)counts[v]++});
     svgPie(chartDiv, counts, colors);
   }
-  $('priority-overlay').classList.remove('hidden');
 }
 
 function renderWinner(players){
@@ -688,6 +690,10 @@ btnToggleTiles.addEventListener('click',()=>{
 
 btnHidePriority.addEventListener('click',()=>{
   priorityOverlay.classList.add('hidden');
+});
+
+btnPriorityCharts.addEventListener('click',()=>{
+  priorityOverlay.classList.remove('hidden');
 });
 
 // Remove player via delegated click on grid
