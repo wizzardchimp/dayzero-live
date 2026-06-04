@@ -93,6 +93,7 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .slot-overlay{position:fixed;inset:0;z-index:99;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,0,0,.6);animation:pulseBg 2s ease-in-out infinite alternate}
 @keyframes pulseBg{0%{background:rgba(0,0,0,.6)}100%{background:rgba(140,0,0,.7)}}
 .slot-overlay.hidden{display:none}
+.priority-overlay.hidden{display:none}
 .dash-slot-machine{background:var(--card);border-radius:var(--radius);padding:24px 16px;box-shadow:0 8px 40px rgba(0,0,0,.3)}
 .dash-slot-window{position:relative;height:450px;overflow:hidden;border-radius:var(--radius-sm);background:var(--card2);border:2px solid var(--border)}
 .dash-slot-window::before{content:'';position:absolute;inset:0;z-index:2;pointer-events:none;background:linear-gradient(to bottom,var(--card2) 0%,transparent 28%,transparent 72%,var(--card2) 100%)}
