@@ -2,7 +2,6 @@ const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
 const path = require('path');
-const { google } = require('googleapis');
 
 const app = express();
 const server = http.createServer(app);
@@ -151,28 +150,15 @@ function compileGameAudit() {
 }
 
 async function logGameToSheet() {
-  if (!process.env.GOOGLE_CREDENTIALS || !process.env.SPREADSHEET_ID) return;
+  if (!process.env.WEBHOOK_URL) return;
   try {
-    const credentials = JSON.parse(process.env.GOOGLE_CREDENTIALS);
-    const auth = new google.auth.GoogleAuth({ credentials, scopes: ['https://www.googleapis.com/auth/spreadsheets'] });
-    const sheets = google.sheets({ version:'v4', auth });
-    const sid = process.env.SPREADSHEET_ID;
     const row = compileGameAudit();
-    const headers = Object.keys(row);
-    const values = headers.map(h => row[h] === undefined ? '' : String(row[h]));
-    // Check if headers exist, write them if cell A1 is empty
-    const existing = await sheets.spreadsheets.values.get({ spreadsheetId: sid, range: 'Games!A1:A1' });
-    if (!existing.data.values || !existing.data.values[0] || !existing.data.values[0][0]) {
-      await sheets.spreadsheets.values.update({
-        spreadsheetId: sid, range: 'Games!A1', valueInputOption: 'USER_ENTERED',
-        resource: { values: [headers] },
-      });
-    }
-    await sheets.spreadsheets.values.append({
-      spreadsheetId: sid, range: 'Games!A:A', valueInputOption: 'USER_ENTERED',
-      resource: { values: [values] },
+    await fetch(process.env.WEBHOOK_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(row),
     });
-    console.log('Audit logged to sheet');
+    console.log('Audit sent to webhook');
   } catch (err) {
     console.error('Audit log failed:', err.message);
   }
