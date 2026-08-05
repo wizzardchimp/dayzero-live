@@ -169,6 +169,22 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .go-history-row .hr-result{font-size:10px;font-weight:700;padding:2px 8px;border-radius:6px;letter-spacing:1px}
 .go-history-row .hr-result.blocked{background:var(--green-light);color:var(--green)}
 .go-history-row .hr-result.breached{background:var(--red-light);color:var(--red)}
+.go-top{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:2px}
+.go-rank{font-size:15px;font-weight:800;background:var(--accent);color:#000;padding:2px 10px;border-radius:999px;letter-spacing:0.5px}
+.game-over h2{font-size:26px;font-weight:900;margin:4px 0 2px}
+.go-meta{font-size:15px;color:var(--text2);margin-bottom:18px;line-height:1.3}
+.go-meta .go-pri{font-weight:700;color:#fff}
+.go-meta .go-score{font-weight:700;margin-left:8px}
+.go-meta .go-match{font-size:13px;color:var(--text3);margin-top:2px}
+.go-attacks-section{max-width:340px;margin:0 auto;text-align:left}
+.go-attack-row{background:var(--bg3);border-radius:8px;padding:9px 11px;margin-bottom:5px;font-size:13px}
+.go-attack-row .go-attack-main{display:flex;align-items:center;gap:7px}
+.ga-icon{font-size:16px}
+.ga-name{flex:1;font-weight:600}
+.ga-result{font-size:9px;padding:1px 6px;border-radius:4px;font-weight:700;letter-spacing:.5px}
+.ga-result.blocked{background:var(--green-light);color:var(--green)}
+.ga-result.breached{background:var(--red-light);color:var(--red)}
+.ga-detail{font-size:11px;color:var(--text3);margin-top:3px;padding-left:23px}
 .name-overlay{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.5);backdrop-filter:blur(12px)}
 .name-overlay.hidden{display:none}
 .name-card{background:var(--bg2);border-radius:var(--radius);padding:40px;box-shadow:var(--shadow-lg);text-align:center;max-width:400px;width:90%}
@@ -191,7 +207,7 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .waiting-overlay .wo-sub{font-size:14px;color:var(--text3);margin-top:8px}
 @media(max-width:768px){.header{padding:12px 16px}.header h1{font-size:16px}.header-right{gap:12px}.round-badge{padding:4px 12px;font-size:12px}.main{top:60px;bottom:40px;padding:16px}.main.selecting{padding:12px 12px 80px}.round-title{font-size:22px;margin-bottom:4px}.round-sub{font-size:14px;margin-bottom:16px}.defence-grid{gap:10px}.defence-card{padding:14px}.defence-icon{font-size:24px;width:32px}.defence-name{font-size:16px}.defence-counters{font-size:13px}.timer-display{font-size:36px;min-width:90px}.timer-section{margin-bottom:16px}.status-bar{padding:8px 16px;font-size:12px}.intro{padding:24px}.intro h2{font-size:20px}.intro-grid{grid-template-columns:1fr}.result-card{padding:24px}.result-title{font-size:18px}.go-stats{gap:8px}.go-stat{padding:12px}.go-stat .value{font-size:22px}}
 @media(max-width:480px){.header{padding:8px 12px}.header h1{font-size:14px}.header-right{gap:8px}.header-budget{gap:4px;font-size:12px}.header-budget .amount{font-size:13px}.round-badge{padding:3px 8px;font-size:10px}.main{top:52px;bottom:36px;padding:12px}.main.selecting{padding:8px 8px 70px}.round-title{font-size:20px}.round-sub{font-size:14px;margin-bottom:12px}.defence-grid{gap:8px;max-width:100%}.defence-card{padding:12px;gap:12px}.defence-card.carried::after{font-size:8px;padding:2px 6px;top:4px;right:4px}.defence-icon{font-size:20px;width:28px}.defence-name{font-size:15px}.defence-counters{font-size:13px}.timer-display{font-size:26px;min-width:60px}.timer-section{gap:6px;margin-bottom:12px}.status-bar{display:none}.wheel-label{font-size:20px;margin-bottom:16px}.ws-icon{font-size:60px}.ws-text{font-size:16px}.intro{padding:16px}.intro h2{font-size:18px;margin-bottom:16px}.intro-item{padding:10px}.intro-item .icon{font-size:20px}.intro-item .name{font-size:14px}.intro-item .counters{font-size:12px}.intro-btn{padding:10px 24px;font-size:13px}.result-card{padding:20px}.result-title{font-size:16px}.result-sub{font-size:12px;margin-bottom:16px}.verdict{padding:16px}.verdict .v-icon{font-size:36px}.verdict .v-label{font-size:15px}.verdict .v-detail{font-size:13px}.attack-info{padding:12px}.budget-item .value{font-size:16px}.defences-deployed .dd-item{font-size:10px;padding:4px 8px}
-.defences-deployed .dd-item.glow{box-shadow:0 0 12px rgba(16,185,129,.4)}.result-btn{width:100%;padding:12px 20px;font-size:14px}.zr-icon{font-size:80px}.zr-name{font-size:32px}.zr-example{font-size:16px}.game-over h2{font-size:24px}.game-over .go-sub{font-size:14px;margin-bottom:20px}.go-stats{gap:6px}.go-stat{padding:10px}.go-stat .label{font-size:10px}.go-stat .value{font-size:18px}.name-card{padding:24px}.name-card h2{font-size:22px}.name-input{font-size:16px;padding:12px}.priority-item{padding:14px}.priority-item .p-rank{font-size:18px;width:28px}.priority-item .p-icon{font-size:20px;width:28px}.priority-item .p-name{font-size:15px}}
+.defences-deployed .dd-item.glow{box-shadow:0 0 12px rgba(16,185,129,.4)}.result-btn{width:100%;padding:12px 20px;font-size:14px}.zr-icon{font-size:80px}.zr-name{font-size:32px}.zr-example{font-size:16px}.game-over h2{font-size:24px}.game-over .go-sub{font-size:14px;margin-bottom:20px}.go-stats{gap:6px}.go-stat{padding:10px}.go-stat .label{font-size:10px}.go-stat .value{font-size:18px}.name-card{padding:24px}.name-card h2{font-size:22px}.name-input{font-size:16px;padding:12px}.priority-item{padding:14px}.priority-item .p-rank{font-size:18px;width:28px}.priority-item .p-icon{font-size:20px;width:28px}.priority-item .p-name{font-size:15px}.go-rank{font-size:13px;padding:1px 8px}.go-meta{font-size:13px}.go-attack-row{padding:7px 9px;font-size:12px}.ga-detail{font-size:10px;padding-left:20px}}
 </style>
 </head>
 <body>
@@ -271,17 +287,16 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 </div>
 <div class="overlay hidden" id="gameover-overlay">
   <div class="intro game-over">
-    <h2 id="go-title">Game Over</h2>
-    <div class="go-sub" id="go-sub">Final Results</div>
-    <div class="go-stats">
-      <div class="go-stat"><div class="label">Attacks Blocked</div><div class="value green" id="go-blocked">0</div></div>
-      <div class="go-stat"><div class="label">Breaches</div><div class="value red" id="go-breaches">0</div></div>
-      <div class="go-stat"><div class="label">Final Budget</div><div class="value blue" id="go-budget">£0</div></div>
+    <div class="go-top">
+      <div class="go-rank" id="go-rank"></div>
+      <h2 id="go-title">Game Over</h2>
     </div>
-    <div id="go-award" style="margin-bottom:12px;text-align:center"></div>
-    <div id="go-defences" style="margin-bottom:12px"></div>
-    <div id="go-history" style="margin-bottom:16px"></div>
-    <div class="waiting-text" style="color:var(--text3);font-size:14px">Game session ended!<br>Thank you for playing!</div>
+    <div class="go-meta" id="go-meta"></div>
+    <div class="go-attacks-section">
+      <div class="go-section-title">Attacks &amp; Results</div>
+      <div id="go-attacks-list"></div>
+    </div>
+    <div class="waiting-text" style="color:var(--text3);font-size:14px;margin-top:20px">Game session ended — thank you for playing!</div>
   </div>
 </div>
 
@@ -319,6 +334,7 @@ let playerId=null;
 let playerName='';
 let playerCode='';
 let myData=null;
+let allPlayers=[];
 let currentAttack=null;
 let lastGameState=null;
 let revealTimer=null;
@@ -331,7 +347,7 @@ const wheelOverlay=$('wheel-overlay'),wheelLabel=$('wheel-label');
 const zoomReveal=$('zoom-reveal'),zrIcon=$('zr-icon'),zrName=$('zr-name'),zrExample=$('zr-example');
 const resultOverlay=$('result-overlay'),resultTitle=$('result-title'),resultSub=$('result-sub'),verdict=$('verdict'),vIcon=verdict.querySelector('.v-icon'),vLabel=verdict.querySelector('.v-label'),vDetail=verdict.querySelector('.v-detail'),vPrevent=verdict.querySelector('.v-prevent');
 const aIcon=$('a-icon'),aName=$('a-name'),aDesc=$('a-desc'),biImpact=$('bi-impact'),biRemaining=$('bi-remaining'),ddList=$('dd-list'),resultBtn=$('result-btn');
-const gameoverOverlay=$('gameover-overlay'),goTitle=$('go-title'),goSub=$('go-sub'),goBlocked=$('go-blocked'),goBreaches=$('go-breaches'),goBudget=$('go-budget');
+const gameoverOverlay=$('gameover-overlay'),goTitle=$('go-title'),goRank=$('go-rank'),goMeta=$('go-meta'),goAttacksList=$('go-attacks-list');
 const waitingOverlay=$('waiting-overlay'),woText=$('wo-text'),woSub=$('wo-sub');
 const priorityOverlay=$('priority-overlay'),priorityList=$('priority-list'),prioritySubBtn=$('priority-sub-btn'),priorityClear=$('priority-clear');
 const wheelSpinner=$('wheel-spinner');
@@ -498,49 +514,55 @@ function renderPhase(gs){
       },3000);
     }
   }else if(phase==='gameover'){
-    goBlocked.textContent=myData.blocked;
-    goBreaches.textContent=myData.breaches;
-    const b=myData.budget;
-    goBudget.textContent=`£${b.toLocaleString()}`;
-    goBudget.className='value'+(b>START_BUDGET*.5?' green':b>0?' blue':' red');
-    goTitle.textContent=b>0?'Mission Complete':'System Compromised';
-    goSub.textContent=b>0?'Your defences held strong':'Budget depleted — too many breaches';
-    const awardEl=$('go-award');
-    const defEl=$('go-defences');
-    const histEl=$('go-history');
-    const priEmojis={'Money':'💰','Data':'💾','Maintain Services':'⚙️'};
-    if(myData.award){
-      const awardIcons={'Gold':'🏆','Silver':'🥈','Bronze':'🥉'};
-      const awardColors={'Gold':'#f59e0b','Silver':'#94a3b8','Bronze':'#cd7f32'};
-      const pri=myData.priority&&myData.priority[0]||'—';
-      const match = (myData.priorityPct!=null) ? `Priority match ${myData.priorityPct}%` : '';
-      const spd = (myData.speedPct!=null) ? ` • Speed ${myData.speedPct}%` : '';
-      awardEl.innerHTML=`<div style="font-size:48px;margin-bottom:8px">${awardIcons[myData.award]||'—'}</div><div style="font-size:20px;font-weight:900;color:${awardColors[myData.award]||'var(--text2)'}">${myData.award}</div><div style="font-size:14px;color:var(--text3);margin-top:4px">${priEmojis[pri]||''} Priority: ${pri} · Score: ${myData.score||0}</div><div style="font-size:13px;color:var(--text2);margin-top:6px">${match}${spd}</div>`;
-    }else{
-      awardEl.innerHTML='';
+    const b = myData.budget || 0;
+    goTitle.textContent = b > 0 ? 'Mission Complete' : 'System Compromised';
+
+    // Compute rank from all players
+    let rank = 1;
+    if (allPlayers.length > 1) {
+      const sorted = [...allPlayers].sort((a,b) => (b.score||0) - (a.score||0));
+      const idx = sorted.findIndex(p => p.id === playerId);
+      if (idx >= 0) rank = idx + 1;
     }
-    // Defences deployed
-    const allDefs=[...myData.carriedOver,...myData.selected,...(myData.defences||[])];
-    const uniDefs=[...new Set(allDefs)];
-    if(uniDefs.length){
-      defEl.innerHTML=`<div class="go-section-title">Defences Deployed</div><div class="go-def-tags">${uniDefs.map(id=>{const d=DEFENCES.find(x=>x.id===id);return d?`<span class="go-def-tag">${d.icon} ${d.name}</span>`:''}).join('')}</div>`;
-    }else defEl.innerHTML='';
-    // Attack history
-    const history=myData.roundHistory||[];
-    if(history.length){
-      const atkIcons={'phishing':'🎣','malware':'🦠','ransomware':'🔒','ddos':'🌊','sql_injection':'💉','zero_day':'⚡','insider':'🏢','data_exfil':'📤','social_eng':'🎭'};
-      const atkNames={'phishing':'Phishing','malware':'Malware','ransomware':'Ransomware','ddos':'DDoS','sql_injection':'SQL Injection','zero_day':'Zero-Day','insider':'Insider Threat','data_exfil':'Data Exfiltration','social_eng':'Social Engineering'};
-      const priAttackMap=myData.priority&&myData.priority[0]?{'Money':['ransomware','insider','social_eng'],'Data':['phishing','sql_injection','data_exfil'],'Maintain Services':['malware','ddos','zero_day']}[myData.priority[0]]||[]:[];
-      histEl.innerHTML='<div class="go-section-title">Attacks Faced</div>'+
-        history.map((r,i)=>{
-          const icon=atkIcons[r.attackId]||'🔓';
-          const name=atkNames[r.attackId]||r.attackId;
-          const cls=r.blocked?'blocked':'breached';
-          const label=r.blocked?'BLOCKED':'BREACHED';
-          const isPri=priAttackMap.includes(r.attackId);
-          return `<div class="go-history-row"><span class="hr-icon">${icon}</span><span class="hr-name">${name}${isPri?' <span style="color:var(--accent);font-size:10px">[PRIORITY]</span>':''}</span><span class="hr-result ${cls}">${label}</span></div>`;
-        }).join('');
-    }else histEl.innerHTML='';
+    goRank.textContent = `#${rank}`;
+
+    // Meta: priority, score, match
+    const pri = myData.priority && myData.priority[0] || '—';
+    const priEmojis = {'Money':'💰','Data':'💾','Maintain Services':'⚙️'};
+    const match = (myData.priorityPct != null) ? `${myData.priorityPct}% match` : '';
+    const spd = (myData.speedPct != null) ? ` · ${myData.speedPct}% speed` : '';
+    goMeta.innerHTML = `
+      <div><span class="go-pri">${priEmojis[pri]||''} ${pri}</span> <span class="go-score">Score: ${myData.score||0}</span></div>
+      <div class="go-match">${match}${spd}</div>
+    `;
+
+    // Attacks list - simpler + what worked/needed
+    const history = myData.roundHistory || [];
+    const atkIcons = {'phishing':'🎣','malware':'🦠','ransomware':'🔒','ddos':'🌊','sql_injection':'💉','zero_day':'⚡','insider':'🏢','data_exfil':'📤','social_eng':'🎭'};
+    const atkNames = {'phishing':'Phishing','malware':'Malware','ransomware':'Ransomware','ddos':'DDoS','sql_injection':'SQL Injection','zero_day':'Zero-Day','insider':'Insider Threat','data_exfil':'Data Exfiltration','social_eng':'Social Engineering'};
+    if (history.length && goAttacksList) {
+      goAttacksList.innerHTML = history.map((r, i) => {
+        const icon = atkIcons[r.attackId] || '🔓';
+        const name = atkNames[r.attackId] || r.attackId;
+        const cls = r.blocked ? 'blocked' : 'breached';
+        const label = r.blocked ? 'BLOCKED' : 'BREACHED';
+        let detail = '';
+        if (r.blocked) {
+          detail = 'Your defence stopped it.';
+        } else {
+          const needed = (EFFECTIVENESS ? Object.entries(EFFECTIVENESS).filter(([,attacks])=>attacks.includes(r.attackId)).map(([id])=>{
+            const d=DEFENCES.find(x=>x.id===id); return d ? `${d.icon} ${d.name}` : id;
+          }) : []);
+          detail = needed.length ? `Needed: ${needed.join(' or ')}` : 'No counter available.';
+        }
+        return `<div class="go-attack-row ${cls}">
+          <div class="go-attack-main"><span class="ga-icon">${icon}</span><span class="ga-name">${name}</span><span class="ga-result ${cls}">${label}</span></div>
+          <div class="ga-detail">${detail}</div>
+        </div>`;
+      }).join('');
+    } else if (goAttacksList) {
+      goAttacksList.innerHTML = '';
+    }
     gameoverOverlay.classList.remove('hidden');
   }
 }
@@ -702,6 +724,7 @@ socket.on('game-state',(gs)=>{
 });
 
 socket.on('players-update',(players)=>{
+  allPlayers=players;
   const me=players.find(p=>p.id===playerId);
   if(!me)return;
   myData=me;

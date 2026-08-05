@@ -67,10 +67,6 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .lobby-qr #lobby-qr-code canvas{border-radius:16px;background:#fff;padding:16px;box-shadow:0 4px 20px rgba(0,0,0,.2)}
 .lobby-qr .qr-code-big{font-size:48px;font-weight:900;letter-spacing:8px;margin:12px 0 4px;background:var(--accent-light);color:var(--accent2);padding:10px 32px;border-radius:14px}
 .lobby-qr .qr-sub{font-size:14px;color:var(--text2);margin-top:6px}
-.join-url{margin-top:16px;display:flex;align-items:center;gap:8px;background:var(--card2);padding:8px 12px;border-radius:8px;font-family:monospace;font-size:13px;max-width:100%;width:100%}
-.join-url code{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text)}
-.copy-btn{background:var(--accent);color:#fff;border:none;padding:4px 10px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap}
-.copy-btn:hover{opacity:0.9}
 .controls-bar{position:fixed;bottom:0;left:0;right:0;z-index:50;background:var(--card);border-top:1px solid var(--border);padding:12px 32px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-shrink:0}
 .controls-left{display:flex;align-items:center;gap:16px}
 .controls-center{display:flex;align-items:center;gap:8px;flex:1;justify-content:center;padding:0 16px}
@@ -93,7 +89,7 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .ctrl-btn.secondary:hover{background:rgba(37,99,235,.1);color:var(--accent2)}
 .ctrl-btn.danger{background:linear-gradient(135deg,var(--red),#dc2626);color:#fff}
 .ctrl-btn.danger:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(239,68,68,.3)}
-.reveal-overlay{position:fixed;inset:0;z-index:100;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,0,0,.88);animation:revIn .6s ease-out both}
+.reveal-overlay{position:fixed;inset:0;z-index:100;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;background:#000;overflow-y:auto;padding:40px 20px 60px;animation:revIn .6s ease-out both}
 .reveal-overlay.hidden{display:none}
 @keyframes revIn{0%{transform:scale(.3);opacity:0}100%{transform:scale(1);opacity:1}}
 .rev-icon{font-size:140px;margin-bottom:16px}
@@ -121,27 +117,12 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
   display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;padding:12px;background:var(--card2);border-radius:var(--radius-sm);justify-content:center
 }
 .dg-title{font-size:16px;font-weight:700;margin-bottom:8px;color:var(--text2);text-align:center}
-.winner-section{text-align:center;margin-bottom:32px}
-.winner-trophy{font-size:72px;margin-bottom:8px}
-.winner-label{font-size:14px;color:var(--text3);font-weight:600;letter-spacing:3px;text-transform:uppercase;margin-bottom:8px}
-.winner-name{font-size:48px;font-weight:900;color:#fff;margin-bottom:4px;text-shadow:0 0 40px rgba(37,99,235,.4)}
-.winner-award{font-size:24px;font-weight:800;margin-bottom:8px}
-.winner-details{display:flex;justify-content:center;gap:24px;flex-wrap:wrap;margin:8px 0 16px}
-.winner-detail{background:rgba(255,255,255,.05);border-radius:var(--radius-sm);padding:10px 20px;text-align:center;min-width:120px}
-.winner-detail .wd-label{font-size:10px;color:var(--text3);font-weight:600;letter-spacing:1px;text-transform:uppercase}
-.winner-detail .wd-value{font-size:18px;font-weight:800;color:#fff;margin-top:2px}
-.winner-defences{margin:12px auto 24px;max-width:600px;text-align:center}
-.winner-defences .wd-title{font-size:13px;color:var(--text3);font-weight:600;letter-spacing:1px;margin-bottom:8px}
-.winner-defences .wd-tags{display:flex;flex-wrap:wrap;justify-content:center;gap:6px}
-.winner-defences .wd-tag{background:rgba(37,99,235,.15);color:var(--accent2);border-radius:8px;padding:4px 12px;font-size:12px;font-weight:500}
-.winner-rounds{max-width:500px;margin:0 auto 24px}
 .winner-round{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.04);border-radius:var(--radius-sm);padding:8px 16px;margin-bottom:6px;font-size:14px}
 .winner-round .wr-icon{font-size:20px;width:28px;text-align:center}
 .winner-round .wr-name{flex:1;font-weight:600;color:rgba(255,255,255,.8)}
 .winner-round .wr-result{font-size:11px;font-weight:700;padding:3px 10px;border-radius:6px;letter-spacing:1px}
 .winner-round .wr-result.blocked{background:rgba(16,185,129,.2);color:var(--green)}
 .winner-round .wr-result.breached{background:rgba(239,68,68,.2);color:var(--red)}
-.ranking-container{max-width:900px;width:100%;margin:0 auto}
 .ranking-title{font-size:22px;font-weight:900;margin-bottom:20px;text-align:center;color:rgba(255,255,255,.7)}
 .podium{display:flex;align-items:flex-end;justify-content:center;gap:16px;margin-bottom:32px}
 .podium-item{text-align:center;border-radius:var(--radius);padding:20px 24px;min-width:180px;transition:all .3s}
@@ -163,6 +144,11 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .ranking-row .rr-priority{text-align:center;font-size:13px}
 .ranking-row .rr-budget{text-align:right;font-weight:700;font-family:monospace}
 .ranking-row .rr-award{text-align:center;font-size:18px}
+.summary-split{display:flex;gap:32px;width:100%;max-width:1100px;margin:0 auto 16px;align-items:flex-start}
+.attacks-col{flex:0 0 30%;min-width:220px}
+.standings-col{flex:1;min-width:0}
+.section-title{font-size:15px;font-weight:700;color:rgba(255,255,255,.55);margin-bottom:10px;text-transform:uppercase;letter-spacing:1.5px}
+.rank-below{max-width:900px;width:100%;margin:8px auto 16px;text-align:center}
 .priority-overlay{position:fixed;inset:0;background:rgba(0,0,0,.92);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:1000}
 .po-title{font-size:28px;font-weight:900;color:#fff;margin-bottom:24px}
 .po-charts{display:flex;gap:40px;flex-wrap:wrap;justify-content:center}
@@ -184,11 +170,6 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
     <span class="phase-indicator" id="phase-indicator"><span class="phase-dot orange" id="phase-dot"></span><span id="phase-label">Lobby</span></span>
     <span>Players: <span class="player-count" id="player-count">0</span></span>
     <span id="ready-count" style="font-size:12px;color:var(--text3);margin-left:8px"></span>
-    <span id="lobby-url-display" style="display:none; font-size:12px; background:#1e3a5f; padding:4px 10px; border-radius:8px; max-width:380px; overflow:hidden; white-space:nowrap; margin-left:8px; align-items:center; gap:6px; border:1px solid #2d4a6f;">
-      <span style="color:#93c5fd; font-size:11px; font-weight:600;">LOBBY URL</span>
-      <span id="lobby-url-text" style="font-family:monospace; color:#bae6fd; font-size:13px; user-select:all;"></span>
-      <button id="copy-lobby-url" style="font-size:11px; padding:2px 8px; border-radius:4px; background:#3b82f6; color:white; border:none; cursor:pointer; font-weight:600;">Copy</button>
-    </span>
   </div>
 </div>
 <div class="main">
@@ -220,20 +201,20 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
   <div class="rev-example" id="rev-example">e.g. An email from your "CEO" requests urgent gift card purchases</div>
   <button class="ctrl-btn primary" id="btn-reveal-next" style="font-size:18px;padding:14px 48px">Start Next Round</button>
 </div>
-<div class="reveal-overlay hidden" id="gameover-reveal" style="background:rgba(0,0,0,.88);overflow-y:auto">
-  <div class="winner-section" id="winner-section">
-    <div class="winner-trophy" id="winner-trophy">🏆</div>
-    <div class="winner-label">WINNER</div>
-    <div class="winner-name" id="winner-name">—</div>
-    <div class="winner-award" id="winner-award"></div>
-    <div class="winner-details" id="winner-details"></div>
-    <div class="winner-defences" id="winner-defences"></div>
-    <div class="winner-rounds" id="winner-rounds"></div>
+<div class="reveal-overlay hidden" id="gameover-reveal">
+  <div class="summary-split">
+    <div class="attacks-col">
+      <div class="section-title">All Attacks</div>
+      <div id="summary-attacks"></div>
+    </div>
+    <div class="standings-col">
+      <div class="section-title">Final Standings</div>
+      <div id="ranking-table"></div>
+    </div>
   </div>
-  <div class="ranking-container" id="ranking-container">
-    <div class="ranking-title">Final Standings</div>
+  <div class="rank-below">
+    <div class="section-title">Rank</div>
     <div class="podium" id="podium"></div>
-    <div class="ranking-table" id="ranking-table"></div>
   </div>
   <button class="ctrl-btn secondary" id="btn-toggle-tiles" style="font-size:14px;padding:10px 24px;margin-top:12px">Hide Summary</button>
   <button class="ctrl-btn primary" id="btn-gov-lobby" style="font-size:18px;padding:14px 48px;margin-top:12px">Return to Lobby</button>
@@ -350,11 +331,7 @@ function renderCards(players){
           <div class="qr-label">Scan to join as Player</div>
           <img src="${qrImg}" alt="QR code to join" style="width:280px;height:280px;border-radius:16px;background:white;padding:8px;box-shadow:0 4px 20px rgba(0,0,0,0.3);">
           <div class="qr-code-big">${currentSessionCode}</div>
-          <div class="qr-sub">Players scan this or use the link below</div>
-          <div class="join-url">
-            <code id="lobby-join-url">${playUrl}</code>
-            <button class="copy-btn" onclick="navigator.clipboard.writeText('${playUrl}').then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1400)})">Copy</button>
-          </div>
+          <div class="qr-sub">Players scan this to enter the game</div>
         </div>
       `;
     } else {
@@ -428,32 +405,6 @@ function updateReadyCount(players){
     ready = connected.filter(p=>p.selected && p.selected.length>=need).length;
   }
   readyCountEl.textContent = `${ready}/${connected.length} ready`;
-}
-
-function updateLobbyUrlDisplay(code){
-  const displayEl = $('lobby-url-display');
-  const textEl = $('lobby-url-text');
-  const copyBtn = $('copy-lobby-url');
-  if(!displayEl || !textEl) return;
-
-  if(code){
-    const origin = window.location.origin;
-    const url = `${origin}/play.html?code=${code}`;
-    textEl.textContent = url;
-    displayEl.style.display = 'inline-flex';
-
-    if(copyBtn){
-      copyBtn.onclick = () => {
-        navigator.clipboard.writeText(url).then(() => {
-          const original = copyBtn.textContent;
-          copyBtn.textContent = 'Copied!';
-          setTimeout(() => { copyBtn.textContent = original; }, 1200);
-        });
-      };
-    }
-  } else {
-    displayEl.style.display = 'none';
-  }
 }
 
 function updateButtons(gs){
@@ -597,12 +548,10 @@ function renderPriorityCharts(players){
 
 function renderWinner(players){
   if(!players||players.length===0){
-    $('winner-trophy').style.display='none';
     $('podium').innerHTML='';$('ranking-table').innerHTML='<div style="text-align:center;padding:32px;color:rgba(255,255,255,.4)">No players</div>';
-    $('winner-rounds').innerHTML='';
+    const atkEl=$('summary-attacks'); if(atkEl) atkEl.innerHTML='';
     return;
   }
-  $('winner-trophy').style.display='none';
   const sorted=[...players].sort((a,b)=>(b.score||0)-(a.score||0));
   const top3=sorted.slice(0,3);
 
@@ -628,7 +577,7 @@ function renderWinner(players){
     }
   }
 
-  // Full ranking table
+  // Full ranking table (70% side)
   const tableEl=$('ranking-table');
   tableEl.innerHTML='<div class="ranking-row header"><span class="rr-rank">Rank</span><span class="rr-name">Name</span><span class="rr-priority">Priority Match</span><span class="rr-speed">Speed</span><span class="rr-budget">Budget</span><span class="rr-award">Award</span></div>';
   sorted.forEach((p,i)=>{
@@ -640,21 +589,20 @@ function renderWinner(players){
     tableEl.appendChild(row);
   });
 
-  // Attacks faced section
-  const winner=sorted[0];
-  const roundsEl=$('winner-rounds');
-  const history=winner&&winner.roundHistory||[];
-  if(history.length){
-    roundsEl.innerHTML='<div class="wd-title" style="margin-bottom:10px;text-align:center;font-size:16px;font-weight:700;color:var(--text2)">ALL ATTACKS</div>'+
-      history.map((r,i)=>{
-        const icon=ATTACK_ICONS[r.attackId]||'🔓';
-        const name=ATTACK_NAMES[r.attackId]||r.attackId;
-        const cls=r.blocked?'blocked':'breached';
-        const label=r.blocked?'BLOCKED':'BREACHED';
-        return `<div class="winner-round"><span class="wr-icon">${icon}</span><span class="wr-name">${name}</span><span class="wr-result ${cls}">${label}</span></div>`;
-      }).join('');
-    roundsEl.style.display='';
-  }else roundsEl.innerHTML='';
+  // All Attacks (30% side) - list what was faced across game
+  const atkEl=$('summary-attacks');
+  const history = (sorted[0] && sorted[0].roundHistory) || [];
+  if(atkEl && history.length){
+    atkEl.innerHTML = history.map((r)=>{
+      const icon=ATTACK_ICONS[r.attackId]||'🔓';
+      const name=ATTACK_NAMES[r.attackId]||r.attackId;
+      const cls=r.blocked?'blocked':'breached';
+      const label=r.blocked?'BLOCKED':'BREACHED';
+      return `<div class="winner-round"><span class="wr-icon">${icon}</span><span class="wr-name">${name}</span><span class="wr-result ${cls}">${label}</span></div>`;
+    }).join('');
+  }else if(atkEl){
+    atkEl.innerHTML='';
+  }
 }
 
 function showGameOver(){
@@ -684,14 +632,6 @@ socket.on('game-state',(gs)=>{
   sessionCode.textContent=gs.sessionCode?'CODE '+gs.sessionCode:'';
   currentSessionCode = gs.sessionCode || '';
   btnFlush.style.display=gs.phase==='lobby'?'':'none';
-
-  // Show lobby join URL in header
-  if (currentSessionCode) {
-    updateLobbyUrlDisplay(currentSessionCode);
-  } else {
-    const d = $('lobby-url-display');
-    if (d) d.style.display = 'none';
-  }
 
   // If in lobby with no players yet, show QR immediately when code arrives
   if (currentPhase === 'lobby' && lastPlayers.length === 0) {
