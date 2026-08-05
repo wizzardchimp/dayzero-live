@@ -14,7 +14,7 @@ button{font-family:inherit;cursor:pointer;border:none;outline:none}
 button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .header{display:flex;align-items:center;justify-content:space-between;padding:12px 32px;border-bottom:1px solid var(--border);flex-shrink:0}
 .header-left{flex:1;display:flex;align-items:center;gap:8px}.header-center{flex:1;display:flex;align-items:center;justify-content:center;gap:12px}.header-right{flex:1;display:flex;align-items:center;justify-content:flex-end;gap:16px;font-size:14px;color:var(--text2)}
-.header h1{font-size:20px;font-weight:900;background:linear-gradient(135deg,var(--accent),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.header-logo{height:28px;width:auto;object-fit:contain}
 .session-code{font-size:13px;font-weight:800;color:var(--accent2);background:var(--accent-light);padding:4px 12px;border-radius:6px;letter-spacing:3px}
 .reset-btn{width:14px;height:14px;border-radius:50%;background:var(--red);border:2px solid rgba(255,255,255,.3);cursor:pointer;padding:0;flex-shrink:0;transition:transform .15s,box-shadow .15s;box-shadow:0 0 4px rgba(239,68,68,.4)}
 .reset-btn:hover{transform:scale(1.2);box-shadow:0 0 8px rgba(239,68,68,.7)}
@@ -62,6 +62,15 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .empty-state .big-icon{font-size:56px;margin-bottom:12px;opacity:.4}
 .empty-state h2{font-size:18px;font-weight:700;color:var(--text2);margin-bottom:6px}
 .empty-state p{font-size:13px;max-width:400px;margin:0 auto}
+.lobby-qr{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 20px}
+.lobby-qr .qr-label{font-size:20px;font-weight:800;margin-bottom:12px;color:var(--text)}
+.lobby-qr #lobby-qr-code canvas{border-radius:16px;background:#fff;padding:16px;box-shadow:0 4px 20px rgba(0,0,0,.2)}
+.lobby-qr .qr-code-big{font-size:48px;font-weight:900;letter-spacing:8px;margin:12px 0 4px;background:var(--accent-light);color:var(--accent2);padding:10px 32px;border-radius:14px}
+.lobby-qr .qr-sub{font-size:14px;color:var(--text2);margin-top:6px}
+.join-url{margin-top:16px;display:flex;align-items:center;gap:8px;background:var(--card2);padding:8px 12px;border-radius:8px;font-family:monospace;font-size:13px;max-width:100%;width:100%}
+.join-url code{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text)}
+.copy-btn{background:var(--accent);color:#fff;border:none;padding:4px 10px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap}
+.copy-btn:hover{opacity:0.9}
 .controls-bar{position:fixed;bottom:0;left:0;right:0;z-index:50;background:var(--card);border-top:1px solid var(--border);padding:12px 32px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-shrink:0}
 .controls-left{display:flex;align-items:center;gap:16px}
 .controls-center{display:flex;align-items:center;gap:8px;flex:1;justify-content:center;padding:0 16px}
@@ -146,7 +155,7 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .podium-budget{font-size:16px;font-weight:700;color:rgba(255,255,255,.9);margin-top:4px}
 .podium-award{display:inline-block;font-size:28px;margin-top:6px}
 .ranking-table{background:rgba(255,255,255,.05);border-radius:var(--radius);overflow:hidden}
-.ranking-row{display:grid;grid-template-columns:50px 1fr 120px 120px 100px;align-items:center;padding:10px 20px;border-bottom:1px solid rgba(255,255,255,.08);font-size:14px;color:rgba(255,255,255,.8)}
+.ranking-row{display:grid;grid-template-columns:44px 1fr 100px 80px 110px 90px;align-items:center;padding:10px 16px;border-bottom:1px solid rgba(255,255,255,.08);font-size:13px;color:rgba(255,255,255,.8)}
 .ranking-row:last-child{border-bottom:none}
 .ranking-row.header{font-size:11px;color:rgba(255,255,255,.4);font-weight:600;letter-spacing:1px;text-transform:uppercase}
 .ranking-row .rr-rank{font-weight:800;font-size:16px;text-align:center}
@@ -162,17 +171,24 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .po-legend{display:flex;gap:12px;justify-content:center;margin-top:8px;flex-wrap:wrap}
 .po-legend-item{display:flex;align-items:center;gap:4px;font-size:12px;font-weight:600;color:var(--text2)}
 .po-legend-swatch{width:10px;height:10px;border-radius:2px;flex-shrink:0}
+.po-bar{display:flex;height:36px;border-radius:8px;overflow:hidden;background:#1a1a2e;margin:6px 0 10px}
 </style>
 </head>
 <body>
 <div class="header">
   <div class="header-left"><button class="reset-btn" id="reset-btn" title="Hard reset: clears game, flushes all players, new code"></button><span class="session-code" id="session-code"></span></div>
   <div class="header-center">
-    <h1>DAY ZERO LIVE</h1>
+    <img src="rocu-logo.png" alt="ROCU" class="header-logo" onerror="this.style.display='none';this.parentNode.innerHTML='<h1 style=&quot;font-size:20px;font-weight:900;background:linear-gradient(135deg,#2563eb,#8b5cf6);-webkit-background-clip:text;-webkit-text-fill-color:transparent&quot;>DAY ZERO LIVE</h1>'">
   </div>
   <div class="header-right">
     <span class="phase-indicator" id="phase-indicator"><span class="phase-dot orange" id="phase-dot"></span><span id="phase-label">Lobby</span></span>
     <span>Players: <span class="player-count" id="player-count">0</span></span>
+    <span id="ready-count" style="font-size:12px;color:var(--text3);margin-left:8px"></span>
+    <span id="lobby-url-display" style="display:none; font-size:12px; background:#1e3a5f; padding:4px 10px; border-radius:8px; max-width:380px; overflow:hidden; white-space:nowrap; margin-left:8px; align-items:center; gap:6px; border:1px solid #2d4a6f;">
+      <span style="color:#93c5fd; font-size:11px; font-weight:600;">LOBBY URL</span>
+      <span id="lobby-url-text" style="font-family:monospace; color:#bae6fd; font-size:13px; user-select:all;"></span>
+      <button id="copy-lobby-url" style="font-size:11px; padding:2px 8px; border-radius:4px; background:#3b82f6; color:white; border:none; cursor:pointer; font-weight:600;">Copy</button>
+    </span>
   </div>
 </div>
 <div class="main">
@@ -286,6 +302,7 @@ const gameoverReveal=$('gameover-reveal'),govName=$('gov-name'),govSub=$('gov-su
 const phaseIndicator=$('phase-indicator'),phaseDot=$('phase-dot'),phaseLabel=$('phase-label');
 const roundAttacksBar=$('round-attacks-bar'),btnToggleTiles=$('btn-toggle-tiles');
 const priorityOverlay=$('priority-overlay'),btnHidePriority=$('btn-hide-priority'),btnPriorityCharts=$('btn-priority-charts');
+const readyCountEl=$('ready-count');
 
 const dashMusic=$('dash-music'),dashDrumroll=$('dash-drumroll'),dashWin=$('dash-win'),dashLose=$('dash-lose'),dashDing=$('dash-ding'),dashChime=$('dash-chime');
 
@@ -296,6 +313,7 @@ let roundAttacks=[];
 let dingPlayedForRound=0;
 
 let lastPlayers=[];
+let currentSessionCode = '';
 
 const PRIORITY_EMOJIS={'Money':'💰','Data':'💾','Maintain Services':'⚙️'};
 const ATTACK_NAMES={phishing:'Phishing',malware:'Malware',ransomware:'Ransomware',ddos:'DDoS',sql_injection:'SQL Injection',zero_day:'Zero-Day',insider:'Insider Threat',data_exfil:'Data Exfiltration',social_eng:'Social Engineering'};
@@ -323,7 +341,25 @@ function formatTime(s){
 function renderCards(players){
   playerCount.textContent=players.length;
   if(players.length===0){
-    grid.innerHTML=`<div class="empty-state"><div class="big-icon">📡</div><h2>Waiting for players</h2><p>Share the link with your team and their cards will appear here as they join.</p></div>`;
+    if(currentPhase==='lobby' && currentSessionCode){
+      const origin = window.location.origin;
+      const playUrl = `${origin}/play.html?code=${currentSessionCode}`;
+      const qrImg = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(playUrl)}&color=111827&bgcolor=ffffff`;
+      grid.innerHTML = `
+        <div class="lobby-qr">
+          <div class="qr-label">Scan to join as Player</div>
+          <img src="${qrImg}" alt="QR code to join" style="width:280px;height:280px;border-radius:16px;background:white;padding:8px;box-shadow:0 4px 20px rgba(0,0,0,0.3);">
+          <div class="qr-code-big">${currentSessionCode}</div>
+          <div class="qr-sub">Players scan this or use the link below</div>
+          <div class="join-url">
+            <code id="lobby-join-url">${playUrl}</code>
+            <button class="copy-btn" onclick="navigator.clipboard.writeText('${playUrl}').then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1400)})">Copy</button>
+          </div>
+        </div>
+      `;
+    } else {
+      grid.innerHTML=`<div class="empty-state"><div class="big-icon">📡</div><h2>Waiting for players</h2><p>Share the link with your team and their cards will appear here as they join.</p></div>`;
+    }
     return;
   }
   const sorted = currentPhase==='lobby' ? players : [...players].sort((a,b)=>b.budget-a.budget);
@@ -375,6 +411,49 @@ function updatePhase(gs){
   phaseLabel.textContent=phases[gs.phase]||gs.phase;
   const colors={lobby:'orange',priority:'purple',selecting:'green',spinning:'purple',reveal:'purple',gameover:'red'};
   phaseDot.className='phase-dot '+(colors[gs.phase]||'orange');
+}
+
+function updateReadyCount(players){
+  if(!readyCountEl) return;
+  if(currentPhase!=='priority' && currentPhase!=='selecting'){
+    readyCountEl.textContent=''; return;
+  }
+  const connected = players.filter(p=>p.connected);
+  if(connected.length===0){ readyCountEl.textContent=''; return; }
+  let ready=0;
+  if(currentPhase==='priority'){
+    ready = connected.filter(p=>p.priority && p.priority.length===3).length;
+  }else{
+    const need = connected[0] ? connected[0].maxSelect : 3;
+    ready = connected.filter(p=>p.selected && p.selected.length>=need).length;
+  }
+  readyCountEl.textContent = `${ready}/${connected.length} ready`;
+}
+
+function updateLobbyUrlDisplay(code){
+  const displayEl = $('lobby-url-display');
+  const textEl = $('lobby-url-text');
+  const copyBtn = $('copy-lobby-url');
+  if(!displayEl || !textEl) return;
+
+  if(code){
+    const origin = window.location.origin;
+    const url = `${origin}/play.html?code=${code}`;
+    textEl.textContent = url;
+    displayEl.style.display = 'inline-flex';
+
+    if(copyBtn){
+      copyBtn.onclick = () => {
+        navigator.clipboard.writeText(url).then(() => {
+          const original = copyBtn.textContent;
+          copyBtn.textContent = 'Copied!';
+          setTimeout(() => { copyBtn.textContent = original; }, 1200);
+        });
+      };
+    }
+  } else {
+    displayEl.style.display = 'none';
+  }
 }
 
 function updateButtons(gs){
@@ -486,16 +565,33 @@ function renderPriorityCharts(players){
   const charts=$('po-charts');charts.innerHTML='';
   const labels=['1st Priority','2nd Priority','3rd Priority'];
   const colors={'Money':'#f59e0b','Data':'#3b82f6','Maintain Services':'#8b5cf6'};
+  const total = readyPlayers.length;
   for(let i=0;i<3;i++){
-    const box=document.createElement('div');box.className='po-chart-box';
-    const label=document.createElement('div');label.className='po-chart-label';label.textContent=labels[i];
-    box.appendChild(label);
-    const chartDiv=document.createElement('div');chartDiv.id='po-pie-'+i;
-    box.appendChild(chartDiv);
-    charts.appendChild(box);
     const counts={'Money':0,'Data':0,'Maintain Services':0};
     readyPlayers.forEach(p=>{const v=p.priority[i];if(counts[v]!==undefined)counts[v]++});
-    svgPie(chartDiv, counts, colors);
+    const box=document.createElement('div');box.className='po-chart-box';
+    const label=document.createElement('div');label.className='po-chart-label';label.textContent=`${labels[i]} (${total} players)`;
+    box.appendChild(label);
+    const bar=document.createElement('div');
+    bar.className='po-bar';
+    bar.style.cssText='display:flex;height:36px;border-radius:8px;overflow:hidden;background:#1a1a2e;margin:8px 0';
+    Object.entries(counts).forEach(([key,val])=>{
+      const pct = total>0 ? Math.round(val/total*100) : 0;
+      if(val===0) return;
+      const seg=document.createElement('div');
+      seg.style.cssText=`width:${pct}%;background:${colors[key]};display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:15px;min-width:28px`;
+      seg.textContent = pct+'%';
+      bar.appendChild(seg);
+    });
+    box.appendChild(bar);
+    const breakEl=document.createElement('div');
+    breakEl.style.cssText='font-size:13px;color:var(--text2);margin-bottom:16px;line-height:1.5';
+    breakEl.innerHTML = Object.entries(counts).map(([k,v])=>{
+      const pct = total>0 ? Math.round(v/total*100) : 0;
+      return `${PRIORITY_EMOJIS[k]||''} ${k} <strong style="font-size:15px">${pct}%</strong> (${v})`;
+    }).join(' &nbsp;·&nbsp; ');
+    box.appendChild(breakEl);
+    charts.appendChild(box);
   }
 }
 
@@ -519,7 +615,8 @@ function renderWinner(players){
     const div=document.createElement('div');
     div.className='podium-item '+rankClasses[i];
     const pr=p.priority&&p.priority[0]?`${PRIORITY_EMOJIS[p.priority[0]]||''} ${p.priority[0]}`:'—';
-    div.innerHTML=`<div class="podium-rank">${rankLabels[i]}</div><div class="podium-name">${p.name}</div><div class="podium-priority">${pr}</div><div class="podium-score">Score: ${p.score||0}</div><div class="podium-budget">£${(p.budget||0).toLocaleString()}</div><div class="podium-award">${p.award==='Gold'?'🏆':p.award==='Silver'?'🥈':p.award==='Bronze'?'🥉':'—'}</div>`;
+    const match = (p.priorityPct!=null) ? `Match ${p.priorityPct}%` : '';
+    div.innerHTML=`<div class="podium-rank">${rankLabels[i]}</div><div class="podium-name">${p.name}</div><div class="podium-priority">${pr}</div><div class="podium-score">Score: ${p.score||0}</div><div class="podium-budget">£${(p.budget||0).toLocaleString()}</div><div class="podium-award">${p.award==='Gold'?'🏆':p.award==='Silver'?'🥈':p.award==='Bronze'?'🥉':'—'}</div><div style="font-size:11px;color:rgba(255,255,255,.85);margin-top:4px">${match}</div>`;
     podiumEl.appendChild(div);
   });
   if(podiumEl.children.length<3){
@@ -533,12 +630,13 @@ function renderWinner(players){
 
   // Full ranking table
   const tableEl=$('ranking-table');
-  tableEl.innerHTML='<div class="ranking-row header"><span class="rr-rank">Rank</span><span class="rr-name">Name</span><span class="rr-priority">Priority</span><span class="rr-budget">Budget</span><span class="rr-award">Award</span></div>';
+  tableEl.innerHTML='<div class="ranking-row header"><span class="rr-rank">Rank</span><span class="rr-name">Name</span><span class="rr-priority">Priority Match</span><span class="rr-speed">Speed</span><span class="rr-budget">Budget</span><span class="rr-award">Award</span></div>';
   sorted.forEach((p,i)=>{
     const row=document.createElement('div');
     row.className='ranking-row';
-    const pr=p.priority&&p.priority.length>0?p.priority.map((x,i)=>`${PRIORITY_EMOJIS[x]||''}${i+1}st:${x}`).join(' | '):'—';
-    row.innerHTML=`<span class="rr-rank">#${i+1}</span><span class="rr-name">${p.name}</span><span class="rr-priority">${pr}</span><span class="rr-budget">£${(p.budget||0).toLocaleString()}</span><span class="rr-award">${p.award==='Gold'?'🏆 Gold':p.award==='Silver'?'🥈 Silver':p.award==='Bronze'?'🥉 Bronze':'—'}</span>`;
+    const prio = (p.priorityPct!=null) ? `${p.priorityPct}%` : '—';
+    const spd = (p.speedPct!=null) ? `${p.speedPct}%` : '—';
+    row.innerHTML=`<span class="rr-rank">#${i+1}</span><span class="rr-name">${p.name}</span><span class="rr-priority">${prio}</span><span class="rr-speed">${spd}</span><span class="rr-budget">£${(p.budget||0).toLocaleString()}</span><span class="rr-award">${p.award==='Gold'?'🏆 Gold':p.award==='Silver'?'🥈 Silver':p.award==='Bronze'?'🥉 Bronze':'—'}</span>`;
     tableEl.appendChild(row);
   });
 
@@ -584,13 +682,28 @@ socket.on('game-state',(gs)=>{
   updatePhase(gs);
   updateButtons(gs);
   sessionCode.textContent=gs.sessionCode?'CODE '+gs.sessionCode:'';
+  currentSessionCode = gs.sessionCode || '';
   btnFlush.style.display=gs.phase==='lobby'?'':'none';
+
+  // Show lobby join URL in header
+  if (currentSessionCode) {
+    updateLobbyUrlDisplay(currentSessionCode);
+  } else {
+    const d = $('lobby-url-display');
+    if (d) d.style.display = 'none';
+  }
+
+  // If in lobby with no players yet, show QR immediately when code arrives
+  if (currentPhase === 'lobby' && lastPlayers.length === 0) {
+    renderCards([]);
+  }
   if(gs.phase==='lobby'){
     hideAll();
     stopAllAudio();
     roundAttacks=[];
     updateRoundAttacks();
     btnStartGame.textContent='Start Game';
+    if(readyCountEl) readyCountEl.textContent='';
   }else if(gs.phase==='priority'){
     hideAll();
     stopAllAudio();
@@ -619,6 +732,7 @@ socket.on('game-state',(gs)=>{
 socket.on('players-update',(players)=>{
   lastPlayers=players;
   renderCards(players);
+  updateReadyCount(players);
   if(currentPhase==='gameover')renderWinner(players);
   if(currentPhase==='priority'){updateButtons({phase:'priority'});renderPriorityCharts(players)}
   if(currentPhase==='selecting'){

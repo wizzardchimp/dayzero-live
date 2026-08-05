@@ -109,7 +109,7 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .ws-text{color:rgba(255,255,255,.8);font-size:18px;font-weight:600;margin-top:20px}
 .ws-sub{color:rgba(255,255,255,.5);font-size:14px;margin-top:8px}
 .wheel-label{color:#fff;font-size:24px;font-weight:700;margin-bottom:24px;text-align:center}
-#confettiCanvas{position:fixed;inset:0;z-index:96;pointer-events:none}
+
 .zoom-reveal{position:fixed;inset:0;z-index:97;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,0,0,.88);animation:zrIn .6s ease-out both}
 .zoom-reveal.hidden{display:none}.zoom-reveal.out{animation:zrOut .3s ease-in both}
 @keyframes zrIn{0%{transform:scale(.15);opacity:0}100%{transform:scale(1);opacity:1}}
@@ -146,6 +146,7 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .defences-deployed .dd-list{display:flex;flex-wrap:wrap;justify-content:center;gap:8px}
 .defences-deployed .dd-item{background:var(--accent-light);color:var(--accent);padding:6px 12px;border-radius:20px;font-size:12px;font-weight:600}
 .defences-deployed .dd-item.glow{background:var(--green-light);color:var(--green);box-shadow:0 0 16px rgba(16,185,129,.5);animation:glowPulse 1.2s ease-in-out infinite alternate}
+.defences-deployed .dd-item.would-help{background:var(--red-light);color:var(--red);border:1px solid var(--red)}
 @keyframes glowPulse{0%{box-shadow:0 0 8px rgba(16,185,129,.3)}100%{box-shadow:0 0 20px rgba(16,185,129,.7)}}
 .result-btn{padding:14px 40px;border-radius:var(--radius-sm);font-size:16px;font-weight:700;background:linear-gradient(135deg,var(--accent),var(--purple));color:#fff;transition:all .2s}
 .result-btn:hover{transform:translateY(-2px);box-shadow:0 4px 20px rgba(37,99,235,.3)}
@@ -253,7 +254,7 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 <div class="zoom-reveal hidden" id="zoom-reveal">
   <div class="zr-content"><div class="zr-icon" id="zr-icon"></div><div class="zr-name" id="zr-name"></div><div class="zr-example" id="zr-example"></div></div>
 </div>
-<canvas id="confettiCanvas"></canvas>
+
 <div class="result-overlay hidden" id="result-overlay">
   <div class="result-card">
     <div class="result-title" id="result-title"></div>
@@ -328,7 +329,6 @@ const timerDisplay=$('timer-display'),timerSection=$('timer-section');
 const headerBudget=$('header-budget'),statusText=$('status-text'),statusBudget=$('status-budget');
 const wheelOverlay=$('wheel-overlay'),wheelLabel=$('wheel-label');
 const zoomReveal=$('zoom-reveal'),zrIcon=$('zr-icon'),zrName=$('zr-name'),zrExample=$('zr-example');
-const confettiCanvas=$('confettiCanvas'),confettiCtx=confettiCanvas.getContext('2d');
 const resultOverlay=$('result-overlay'),resultTitle=$('result-title'),resultSub=$('result-sub'),verdict=$('verdict'),vIcon=verdict.querySelector('.v-icon'),vLabel=verdict.querySelector('.v-label'),vDetail=verdict.querySelector('.v-detail'),vPrevent=verdict.querySelector('.v-prevent');
 const aIcon=$('a-icon'),aName=$('a-name'),aDesc=$('a-desc'),biImpact=$('bi-impact'),biRemaining=$('bi-remaining'),ddList=$('dd-list'),resultBtn=$('result-btn');
 const gameoverOverlay=$('gameover-overlay'),goTitle=$('go-title'),goSub=$('go-sub'),goBlocked=$('go-blocked'),goBreaches=$('go-breaches'),goBudget=$('go-budget');
@@ -348,14 +348,20 @@ const PRIORITY_OPTIONS=[
   {id:'Maintain Services',icon:'⚙️',name:'Maintain Services'}
 ];
 let priorityOrder=[];
+let priorityTapLock = 0;
+let defenceTapLock = 0;
+const TAP_COOLDOWN_MS = 350;
 
 function tapPriority(id){
+  const now = Date.now();
+  if (now < priorityTapLock) return;
   const idx=priorityOrder.indexOf(id);
   if(idx>=0){
     priorityOrder.splice(idx,1);
   }else if(priorityOrder.length<3){
     priorityOrder.push(id);
   }
+  priorityTapLock = now + TAP_COOLDOWN_MS;
   renderPriority();
 }
 
@@ -423,9 +429,12 @@ function renderDefences(){
     card.innerHTML=`<div class="defence-icon">${d.icon}</div><div class="defence-card-body"><div class="defence-name">${d.name}</div><div class="defence-counters">${d.desc}</div></div>`;
     if(!isCarried){
       card.addEventListener('click',()=>{
+        const now = Date.now();
+        if (now < defenceTapLock) return;
         ensureAudio();
         if(isSelected){socket.emit('deselect-defence',d.id)}
         else if(!maxed){socket.emit('select-defence',d.id);playSelectBeep()}
+        defenceTapLock = now + TAP_COOLDOWN_MS;
       });
     }
     defenceGrid.appendChild(card);
@@ -484,7 +493,6 @@ function renderPhase(gs){
         setTimeout(()=>{
           zoomReveal.classList.add('hidden');zoomReveal.classList.remove('out');
           wheelOverlay.classList.add('hidden');
-          launchConfetti();
           setTimeout(showResult,500);
         },350);
       },3000);
@@ -505,7 +513,9 @@ function renderPhase(gs){
       const awardIcons={'Gold':'🏆','Silver':'🥈','Bronze':'🥉'};
       const awardColors={'Gold':'#f59e0b','Silver':'#94a3b8','Bronze':'#cd7f32'};
       const pri=myData.priority&&myData.priority[0]||'—';
-      awardEl.innerHTML=`<div style="font-size:48px;margin-bottom:8px">${awardIcons[myData.award]||'—'}</div><div style="font-size:20px;font-weight:900;color:${awardColors[myData.award]||'var(--text2)'}">${myData.award}</div><div style="font-size:14px;color:var(--text3);margin-top:4px">${priEmojis[pri]||''} Priority: ${pri} · Score: ${myData.score||0}</div>`;
+      const match = (myData.priorityPct!=null) ? `Priority match ${myData.priorityPct}%` : '';
+      const spd = (myData.speedPct!=null) ? ` • Speed ${myData.speedPct}%` : '';
+      awardEl.innerHTML=`<div style="font-size:48px;margin-bottom:8px">${awardIcons[myData.award]||'—'}</div><div style="font-size:20px;font-weight:900;color:${awardColors[myData.award]||'var(--text2)'}">${myData.award}</div><div style="font-size:14px;color:var(--text3);margin-top:4px">${priEmojis[pri]||''} Priority: ${pri} · Score: ${myData.score||0}</div><div style="font-size:13px;color:var(--text2);margin-top:6px">${match}${spd}</div>`;
     }else{
       awardEl.innerHTML='';
     }
@@ -535,37 +545,42 @@ function renderPhase(gs){
   }
 }
 
-function launchConfetti(){
-  confettiCanvas.width=window.innerWidth;confettiCanvas.height=window.innerHeight;
-  const particles=[],colors=['#2563eb','#3b82f6','#10b981','#f59e0b','#ef4444','#8b5cf6','#ec4899'];
-  for(let i=0;i<180;i++)particles.push({x:confettiCanvas.width/2,y:confettiCanvas.height/2,vx:(Math.random()-.5)*20,vy:(Math.random()-.5)*20-8,color:colors[Math.floor(Math.random()*colors.length)],size:Math.random()*8+4,rotation:Math.random()*360,rotSpeed:(Math.random()-.5)*10,life:1});
-  function update(){
-    confettiCtx.clearRect(0,0,confettiCanvas.width,confettiCanvas.height);let alive=false;
-    particles.forEach(p=>{if(p.life<=0)return;alive=true;p.x+=p.vx;p.y+=p.vy;p.vy+=.3;p.rotation+=p.rotSpeed;p.life-=.008;confettiCtx.save();confettiCtx.translate(p.x,p.y);confettiCtx.rotate(p.rotation*Math.PI/180);confettiCtx.globalAlpha=p.life;confettiCtx.fillStyle=p.color;confettiCtx.fillRect(-p.size/2,-p.size/2,p.size,p.size);confettiCtx.restore()});
-    if(alive)requestAnimationFrame(update);else confettiCtx.clearRect(0,0,confettiCanvas.width,confettiCanvas.height);
-  }
-  requestAnimationFrame(update);
-}
-
 function showResult(){
   const la=myData.lastAttack;
   if(!la)return;
   resultTitle.textContent=`ROUND ${myData.blocked+myData.breaches} — ${myData.lastResult==='blocked'?'DEFENDED':'BREACHED'}`;
   resultSub.textContent=`ROUND ${myData.blocked+myData.breaches} OF ${MAX_ROUNDS}`;
   aIcon.textContent=la.icon;aName.textContent=la.name;aDesc.textContent=la.desc;
+
+  // Compute what would have worked
+  const effective = Object.entries(EFFECTIVENESS).filter(([,attacks]) => attacks.includes(la.id)).map(([id]) => id);
+
   if(myData.lastResult==='blocked'){
     verdict.className='verdict blocked';
-    vIcon.textContent='🛡️';vLabel.textContent='THREAT NEUTRALISED';
-    vDetail.textContent=`${la.name} was blocked by ${la.blockedBy||'your defences'}`;
+    vIcon.textContent='🛡️';vLabel.textContent='DEFENDED';
+    const blockerName = la.blockedBy || 'your defences';
+    vDetail.textContent = `${la.name} was stopped by ${blockerName}.`;
     if(vPrevent)vPrevent.style.display='none';
   }else{
     verdict.className='verdict breached';
-    vIcon.textContent='💥';vLabel.textContent='BREACH DETECTED';
-    vDetail.textContent=`${la.name} exploited a gap in your defences`;
-    if(vPrevent){vPrevent.style.display='';vPrevent.textContent=(myData.preventInfo)||'Could have been prevented by deploying the right defences'}
+    vIcon.textContent='💥';vLabel.textContent='BREACHED';
+    const needed = effective.map(id => { const d=DEFENCES.find(x=>x.id===id); return d ? `${d.icon} ${d.name}` : id; });
+    vDetail.textContent = needed.length ? `You needed: ${needed.join(' or ')}` : 'No defence countered this attack.';
+    if(vPrevent){vPrevent.style.display='';vPrevent.textContent=(myData.preventInfo)||'';}
   }
+
   const blockerName=myData.lastResult==='blocked'?myData.lastAttack.blockedBy:null;
-  ddList.innerHTML=myData.defences.map(id=>{const d=DEFENCES.find(x=>x.id===id);if(!d)return '';const glow=blockerName&&d.name===blockerName?' glow':'';return`<span class="dd-item${glow}">${d.icon} ${d.name}</span>`}).join('');
+  // Show what the player had active this round, highlight what helped
+  ddList.innerHTML=myData.defences.map(id=>{
+    const d=DEFENCES.find(x=>x.id===id); if(!d) return '';
+    const helped = blockerName && d.name===blockerName;
+    const wouldHelp = myData.lastResult==='breached' && effective.includes(id);
+    let cls = 'dd-item';
+    if(helped) cls += ' glow';
+    if(wouldHelp) cls += ' would-help';
+    return `<span class="${cls}">${d.icon} ${d.name}</span>`;
+  }).join('');
+
   const cost=myData.lastResult==='blocked'?0:ATTACK_COST;
   biImpact.textContent=cost===0?'£0':`−£${cost.toLocaleString()}`;
   biImpact.className='value'+(cost>0?' negative':'');
@@ -574,7 +589,7 @@ function showResult(){
 }
 
 // Socket events
-socket.on('connect',()=>{
+  socket.on('connect',()=>{
   connDot.className='conn-dot ready';
   if(playerName){
     connMsg.textContent='Reconnected! Joining session...';
@@ -583,6 +598,19 @@ socket.on('connect',()=>{
     connMsg.textContent='Connected! Enter session code and name to begin.';
   }
 });
+
+// Auto-fill code from URL if present (?code=123)
+(function autoFillCode(){
+  try{
+    const params = new URLSearchParams(window.location.search);
+    const c = params.get('code');
+    if(c && codeInput && !codeInput.value){
+      codeInput.value = c;
+      // focus name next
+      setTimeout(()=> nameInput && nameInput.focus(), 50);
+    }
+  }catch(e){}
+})();
 socket.on('disconnect',()=>{connDot.className='conn-dot disconnected'});
 
 socket.on('joined',(data)=>{

@@ -61,6 +61,9 @@ const game = {
   usedAttacks: [],
   sessionCode: genCode(),
   startTime: null,
+  priorityStartTime: null,
+  roundStartTimes: [],
+  plannedAttacks: [],
 };
 const players = {};
 
@@ -82,6 +85,15 @@ function defName(id) {
 }
 
 function selectAttack() {
+  // Use pre-planned attacks if available (fair distribution)
+  if (game.plannedAttacks && game.plannedAttacks.length >= game.round) {
+    const plannedId = game.plannedAttacks[game.round - 1];
+    if (!game.usedAttacks.includes(plannedId)) {
+      game.usedAttacks.push(plannedId);
+      const planned = ATTACKS.find(a => a.id === plannedId);
+      if (planned) return planned;
+    }
+  }
   const available = ATTACKS.filter(a => !game.usedAttacks.includes(a.id));
   if (available.length === 0) return ATTACKS[0];
   const pick = available[Math.floor(Math.random() * available.length)];
@@ -102,16 +114,55 @@ function getGameState() {
 }
 
 function calculateAward(player) {
-  const topPriority = (player.priority || ['Money'])[0];
-  const priorityAttacks = PRIORITY_MAP[topPriority] || [];
+  if (!player.priority || player.priority.length === 0) {
+    const b = Math.max(0, Math.min(100, Math.round((player.budget / START_BUDGET) * 100)));
+    return { award: '—', score: b, priorityPct: 0, speedPct: 0, budgetPct: b };
+  }
+
+  const prio = player.priority;
+  const weights = [3, 2, 1];
   const history = player.roundHistory || [];
-  const faced = history.filter(r => priorityAttacks.includes(r.attackId));
-  const blocked = faced.filter(r => r.blocked).length;
-  const tot = faced.length;
-  const pct = tot === 0 ? 1 : blocked / tot;
-  const award = pct >= 2/3 ? 'Gold' : pct >= 1/3 ? 'Silver' : 'Bronze';
-  const score = Math.round((pct * 50) + ((player.budget / START_BUDGET) * 50));
-  return { award, score, priorityPct: Math.round(pct * 100) };
+  let points = 0, maxPoints = 0;
+
+  prio.forEach((pName, i) => {
+    const attacks = PRIORITY_MAP[pName] || [];
+    const w = weights[i] || 1;
+    history.forEach(r => {
+      if (attacks.includes(r.attackId)) {
+        maxPoints += w;
+        if (r.blocked) points += w;
+      }
+    });
+  });
+
+  const prioPct = maxPoints > 0 ? Math.round((points / maxPoints) * 100) : 50;
+
+  // Speed scoring (lower time = better)
+  let speedPct = 50;
+  const times = [];
+  if (player.prioritySubmitTime && game.priorityStartTime) {
+    times.push(player.prioritySubmitTime - game.priorityStartTime);
+  }
+  (player.roundSelectTimes || []).forEach((t, idx) => {
+    if (t && game.roundStartTimes[idx]) times.push(t - game.roundStartTimes[idx]);
+  });
+  if (times.length > 0) {
+    const avg = times.reduce((a,b)=>a+b,0) / times.length;
+    const norm = Math.max(0, Math.min(1, 1 - (avg / 120000)));
+    speedPct = Math.round(norm * 100);
+  }
+
+  // Budget component
+  const budgetPct = Math.max(0, Math.min(100, Math.round((player.budget / START_BUDGET) * 100)));
+
+  // Final score: 60% priority match, 25% speed, 15% budget
+  const score = Math.round(prioPct * 0.60 + speedPct * 0.25 + budgetPct * 0.15);
+
+  let award = 'Bronze';
+  if (score >= 78) award = 'Gold';
+  else if (score >= 58) award = 'Silver';
+
+  return { award, score, priorityPct: prioPct, speedPct, budgetPct };
 }
 
 function compileGameAudit() {
@@ -185,7 +236,11 @@ function getPlayersData() {
       roundHistory: p.roundHistory || [],
       award: awardInfo.award,
       score: awardInfo.score,
+      prioritySubmitTime: p.prioritySubmitTime || null,
+      roundSelectTimes: p.roundSelectTimes || [],
       priorityPct: awardInfo.priorityPct,
+      speedPct: awardInfo.speedPct || 0,
+      budgetPct: awardInfo.budgetPct || 0,
     };
   });
 }
@@ -258,6 +313,7 @@ function startRound() {
   }
   game.phase = 'selecting';
   game.timerRemaining = game.timerDuration;
+  game.roundStartTimes[game.round-1] = Date.now();
   game.currentAttack = null;
 
   Object.values(players).forEach(p => {
@@ -275,10 +331,23 @@ function startRound() {
 
 function startGame() {
   game.startTime = Date.now();
+  game.priorityStartTime = Date.now();
+  game.roundStartTimes = [];
   game.phase = 'priority';
   game.round = 0;
   game.usedAttacks = [];
   game.currentAttack = null;
+  // Pre-draw 3 attacks: one from each priority bucket, shuffled
+  const buckets = [
+    ['ransomware', 'insider', 'social_eng'],
+    ['phishing', 'sql_injection', 'data_exfil'],
+    ['malware', 'ddos', 'zero_day']
+  ];
+  game.plannedAttacks = buckets.map(b => b[Math.floor(Math.random() * b.length)]);
+  for (let i=2; i>0; i--) {
+    const j = Math.floor(Math.random() * (i+1));
+    [game.plannedAttacks[i], game.plannedAttacks[j]] = [game.plannedAttacks[j], game.plannedAttacks[i]];
+  }
   Object.values(players).forEach(p => {
     p.selected = [];
     p.carriedOver = [];
@@ -291,6 +360,8 @@ function startGame() {
     p.maxSelect = 3;
     p.roundHistory = [];
     p.priority = [];
+    p.prioritySubmitTime = null;
+    p.roundSelectTimes = [null, null, null];
   });
   broadcast();
 }
@@ -428,6 +499,9 @@ io.on('connection', (socket) => {
     if (p.selected.length >= p.maxSelect) return;
     if (p.carriedOver.includes(defenceId)) return;
     p.selected.push(defenceId);
+    if (p.selected.length === p.maxSelect && !p.roundSelectTimes[game.round-1]) {
+      p.roundSelectTimes[game.round-1] = Date.now();
+    }
     broadcast();
   });
 
@@ -435,6 +509,9 @@ io.on('connection', (socket) => {
     const p = players[socket.id];
     if (!p || priority.length !== 3) return;
     p.priority = priority;
+    if (!p.prioritySubmitTime && game.priorityStartTime) {
+      p.prioritySubmitTime = Date.now();
+    }
     broadcast();
   });
 
