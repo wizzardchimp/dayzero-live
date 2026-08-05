@@ -59,6 +59,7 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .status-budget .amount.low{color:var(--orange)}
 .status-budget .amount.critical{color:var(--red)}
 .overlay{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.4);backdrop-filter:blur(8px);opacity:1;transition:opacity .3s}
+#gameover-overlay .intro{width:100%;max-width:none;padding:24px 16px;border-radius:0;max-height:100vh}
 .overlay.hidden{opacity:0;pointer-events:none}
 .intro{max-width:800px;width:90%;background:var(--bg2);border-radius:var(--radius);padding:40px;box-shadow:var(--shadow-lg);max-height:90vh;overflow-y:auto}
 .intro h2{font-size:24px;font-weight:800;margin-bottom:24px;text-align:center}
@@ -118,37 +119,37 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .zr-example{font-size:18px;color:rgba(255,255,255,.7);margin-top:12px;max-width:600px;text-align:center;font-style:italic;padding:0 20px}
 .result-overlay{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.5);backdrop-filter:blur(8px)}
 .result-overlay.hidden{display:none}
-.result-card{max-width:600px;width:90%;background:var(--bg2);border-radius:var(--radius);padding:40px;box-shadow:var(--shadow-lg);text-align:center}
-.result-title{font-size:22px;font-weight:800;margin-bottom:4px}
-.result-sub{font-size:14px;color:var(--text3);margin-bottom:24px}
-.verdict{padding:24px;border-radius:var(--radius-sm);margin-bottom:24px}
+.result-card{width:100%;max-width:none;background:var(--bg2);border-radius:0;padding:32px 16px;box-shadow:none;text-align:center}
+.result-title{font-size:28px;font-weight:900;margin-bottom:6px}
+.result-sub{font-size:18px;color:var(--text3);margin-bottom:28px}
+.verdict{padding:32px 16px;border-radius:0;margin-bottom:28px}
 .verdict.blocked{background:var(--green-light);border:1px solid var(--green)}
 .verdict.breached{background:var(--red-light);border:1px solid var(--red)}
-.verdict .v-icon{font-size:48px;margin-bottom:8px}
-.verdict .v-label{font-size:18px;font-weight:800;letter-spacing:1px}
+.verdict .v-icon{font-size:64px;margin-bottom:10px}
+.verdict .v-label{font-size:24px;font-weight:900;letter-spacing:1px}
 .verdict.blocked .v-label{color:var(--green)}
 .verdict.breached .v-label{color:var(--red)}
-.verdict .v-detail{font-size:15px;margin-top:6px;color:var(--text2)}
-.verdict .v-prevent{font-size:14px;margin-top:10px;color:var(--orange);font-weight:600}
-.attack-info{background:var(--bg3);border-radius:var(--radius-sm);padding:16px;margin-bottom:20px;text-align:left}
+.verdict .v-detail{font-size:18px;margin-top:8px;color:var(--text2)}
+.verdict .v-prevent{font-size:16px;margin-top:12px;color:var(--orange);font-weight:600}
+.attack-info{background:var(--bg3);border-radius:0;padding:20px;margin-bottom:24px;text-align:left}
 .attack-info .a-header{display:flex;align-items:center;gap:12px;margin-bottom:8px}
-.attack-info .a-icon{font-size:28px}
-.attack-info .a-name{font-weight:700;font-size:16px}
-.attack-info .a-desc{font-size:13px;color:var(--text2)}
-.budget-impact{display:flex;justify-content:space-around;margin-bottom:24px}
+.attack-info .a-icon{font-size:36px}
+.attack-info .a-name{font-weight:700;font-size:20px}
+.attack-info .a-desc{font-size:16px;color:var(--text2)}
+.budget-impact{display:flex;justify-content:space-around;margin-bottom:28px}
 .budget-item{text-align:center}
-.budget-item .label{font-size:12px;color:var(--text3);font-weight:500;margin-bottom:4px}
-.budget-item .value{font-size:20px;font-weight:800}
+.budget-item .label{font-size:14px;color:var(--text3);font-weight:500;margin-bottom:4px}
+.budget-item .value{font-size:26px;font-weight:900}
 .budget-item .value.negative{color:var(--red)}
 .budget-item .value.positive{color:var(--green)}
-.defences-deployed{margin-bottom:24px}
-.defences-deployed .dd-label{font-size:13px;color:var(--text3);font-weight:600;margin-bottom:8px;letter-spacing:1px}
+.defences-deployed{margin-bottom:28px}
+.defences-deployed .dd-label{font-size:16px;color:var(--text3);font-weight:600;margin-bottom:10px;letter-spacing:1px}
 .defences-deployed .dd-list{display:flex;flex-wrap:wrap;justify-content:center;gap:8px}
-.defences-deployed .dd-item{background:var(--accent-light);color:var(--accent);padding:6px 12px;border-radius:20px;font-size:12px;font-weight:600}
+.defences-deployed .dd-item{background:var(--accent-light);color:var(--accent);padding:8px 16px;border-radius:20px;font-size:15px;font-weight:600}
 .defences-deployed .dd-item.glow{background:var(--green-light);color:var(--green);box-shadow:0 0 16px rgba(16,185,129,.5);animation:glowPulse 1.2s ease-in-out infinite alternate}
 .defences-deployed .dd-item.would-help{background:var(--red-light);color:var(--red);border:1px solid var(--red)}
 @keyframes glowPulse{0%{box-shadow:0 0 8px rgba(16,185,129,.3)}100%{box-shadow:0 0 20px rgba(16,185,129,.7)}}
-.result-btn{padding:14px 40px;border-radius:var(--radius-sm);font-size:16px;font-weight:700;background:linear-gradient(135deg,var(--accent),var(--purple));color:#fff;transition:all .2s}
+.result-btn{padding:18px 40px;border-radius:0;font-size:20px;font-weight:700;background:linear-gradient(135deg,var(--accent),var(--purple));color:#fff;transition:all .2s}
 .result-btn:hover{transform:translateY(-2px);box-shadow:0 4px 20px rgba(37,99,235,.3)}
 .game-over{text-align:center}
 .game-over h2{font-size:32px;font-weight:900;margin-bottom:8px}
@@ -162,7 +163,7 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .go-stat .value.blue{color:var(--accent)}
 .go-def-tags{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin-bottom:8px}
 .go-def-tag{background:var(--accent-light);color:var(--accent);padding:4px 10px;border-radius:12px;font-size:11px;font-weight:600}
-.go-section-title{font-size:12px;color:var(--text3);font-weight:600;letter-spacing:1px;margin-bottom:6px;text-transform:uppercase}
+.go-section-title{font-size:16px;color:var(--text3);font-weight:600;letter-spacing:1px;margin-bottom:8px;text-transform:uppercase}
 .go-history-row{display:flex;align-items:center;gap:8px;background:var(--bg3);border-radius:var(--radius-sm);padding:8px 12px;margin-bottom:4px;font-size:13px}
 .go-history-row .hr-icon{font-size:16px;width:24px;text-align:center}
 .go-history-row .hr-name{flex:1;font-weight:600;text-align:left;font-size:13px}
@@ -170,21 +171,21 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .go-history-row .hr-result.blocked{background:var(--green-light);color:var(--green)}
 .go-history-row .hr-result.breached{background:var(--red-light);color:var(--red)}
 .go-top{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:2px}
-.go-rank{font-size:15px;font-weight:800;background:var(--accent);color:#000;padding:2px 10px;border-radius:999px;letter-spacing:0.5px}
-.game-over h2{font-size:26px;font-weight:900;margin:4px 0 2px}
-.go-meta{font-size:15px;color:var(--text2);margin-bottom:18px;line-height:1.3}
+.go-rank{font-size:20px;font-weight:800;background:var(--accent);color:#000;padding:4px 14px;border-radius:999px;letter-spacing:0.5px}
+.game-over h2{font-size:36px;font-weight:900;margin:4px 0 4px}
+.go-meta{font-size:20px;color:var(--text2);margin-bottom:24px;line-height:1.3}
 .go-meta .go-pri{font-weight:700;color:#fff}
 .go-meta .go-score{font-weight:700;margin-left:8px}
-.go-meta .go-match{font-size:13px;color:var(--text3);margin-top:2px}
-.go-attacks-section{max-width:340px;margin:0 auto;text-align:left}
-.go-attack-row{background:var(--bg3);border-radius:8px;padding:9px 11px;margin-bottom:5px;font-size:13px}
-.go-attack-row .go-attack-main{display:flex;align-items:center;gap:7px}
-.ga-icon{font-size:16px}
-.ga-name{flex:1;font-weight:600}
-.ga-result{font-size:9px;padding:1px 6px;border-radius:4px;font-weight:700;letter-spacing:.5px}
+.go-meta .go-match{font-size:16px;color:var(--text3);margin-top:4px}
+.go-attacks-section{max-width:none;margin:0 auto;text-align:left}
+.go-attack-row{background:var(--bg3);border-radius:0;padding:12px 16px;margin-bottom:8px;font-size:17px}
+.go-attack-row .go-attack-main{display:flex;align-items:center;gap:8px}
+.ga-icon{font-size:22px}
+.ga-name{flex:1;font-weight:700}
+.ga-result{font-size:12px;padding:3px 10px;border-radius:4px;font-weight:700;letter-spacing:.5px}
 .ga-result.blocked{background:var(--green-light);color:var(--green)}
 .ga-result.breached{background:var(--red-light);color:var(--red)}
-.ga-detail{font-size:11px;color:var(--text3);margin-top:3px;padding-left:23px}
+.ga-detail{font-size:15px;color:var(--text3);margin-top:4px;padding-left:30px}
 .name-overlay{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.5);backdrop-filter:blur(12px)}
 .name-overlay.hidden{display:none}
 .name-card{background:var(--bg2);border-radius:var(--radius);padding:40px;box-shadow:var(--shadow-lg);text-align:center;max-width:400px;width:90%}
@@ -205,9 +206,9 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 @keyframes waitPulse{0%{transform:scale(.9);opacity:.6}50%{transform:scale(1.1);opacity:1}100%{transform:scale(.9);opacity:.6}}
 .waiting-overlay .wo-text{font-size:20px;font-weight:700;color:var(--text2)}
 .waiting-overlay .wo-sub{font-size:14px;color:var(--text3);margin-top:8px}
-@media(max-width:768px){.header{padding:12px 16px}.header h1{font-size:16px}.header-right{gap:12px}.round-badge{padding:4px 12px;font-size:12px}.main{top:60px;bottom:40px;padding:16px}.main.selecting{padding:12px 12px 80px}.round-title{font-size:22px;margin-bottom:4px}.round-sub{font-size:14px;margin-bottom:16px}.defence-grid{gap:10px}.defence-card{padding:14px}.defence-icon{font-size:24px;width:32px}.defence-name{font-size:16px}.defence-counters{font-size:13px}.timer-display{font-size:36px;min-width:90px}.timer-section{margin-bottom:16px}.status-bar{padding:8px 16px;font-size:12px}.intro{padding:24px}.intro h2{font-size:20px}.intro-grid{grid-template-columns:1fr}.result-card{padding:24px}.result-title{font-size:18px}.go-stats{gap:8px}.go-stat{padding:12px}.go-stat .value{font-size:22px}}
-@media(max-width:480px){.header{padding:8px 12px}.header h1{font-size:14px}.header-right{gap:8px}.header-budget{gap:4px;font-size:12px}.header-budget .amount{font-size:13px}.round-badge{padding:3px 8px;font-size:10px}.main{top:52px;bottom:36px;padding:12px}.main.selecting{padding:8px 8px 70px}.round-title{font-size:20px}.round-sub{font-size:14px;margin-bottom:12px}.defence-grid{gap:8px;max-width:100%}.defence-card{padding:12px;gap:12px}.defence-card.carried::after{font-size:8px;padding:2px 6px;top:4px;right:4px}.defence-icon{font-size:20px;width:28px}.defence-name{font-size:15px}.defence-counters{font-size:13px}.timer-display{font-size:26px;min-width:60px}.timer-section{gap:6px;margin-bottom:12px}.status-bar{display:none}.wheel-label{font-size:20px;margin-bottom:16px}.ws-icon{font-size:60px}.ws-text{font-size:16px}.intro{padding:16px}.intro h2{font-size:18px;margin-bottom:16px}.intro-item{padding:10px}.intro-item .icon{font-size:20px}.intro-item .name{font-size:14px}.intro-item .counters{font-size:12px}.intro-btn{padding:10px 24px;font-size:13px}.result-card{padding:20px}.result-title{font-size:16px}.result-sub{font-size:12px;margin-bottom:16px}.verdict{padding:16px}.verdict .v-icon{font-size:36px}.verdict .v-label{font-size:15px}.verdict .v-detail{font-size:13px}.attack-info{padding:12px}.budget-item .value{font-size:16px}.defences-deployed .dd-item{font-size:10px;padding:4px 8px}
-.defences-deployed .dd-item.glow{box-shadow:0 0 12px rgba(16,185,129,.4)}.result-btn{width:100%;padding:12px 20px;font-size:14px}.zr-icon{font-size:80px}.zr-name{font-size:32px}.zr-example{font-size:16px}.game-over h2{font-size:24px}.game-over .go-sub{font-size:14px;margin-bottom:20px}.go-stats{gap:6px}.go-stat{padding:10px}.go-stat .label{font-size:10px}.go-stat .value{font-size:18px}.name-card{padding:24px}.name-card h2{font-size:22px}.name-input{font-size:16px;padding:12px}.priority-item{padding:14px}.priority-item .p-rank{font-size:18px;width:28px}.priority-item .p-icon{font-size:20px;width:28px}.priority-item .p-name{font-size:15px}.go-rank{font-size:13px;padding:1px 8px}.go-meta{font-size:13px}.go-attack-row{padding:7px 9px;font-size:12px}.ga-detail{font-size:10px;padding-left:20px}}
+@media(max-width:768px){.header{padding:12px 16px}.header h1{font-size:16px}.header-right{gap:12px}.round-badge{padding:4px 12px;font-size:12px}.main{top:60px;bottom:40px;padding:16px}.main.selecting{padding:12px 12px 80px}.round-title{font-size:22px;margin-bottom:4px}.round-sub{font-size:14px;margin-bottom:16px}.defence-grid{gap:10px}.defence-card{padding:14px}.defence-icon{font-size:24px;width:32px}.defence-name{font-size:16px}.defence-counters{font-size:13px}.timer-display{font-size:36px;min-width:90px}.timer-section{margin-bottom:16px}.status-bar{padding:8px 16px;font-size:12px}.intro{padding:24px}.intro h2{font-size:28px}.intro-grid{grid-template-columns:1fr}.result-card{padding:24px}.result-title{font-size:26px}.go-stats{gap:8px}.go-stat{padding:12px}.go-stat .value{font-size:26px}}
+@media(max-width:480px){.header{padding:8px 12px}.header h1{font-size:14px}.header-right{gap:8px}.header-budget{gap:4px;font-size:12px}.header-budget .amount{font-size:13px}.round-badge{padding:3px 8px;font-size:10px}.main{top:52px;bottom:36px;padding:12px}.main.selecting{padding:8px 8px 70px}.round-title{font-size:20px}.round-sub{font-size:14px;margin-bottom:12px}.defence-grid{gap:8px;max-width:100%}.defence-card{padding:12px;gap:12px}.defence-card.carried::after{font-size:8px;padding:2px 6px;top:4px;right:4px}.defence-icon{font-size:20px;width:28px}.defence-name{font-size:15px}.defence-counters{font-size:13px}.timer-display{font-size:26px;min-width:60px}.timer-section{gap:6px;margin-bottom:12px}.status-bar{display:none}.wheel-label{font-size:20px;margin-bottom:16px}.ws-icon{font-size:60px}.ws-text{font-size:16px}.intro{padding:16px}.intro h2{font-size:26px;margin-bottom:16px}.intro-item{padding:10px}.intro-item .icon{font-size:20px}.intro-item .name{font-size:14px}.intro-item .counters{font-size:12px}.intro-btn{padding:10px 24px;font-size:13px}.result-card{padding:20px}.result-title{font-size:24px}.result-sub{font-size:16px;margin-bottom:16px}.verdict{padding:16px}.verdict .v-icon{font-size:48px}.verdict .v-label{font-size:20px}.verdict .v-detail{font-size:16px}.attack-info{padding:12px}.budget-item .value{font-size:22px}.defences-deployed .dd-item{font-size:13px;padding:6px 10px}
+.defences-deployed .dd-item.glow{box-shadow:0 0 12px rgba(16,185,129,.4)}.result-btn{width:100%;padding:12px 20px;font-size:14px}.zr-icon{font-size:80px}.zr-name{font-size:32px}.zr-example{font-size:16px}.game-over h2{font-size:30px}.game-over .go-sub{font-size:14px;margin-bottom:20px}.go-stats{gap:6px}.go-stat{padding:10px}.go-stat .label{font-size:10px}.go-stat .value{font-size:22px}.name-card{padding:24px}.name-card h2{font-size:22px}.name-input{font-size:16px;padding:12px}.priority-item{padding:14px}.priority-item .p-rank{font-size:18px;width:28px}.priority-item .p-icon{font-size:20px;width:28px}.priority-item .p-name{font-size:15px}.go-rank{font-size:17px;padding:2px 10px}.go-meta{font-size:17px}.go-attack-row{padding:10px 12px;font-size:15px}.ga-detail{font-size:13px;padding-left:24px}}
 </style>
 </head>
 <body>
