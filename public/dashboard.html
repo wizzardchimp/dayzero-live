@@ -62,11 +62,17 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .empty-state .big-icon{font-size:56px;margin-bottom:12px;opacity:.4}
 .empty-state h2{font-size:18px;font-weight:700;color:var(--text2);margin-bottom:6px}
 .empty-state p{font-size:13px;max-width:400px;margin:0 auto}
-.lobby-qr{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 20px}
-.lobby-qr .qr-label{font-size:20px;font-weight:800;margin-bottom:12px;color:var(--text)}
+.lobby-qr{display:flex;flex-direction:row;align-items:center;justify-content:center;gap:60px;padding:40px 48px;max-width:960px;margin:0 auto}
+.lobby-qr .qr-side{display:flex;flex-direction:column;align-items:center}
+.lobby-qr .info-side{display:flex;flex-direction:column;gap:20px;text-align:left}
+.lobby-qr .info-title{font-size:36px;font-weight:900;color:var(--text);line-height:1.2}
+.lobby-qr .info-bullets{display:flex;flex-direction:column;gap:18px}
+.lobby-qr .info-bullet{display:flex;align-items:flex-start;gap:14px;font-size:20px;color:var(--text2);line-height:1.5}
+.lobby-qr .info-bullet .bullet-num{flex-shrink:0;width:36px;height:36px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:16px}
+.lobby-qr .qr-label{font-size:24px;font-weight:800;margin-bottom:16px;color:var(--text)}
 .lobby-qr #lobby-qr-code canvas{border-radius:16px;background:#fff;padding:16px;box-shadow:0 4px 20px rgba(0,0,0,.2)}
 .lobby-qr .qr-code-big{font-size:48px;font-weight:900;letter-spacing:8px;margin:12px 0 4px;background:var(--accent-light);color:var(--accent2);padding:10px 32px;border-radius:14px}
-.lobby-qr .qr-sub{font-size:14px;color:var(--text2);margin-top:6px}
+.lobby-qr .qr-sub{font-size:16px;color:var(--text2);margin-top:8px}
 .controls-bar{position:fixed;bottom:0;left:0;right:0;z-index:50;background:var(--card);border-top:1px solid var(--border);padding:12px 32px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-shrink:0}
 .controls-left{display:flex;align-items:center;gap:16px}
 .controls-center{display:flex;align-items:center;gap:8px;flex:1;justify-content:center;padding:0 16px}
@@ -294,10 +300,20 @@ function renderCards(players){
       const qrImg = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(playUrl)}&color=111827&bgcolor=ffffff`;
       grid.innerHTML = `
         <div class="lobby-qr">
-          <div class="qr-label">Scan to join as Player</div>
-          <img src="${qrImg}" alt="QR code to join" style="width:280px;height:280px;border-radius:16px;background:white;padding:8px;box-shadow:0 4px 20px rgba(0,0,0,0.3);">
-          <div class="qr-code-big">${currentSessionCode}</div>
-          <div class="qr-sub">Players scan this to enter the game</div>
+          <div class="info-side">
+            <div class="info-title">How to Play</div>
+            <div class="info-bullets">
+              <div class="info-bullet"><span class="bullet-num">1</span><span>Select cyber defences to protect against random attacks</span></div>
+              <div class="info-bullet"><span class="bullet-num">2</span><span>Survive three rounds — each round brings a new attack</span></div>
+              <div class="info-bullet"><span class="bullet-num">3</span><span>Build the strongest defence and select fastest for bonus points</span></div>
+            </div>
+          </div>
+          <div class="qr-side">
+            <div class="qr-label">Scan to join</div>
+            <img src="${qrImg}" alt="QR code to join" style="width:280px;height:280px;border-radius:16px;background:white;padding:8px;box-shadow:0 4px 20px rgba(0,0,0,0.3);">
+            <div class="qr-code-big">${currentSessionCode}</div>
+            <div class="qr-sub">Players scan this to enter the game</div>
+          </div>
         </div>
       `;
     } else {
