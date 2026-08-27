@@ -138,7 +138,7 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .podium-budget{font-size:16px;font-weight:700;color:rgba(255,255,255,.9);margin-top:4px}
 .podium-award{display:inline-block;font-size:28px;margin-top:6px}
 .ranking-table{background:rgba(255,255,255,.05);border-radius:var(--radius);overflow:hidden}
-.ranking-row{display:grid;grid-template-columns:44px 1fr 100px 80px 110px 90px;align-items:center;padding:10px 16px;border-bottom:1px solid rgba(255,255,255,.08);font-size:13px;color:rgba(255,255,255,.8)}
+.ranking-row{display:grid;grid-template-columns:50px 1fr 130px 100px 130px 120px;align-items:center;padding:12px 20px;border-bottom:1px solid rgba(255,255,255,.08);font-size:14px;color:rgba(255,255,255,.8);gap:8px}
 .ranking-row:last-child{border-bottom:none}
 .ranking-row.header{font-size:11px;color:rgba(255,255,255,.4);font-weight:600;letter-spacing:1px;text-transform:uppercase}
 .ranking-row .rr-rank{font-weight:800;font-size:16px;text-align:center}
@@ -233,7 +233,7 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 </div>
 <audio id="dash-music" loop src="music.mp3"></audio>
 <audio id="dash-drumroll" src="drumroll.mp3"></audio>
-<audio id="dash-win" src="win.mp3"></audio>
+<audio id="dash-win" src="Winner.mp3"></audio>
 <audio id="dash-lose" src="lose.mp3"></audio>
 <audio id="dash-ding" src="Ding.mp3"></audio>
 <audio id="dash-chime" src="chime.mp3"></audio>
@@ -637,6 +637,7 @@ function showGameOver(){
   revealOverlay.classList.add('hidden');
   renderWinner(lastPlayers);
   gameoverReveal.classList.remove('hidden');
+  playWin();
 }
 
 function hideAll(){
