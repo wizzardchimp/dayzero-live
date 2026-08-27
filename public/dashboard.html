@@ -151,8 +151,10 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .priority-overlay{position:fixed;inset:0;background:rgba(0,0,0,.92);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:1000}
 .priority-overlay.hidden{display:none}
 .po-title{font-size:28px;font-weight:900;color:#fff;margin-bottom:24px}
-.po-charts{display:flex;gap:40px;flex-wrap:wrap;justify-content:center}
-.po-chart-box{text-align:center}
+.po-charts{display:flex;flex-direction:column;gap:20px;align-items:center;width:100%;max-width:700px;margin:0 auto}
+.po-chart-box{width:100%;text-align:center}
+.ctrl-btn.glow{animation:btnGlow 1.5s ease-in-out infinite alternate}
+@keyframes btnGlow{0%{box-shadow:0 0 8px rgba(37,99,235,.3)}100%{box-shadow:0 0 20px rgba(37,99,235,.7),0 0 40px rgba(37,99,235,.3)}}
 .po-chart-label{font-size:14px;font-weight:700;color:var(--text2);margin-bottom:8px;letter-spacing:1px;text-transform:uppercase}
 .po-legend{display:flex;gap:12px;justify-content:center;margin-top:8px;flex-wrap:wrap}
 .po-legend-item{display:flex;align-items:center;gap:4px;font-size:12px;font-weight:600;color:var(--text2)}
@@ -394,6 +396,7 @@ function updateButtons(gs){
   btnForceEnd.style.display='none';
   btnNextRound.style.display='none';
   btnPriorityCharts.style.display='none';
+  btnPriorityCharts.classList.remove('glow');
   timerDec.style.display=gs.phase==='selecting'?'':'none';
   timerInc.style.display=gs.phase==='selecting'?'':'none';
   if(gs.phase==='lobby'){
@@ -405,6 +408,7 @@ function updateButtons(gs){
     btnStartGame.disabled=lastPlayers.length===0;
     btnStartGame.textContent='Start Round 1';
     btnPriorityCharts.style.display='';
+    btnPriorityCharts.classList.add('glow');
   }else if(gs.phase==='selecting'){
     btnForceEnd.style.display='';
     btnForceEnd.textContent='Force End Round';
@@ -430,9 +434,9 @@ function showSlotMachine(attack){
   if(targetIdx<0)return;
   cardFlipContainer.style.filter='none';
   cardFlipContainer.style.transform='scale(1)';
-  const totalCycles=5;let step=0;
+  const totalCycles=3;let step=0;
   const totalSteps=totalCycles*atts.length+targetIdx;
-  const baseInterval=120;let interval=baseInterval;
+  const baseInterval=100;let interval=baseInterval;
   function spin(){
     const a=atts[step%atts.length];
     cardFlipIcon.textContent=a.icon;
@@ -446,6 +450,7 @@ function showSlotMachine(attack){
       cardFlipIcon.textContent=attack.icon;
       cardFlipIcon.style.transform='rotateY(0)';
       cardFlipContainer.style.filter='none';
+      dashDrumroll.pause();dashDrumroll.currentTime=0;
       setTimeout(()=>{
         slotOverlay.classList.add('hidden');
         revIcon.textContent=attack.icon;
