@@ -96,17 +96,10 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .rev-name{font-size:56px;font-weight:900;color:#fff;margin-bottom:8px}
 .rev-example{font-size:20px;color:rgba(255,255,255,.7);font-style:italic;max-width:700px;text-align:center;padding:0 24px;margin-bottom:48px}
 .slot-overlay{position:fixed;inset:0;z-index:99;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,0,0,.6);animation:pulseBg 2s ease-in-out infinite alternate}
-@keyframes pulseBg{0%{background:rgba(0,0,0,.6)}100%{background:rgba(140,0,0,.7)}}
 .slot-overlay.hidden{display:none}
-.priority-overlay.hidden{display:none}
-.dash-slot-machine{background:var(--card);border-radius:var(--radius);padding:24px 16px;box-shadow:0 8px 40px rgba(0,0,0,.3)}
-.dash-slot-window{position:relative;height:450px;overflow:hidden;border-radius:var(--radius-sm);background:var(--card2);border:2px solid var(--border)}
-.dash-slot-window::before{content:'';position:absolute;inset:0;z-index:2;pointer-events:none;background:linear-gradient(to bottom,var(--card2) 0%,transparent 28%,transparent 72%,var(--card2) 100%)}
-.dash-slot-track{will-change:transform}
-.dash-slot-item{height:150px;display:flex;align-items:center;justify-content:center;gap:16px;font-size:32px;font-weight:700;color:var(--text);border-bottom:1px solid var(--border)}
-.dash-slot-item .dsi-icon{font-size:48px}
-.dash-slot-item .dsi-name{color:var(--text2);font-size:28px}
 .slot-label{color:#fff;font-size:24px;font-weight:700;margin-bottom:24px;text-align:center}
+.card-flip-container{width:220px;height:280px;background:var(--card);border-radius:var(--radius);display:flex;align-items:center;justify-content:center;box-shadow:0 8px 40px rgba(0,0,0,.4);transition:filter .1s,transform .3s}
+.card-flip-icon{font-size:100px;transition:filter .1s,transform .3s}
 .phase-indicator{display:flex;align-items:center;gap:8px;background:var(--card2);padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;color:var(--text2)}
 .phase-dot{width:8px;height:8px;border-radius:50%}
 .phase-dot.green{background:var(--green)}
@@ -193,7 +186,9 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 </div>
 <div class="slot-overlay hidden" id="slot-overlay">
   <div class="slot-label">Incoming Attack...</div>
-  <div class="dash-slot-machine"><div class="dash-slot-window"><div class="dash-slot-track" id="dash-slot-track"></div></div></div>
+  <div class="card-flip-container" id="card-flip-container">
+    <div class="card-flip-icon" id="card-flip-icon">🎣</div>
+  </div>
 </div>
 <div class="reveal-overlay hidden" id="reveal-overlay">
   <div class="rev-icon" id="rev-icon">🎣</div>
@@ -230,54 +225,21 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 <audio id="dash-lose" src="lose.mp3"></audio>
 <audio id="dash-ding" src="Ding.mp3"></audio>
 <audio id="dash-chime" src="chime.mp3"></audio>
+<script src="/shared.js"></script>
 <script>
 const socket=io();
-
-const ATTACKS={
-  phishing:'🎣',malware:'🦠',ransomware:'🔒',ddos:'🌊',
-  sql_injection:'💉',zero_day:'⚡',insider:'🏢',
-  data_exfil:'📤',social_eng:'🎭'
-};
-const ATTACK_DATA=[
-  {id:'phishing',name:'Phishing',icon:'🎣',desc:'Deceptive emails to steal credentials',example:'An email from your "CEO" requests urgent gift card purchases'},
-  {id:'malware',name:'Malware',icon:'🦠',desc:'Malicious software to compromise systems',example:'An innocent-looking PDF attachment installs a keylogger'},
-  {id:'ransomware',name:'Ransomware',icon:'🔒',desc:'Encrypts data and demands payment',example:'All company files encrypted — pay 10 BTC within 48 hours'},
-  {id:'ddos',name:'DDoS',icon:'🌊',desc:'Overwhelming traffic to disrupt services',example:'Website returns 503 errors under 500Gbps traffic flood'},
-  {id:'sql_injection',name:'SQL Injection',icon:'💉',desc:'Database manipulation via input fields',example:'Login form accepts "\' OR 1=1 —" as valid credentials'},
-  {id:'zero_day',name:'Zero-Day Exploit',icon:'⚡',desc:'Attacking unknown vulnerabilities',example:'An unpatched router vulnerability gives attackers full network access'},
-  {id:'insider',name:'Insider Threat',icon:'🏢',desc:'Malicious or negligent internal actors',example:'A departing employee copies the entire client database before leaving'},
-  {id:'data_exfil',name:'Data Exfiltration',icon:'📤',desc:'Stealing sensitive data from systems',example:'Sensitive spreadsheets are uploaded to a personal cloud account'},
-  {id:'social_eng',name:'Social Engineering',icon:'🎭',desc:'Psychological manipulation to gain access',example:'Caller posing as IT support asks you to "verify" your password'}
-];
-const DEFENCE_DATA=[
-  {id:'firewall',name:'Firewall',icon:'🛡️',desc:'Monitors and controls network traffic'},
-   {id:'endpoint',name:'Endpoint Protection',icon:'💻',desc:'secure individual devices'},
-  {id:'mfa',name:'Multi-Factor Auth',icon:'🔐',desc:'Requires multiple verification methods'},
-  {id:'encryption',name:'Encryption',icon:'🔒',desc:'Scrambles data to prevent unauthorised access'},
-   {id:'seg',name:'Network Segmentation',icon:'🔀',desc:'seperates the network into departmental areas'},
-  {id:'backup',name:'Backup & Recovery',icon:'💾',desc:'Restores data after loss or attack'},
-   {id:'threat',name:'Threat Detection',icon:'👁️',desc:'uses AI to monitor network usage of individuals'},
-  {id:'passwords',name:'Secure Passwords',icon:'🔑',desc:'Enforces strong password policies'},
-  {id:'training',name:'Security Training',icon:'📚',desc:'Educates users to recognise threats'},
-  {id:'monitoring',name:'Continuous Monitoring',icon:'📊',desc:'Tracks systems for unusual behaviour'},
-  {id:'passkeys',name:'Passkeys - User Account',icon:'🔑',desc:'Phishing-resistant authentication bound to user devices'}
-];
-const DEFENCE_NAMES={
-  firewall:'Firewall',endpoint:'Endpoint Protection',mfa:'Multi-Factor Auth',encryption:'Encryption',
-  seg:'Network Segmentation',backup:'Backup & Recovery',threat:'Threat Detection',
-  passwords:'Secure Passwords',training:'Security Training',monitoring:'Continuous Monitoring',passkeys:'Passkeys - User Account'
-};
-const DEFENCE_ICONS={
-  firewall:'🛡️',endpoint:'💻',mfa:'🔐',encryption:'🔒',
-  seg:'🔀',backup:'💾',threat:'👁️',
-  passwords:'🔑',training:'📚',monitoring:'📊',passkeys:'🔑'
-};
+const{ATTACKS:ATTACK_LIST,DEFENCES,EFFECTIVENESS,PRIORITY_MAP,PRIORITY_EMOJIS,ATTACK_COST,START_BUDGET,MAX_ROUNDS,SPIN_DURATION}=GAME_DATA;
+const ATTACKS={};ATTACK_LIST.forEach(a=>{ATTACKS[a.id]=a.icon});
+const ATTACK_DATA=ATTACK_LIST;
+const DEFENCE_DATA=DEFENCES.map(d=>({id:d.id,name:d.name,icon:d.icon,desc:d.desc}));
+const DEFENCE_NAMES={};DEFENCES.forEach(d=>{DEFENCE_NAMES[d.id]=d.name});
+const DEFENCE_ICONS={};DEFENCES.forEach(d=>{DEFENCE_ICONS[d.id]=d.icon});
 
 const $=id=>document.getElementById(id);
 const grid=$('grid'),playerCount=$('player-count'),sessionCode=$('session-code'),resetBtn=$('reset-btn');
 const dashTimer=$('dash-timer'),timerDec=$('timer-dec'),timerInc=$('timer-inc');
 const btnStartGame=$('btn-start-game'),btnFlush=$('btn-flush-players'),btnForceEnd=$('btn-force-end'),btnNextRound=$('btn-next-round');
-const slotOverlay=$('slot-overlay'),dashSlotTrack=$('dash-slot-track'),slotLabel=$('slot-label');
+const slotOverlay=$('slot-overlay'),cardFlipContainer=$('card-flip-container'),cardFlipIcon=$('card-flip-icon'),slotLabel=$('slot-label');
 const revealOverlay=$('reveal-overlay'),revIcon=$('rev-icon'),revName=$('rev-name'),revExample=$('rev-example'),btnRevealNext=$('btn-reveal-next');
 const gameoverReveal=$('gameover-reveal'),govName=$('gov-name'),govSub=$('gov-sub'),btnGovLobby=$('btn-gov-lobby');
 const phaseIndicator=$('phase-indicator'),phaseDot=$('phase-dot'),phaseLabel=$('phase-label');
@@ -286,6 +248,10 @@ const priorityOverlay=$('priority-overlay'),btnHidePriority=$('btn-hide-priority
 const readyCountEl=$('ready-count');
 
 const dashMusic=$('dash-music'),dashDrumroll=$('dash-drumroll'),dashWin=$('dash-win'),dashLose=$('dash-lose'),dashDing=$('dash-ding'),dashChime=$('dash-chime');
+
+let dashAudioCtx=null;
+function ensureDashAudio(){if(!dashAudioCtx)dashAudioCtx=new(window.AudioContext||window.webkitAudioContext)();if(dashAudioCtx.state==='suspended')dashAudioCtx.resume()}
+function playDashWarningChime(){ensureDashAudio();if(!dashAudioCtx)return;const t=dashAudioCtx.currentTime;for(let i=0;i<2;i++){const osc=dashAudioCtx.createOscillator(),g=dashAudioCtx.createGain();osc.connect(g);g.connect(dashAudioCtx.destination);osc.type='sine';osc.frequency.setValueAtTime(660,t+i*.3);g.gain.setValueAtTime(.25,t+i*.3);g.gain.exponentialRampToValueAtTime(.001,t+i*.3+.2);osc.start(t+i*.3);osc.stop(t+i*.3+.25)}}
 
 let currentPhase='lobby';
 let currentRound=0;
@@ -296,9 +262,8 @@ let dingPlayedForRound=0;
 let lastPlayers=[];
 let currentSessionCode = '';
 
-const PRIORITY_EMOJIS={'Money':'💰','Data':'💾','Maintain Services':'⚙️'};
-const ATTACK_NAMES={phishing:'Phishing',malware:'Malware',ransomware:'Ransomware',ddos:'DDoS',sql_injection:'SQL Injection',zero_day:'Zero-Day',insider:'Insider Threat',data_exfil:'Data Exfiltration',social_eng:'Social Engineering'};
-const ATTACK_ICONS={phishing:'🎣',malware:'🦠',ransomware:'🔒',ddos:'🌊',sql_injection:'💉',zero_day:'⚡',insider:'🏢',data_exfil:'📤',social_eng:'🎭'};
+const ATTACK_NAMES={};ATTACK_DATA.forEach(a=>{ATTACK_NAMES[a.id]=a.name});
+const ATTACK_ICONS={};ATTACK_DATA.forEach(a=>{ATTACK_ICONS[a.id]=a.icon});
 
 function stopAllAudio(){
   dashMusic.pause();dashMusic.currentTime=0;
@@ -412,6 +377,8 @@ function updateButtons(gs){
   btnForceEnd.style.display='none';
   btnNextRound.style.display='none';
   btnPriorityCharts.style.display='none';
+  timerDec.style.display=gs.phase==='selecting'?'':'none';
+  timerInc.style.display=gs.phase==='selecting'?'':'none';
   if(gs.phase==='lobby'){
     btnStartGame.style.display='';
     btnStartGame.disabled=false;
@@ -438,32 +405,40 @@ function showSlotMachine(attack){
   slotOverlay.classList.remove('hidden');
   revealOverlay.classList.add('hidden');
   gameoverReveal.classList.add('hidden');
-  const ih=150,cycles=5;
-    const atts=Object.keys(ATTACKS).map(id=>{
+  const atts=Object.keys(ATTACKS).map(id=>{
     const names={phishing:'Phishing',malware:'Malware',ransomware:'Ransomware',ddos:'DDoS',sql_injection:'SQL Injection',zero_day:'Zero-Day',insider:'Insider Threat',data_exfil:'Data Exfiltration',social_eng:'Social Engineering'};
     return {id,icon:ATTACKS[id],name:names[id]||id};
   });
   const targetIdx=atts.findIndex(a=>a.id===attack.id);
   if(targetIdx<0)return;
-  dashSlotTrack.innerHTML='';
-  for(let c=0;c<cycles+1;c++)atts.forEach(a=>{
-    const d=document.createElement('div');d.className='dash-slot-item';
-    d.innerHTML='<span class="dsi-icon">'+a.icon+'</span><span class="dsi-name">'+a.name+'</span>';
-    dashSlotTrack.appendChild(d);
-  });
-  atts.slice(0,2).forEach(a=>{
-    const d=document.createElement('div');d.className='dash-slot-item';
-    d.innerHTML='<span class="dsi-icon">'+a.icon+'</span><span class="dsi-name">'+a.name+'</span>';
-    dashSlotTrack.appendChild(d);
-  });
-  const tgi=cycles*atts.length+targetIdx,endY=(tgi-1)*ih,duration=7000,st=performance.now();
-  function eo(t){return 1-Math.pow(1-t,3)}
-  function an(now){
-    const elapsed=now-st,progress=Math.min(elapsed/duration,1),cur=eo(progress)*endY;
-    dashSlotTrack.style.transform='translateY(-'+cur+'px)';
-    if(progress<1)requestAnimationFrame(an);
+  cardFlipContainer.style.filter='none';
+  cardFlipContainer.style.transform='scale(1)';
+  const totalCycles=5;let step=0;
+  const totalSteps=totalCycles*atts.length+targetIdx;
+  const baseInterval=120;let interval=baseInterval;
+  function spin(){
+    const a=atts[step%atts.length];
+    cardFlipIcon.textContent=a.icon;
+    cardFlipIcon.style.transform='rotateY('+((step%2)*180)+'deg)';
+    step++;
+    if(step<totalSteps){
+      interval=baseInterval+Math.pow(step/totalSteps,3)*400;
+      cardFlipContainer.style.filter='blur('+(step/totalSteps*6)+'px)';
+      setTimeout(spin,interval);
+    }else{
+      cardFlipIcon.textContent=attack.icon;
+      cardFlipIcon.style.transform='rotateY(0)';
+      cardFlipContainer.style.filter='none';
+      setTimeout(()=>{
+        slotOverlay.classList.add('hidden');
+        revIcon.textContent=attack.icon;
+        revName.textContent=attack.name;
+        revExample.textContent='e.g. '+attack.example;
+        revealOverlay.classList.remove('hidden');
+      },600);
+    }
   }
-  requestAnimationFrame(an);
+  spin();
 }
 
 function showReveal(attack){
@@ -690,6 +665,7 @@ socket.on('players-update',(players)=>{
 socket.on('timer-update',(remaining)=>{
   dashTimer.textContent=formatTime(remaining);
   dashTimer.className='dash-timer'+(remaining<=10?' danger':remaining<=30?' warning':'');
+  if(remaining===15)playDashWarningChime();
 });
 
 // Controls
