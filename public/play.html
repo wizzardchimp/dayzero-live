@@ -67,6 +67,23 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .priority-overlay.hidden{opacity:0;pointer-events:none}
 .name-overlay{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.5);backdrop-filter:blur(12px);transition:opacity .3s ease}
 .name-overlay.hidden{opacity:0;pointer-events:none}
+.instructions-btn{margin-top:10px;padding:10px;font-size:13px;font-weight:600;border:1px solid rgba(255,255,255,.15);border-radius:8px;background:transparent;color:var(--text3);cursor:pointer;transition:all .2s}
+.instructions-btn:active{background:rgba(255,255,255,.08)}
+.instructions-overlay{position:fixed;inset:0;z-index:300;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.6);backdrop-filter:blur(8px);transition:opacity .3s ease}
+.instructions-overlay.hidden{opacity:0;pointer-events:none}
+.instructions-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px 18px;max-width:380px;max-height:85vh;overflow-y:auto;width:90%}
+.instructions-card h3{font-size:18px;font-weight:800;margin-bottom:12px;color:var(--text)}
+.instructions-card .inst-section{margin-bottom:14px}
+.instructions-card .inst-section h4{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px}
+.instructions-card .inst-list{padding-left:16px;font-size:13px;color:var(--text2);line-height:1.6}
+.instructions-card .inst-list li{margin-bottom:4px}
+.instructions-card .inst-matrix{font-size:11px;width:100%;border-collapse:collapse;margin-top:6px}
+.instructions-card .inst-matrix th{padding:4px 3px;text-align:center;color:var(--text3);font-weight:600;border-bottom:1px solid var(--border)}
+.instructions-card .inst-matrix td{padding:3px;text-align:center;color:var(--text2)}
+.instructions-card .inst-matrix .yes{color:var(--green);font-weight:700}
+.instructions-card .inst-matrix .no{color:#4b5563}
+.instructions-close{margin-top:14px;width:100%;padding:12px;font-size:15px;font-weight:700;border-radius:8px;border:none;background:var(--accent);color:#fff;cursor:pointer}
+.instructions-close:active{transform:scale(.97)}
 .waiting-overlay{position:fixed;inset:0;z-index:80;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(255,255,255,.85);backdrop-filter:blur(4px);transition:opacity .3s ease}
 .waiting-overlay.hidden{opacity:0;pointer-events:none}
 .result-overlay{position:fixed;inset:0;z-index:100;display:flex;align-items:flex-end;justify-content:center;background:rgba(0,0,0,.5);backdrop-filter:blur(8px);transition:opacity .3s ease}
@@ -259,8 +276,56 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
     <input class="code-input" id="code-input" type="text" placeholder="Session code" maxlength="3" inputmode="numeric" pattern="[0-9]*">
     <input class="name-input" id="name-input" type="text" placeholder="Your name" maxlength="20">
     <button class="name-sub-btn" id="name-sub-btn">Join Game</button>
+    <button class="instructions-btn" id="instructions-btn">How to Play</button>
     <div class="join-error hidden" id="join-error"></div>
     <div class="connecting" id="connecting-msg">Connecting to server...</div>
+  </div>
+</div>
+
+<div class="instructions-overlay hidden" id="instructions-overlay">
+  <div class="instructions-card">
+    <h3>How to Play</h3>
+    <div class="inst-section">
+      <h4>🎯 Objective</h4>
+      <ul class="inst-list">
+        <li>Select cyber defences to protect against random attacks</li>
+        <li>Survive three rounds — each round brings a new attack</li>
+        <li>Build the strongest defence and select fastest for bonus points</li>
+      </ul>
+    </div>
+    <div class="inst-section">
+      <h4>💰 Budget</h4>
+      <ul class="inst-list">
+        <li>You start with <strong>£200,000</strong></li>
+        <li>Each breach costs <strong>£100,000</strong></li>
+        <li>Go to £0 = <strong>eliminated</strong> (red screen, out of the game)</li>
+      </ul>
+    </div>
+    <div class="inst-section">
+      <h4>🛡️ Defence → Attack Matrix</h4>
+      <table class="inst-matrix">
+        <tr><th></th><th>🎣</th><th>🦠</th><th>🔒</th><th>🌊</th><th>💉</th><th>⚡</th><th>🏢</th><th>📤</th><th>🎭</th></tr>
+        <tr><td>🛡️</td><td class="yes">✓</td><td></td><td></td><td class="yes">✓</td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td>💻</td><td></td><td class="yes">✓</td><td class="yes">✓</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td>🔐</td><td></td><td></td><td></td><td></td><td></td><td></td><td class="yes">✓</td><td></td><td class="yes">✓</td></tr>
+        <tr><td>🔒</td><td></td><td></td><td class="yes">✓</td><td></td><td></td><td></td><td></td><td class="yes">✓</td><td></td></tr>
+        <tr><td>🔀</td><td></td><td></td><td></td><td></td><td class="yes">✓</td><td></td><td class="yes">✓</td><td></td><td></td></tr>
+        <tr><td>💾</td><td></td><td></td><td class="yes">✓</td><td class="yes">✓</td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td>👁️</td><td class="yes">✓</td><td></td><td></td><td></td><td></td><td class="yes">✓</td><td></td><td></td><td></td></tr>
+        <tr><td>🔑</td><td></td><td></td><td></td><td></td><td class="yes">✓</td><td></td><td></td><td></td><td class="yes">✓</td></tr>
+        <tr><td>📚</td><td></td><td class="yes">✓</td><td></td><td></td><td></td><td></td><td></td><td></td><td class="yes">✓</td></tr>
+        <tr><td>📊</td><td></td><td></td><td></td><td></td><td></td><td class="yes">✓</td><td></td><td class="yes">✓</td><td></td></tr>
+        <tr><td>🔑</td><td class="yes">✓</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td class="yes">✓</td></tr>
+      </table>
+    </div>
+    <div class="inst-section">
+      <h4>📊 Scoring</h4>
+      <ul class="inst-list">
+        <li><strong>75%</strong> — Priority match (higher rank = more points)</li>
+        <li><strong>25%</strong> — Speed (faster selection = more points)</li>
+      </ul>
+    </div>
+    <button class="instructions-close" id="instructions-close">Got it</button>
   </div>
 </div>
 
@@ -354,6 +419,7 @@ let lastGameState=null;
 let revealTimer=null;
 
 const connDot=$('conn-dot'),nameOverlay=$('name-overlay'),nameInput=$('name-input'),codeInput=$('code-input'),nameSubBtn=$('name-sub-btn'),joinError=$('join-error'),connMsg=$('connecting-msg');
+const instructionsBtn=$('instructions-btn'),instructionsOverlay=$('instructions-overlay'),instructionsClose=$('instructions-close');
 const defenceGrid=$('defence-grid'),roundTitle=$('round-title'),roundSub=$('round-sub'),roundBadge=$('round-badge'),selectionCounter=$('selection-counter'),waitSelected=$('wait-selected');
 const timerDisplay=$('timer-display'),timerSection=$('timer-section');
 const headerBudget=$('header-budget'),statusText=$('status-text'),statusBudget=$('status-budget');
@@ -786,6 +852,9 @@ function joinGame(){
 nameSubBtn.addEventListener('click',joinGame);
 nameInput.addEventListener('keydown',e=>{if(e.key==='Enter')joinGame()});
 codeInput.addEventListener('keydown',e=>{if(e.key==='Enter')joinGame()});
+instructionsBtn.addEventListener('click',()=>{instructionsOverlay.classList.remove('hidden')});
+instructionsClose.addEventListener('click',()=>{instructionsOverlay.classList.add('hidden')});
+instructionsOverlay.addEventListener('click',e=>{if(e.target===instructionsOverlay)instructionsOverlay.classList.add('hidden')});
 
 resultBtn.addEventListener('click',()=>{
   resultOverlay.classList.add('hidden');
