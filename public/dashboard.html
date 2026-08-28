@@ -278,11 +278,15 @@ const ATTACK_NAMES={};ATTACK_DATA.forEach(a=>{ATTACK_NAMES[a.id]=a.name});
 const ATTACK_ICONS={};ATTACK_DATA.forEach(a=>{ATTACK_ICONS[a.id]=a.icon});
 
 function stopAllAudio(){
-  dashMusic.pause();dashMusic.currentTime=0;
+  dashMusic.pause();dashMusic.currentTime=0;dashMusic.removeAttribute('loop');
   dashDrumroll.pause();dashDrumroll.currentTime=0;
+  dashWin.pause();dashWin.currentTime=0;dashWin.removeAttribute('loop');
+  dashLose.pause();dashLose.currentTime=0;
+  dashChime.pause();dashChime.currentTime=0;
+  dashDing.pause();dashDing.currentTime=0;
 }
 
-function playMusic(){dashMusic.currentTime=0;dashMusic.play().catch(()=>{})}
+function playMusic(){dashMusic.setAttribute('loop','');dashMusic.currentTime=0;dashMusic.play().catch(()=>{})}
 function playDrumroll(){dashDrumroll.currentTime=0;dashDrumroll.play().catch(()=>{})}
 function playWin(){dashWin.currentTime=0;dashWin.play().catch(()=>{})}
 function playLose(){dashLose.currentTime=0;dashLose.play().catch(()=>{})}
