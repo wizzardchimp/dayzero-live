@@ -868,12 +868,13 @@ document.addEventListener('keydown',e=>{
   }
 });
 
-const instBtn=document.getElementById('inst-btn');
 const instOverlay=document.getElementById('inst-overlay');
 const instClose=document.getElementById('inst-close');
-if(instBtn)instBtn.addEventListener('click',()=>{instOverlay.classList.remove('hidden')});
-if(instClose)instClose.addEventListener('click',()=>{instOverlay.classList.add('hidden')});
-if(instOverlay)instOverlay.addEventListener('click',e=>{if(e.target===instOverlay)instOverlay.classList.add('hidden')});
+document.addEventListener('click',e=>{
+  if(e.target.id==='inst-btn')instOverlay.classList.remove('hidden');
+  if(e.target.id==='inst-close')instOverlay.classList.add('hidden');
+  if(e.target===instOverlay)instOverlay.classList.add('hidden');
+});
 
 // Initial state
 renderCards([]);
