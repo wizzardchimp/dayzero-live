@@ -222,13 +222,19 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .wait-selected.show{transform:translateY(0)}
 .wait-selected .ws-label{font-size:16px;font-weight:700;color:var(--green)}
 .wait-selected .ws-sub{font-size:14px;color:var(--text2);margin-top:4px}
+.eliminated-overlay{position:fixed;inset:0;z-index:200;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(135deg,#7f1d1d,#991b1b);transition:opacity .3s ease}
+.eliminated-overlay.hidden{opacity:0;pointer-events:none}
+.eliminated-overlay .eo-icon{font-size:72px;margin-bottom:16px}
+.eliminated-overlay .eo-title{font-size:36px;font-weight:900;color:#fff;letter-spacing:4px;text-transform:uppercase}
+.eliminated-overlay .eo-sub{font-size:18px;color:rgba(255,255,255,.7);margin-top:8px}
+.eliminated-overlay .eo-budget{font-size:16px;color:rgba(255,255,255,.5);margin-top:16px}
 </style>
 </head>
 <body>
 <div class="header">
   <h1>DAY ZERO</h1>
   <div class="header-right">
-    <div class="header-budget"><span class="label">Budget</span><span class="amount ok" id="header-budget">£300,000</span></div>
+    <div class="header-budget"><span class="label">Budget</span><span class="amount ok" id="header-budget">£200,000</span></div>
     <div class="round-badge" id="round-badge">ROUND 1</div>
     <div class="conn-dot" id="conn-dot"></div>
   </div>
@@ -244,7 +250,7 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 </div>
 <div class="status-bar">
   <div class="status-left"><div class="status-dot"></div><span class="status-text" id="status-text">System Active</span></div>
-  <div class="status-budget"><span class="label">Budget</span><span class="amount ok" id="status-budget">£300,000</span></div>
+  <div class="status-budget"><span class="label">Budget</span><span class="amount ok" id="status-budget">£200,000</span></div>
 </div>
 <div class="name-overlay" id="name-overlay">
   <div class="name-card">
@@ -294,7 +300,7 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
     <div class="attack-info"><div class="a-header"><div class="a-icon" id="a-icon">🔓</div><div><div class="a-name" id="a-name">Attack Name</div><div class="a-desc" id="a-desc">Description</div></div></div></div>
     <div class="budget-impact">
       <div class="budget-item"><div class="label">Impact</div><div class="value" id="bi-impact">£0</div></div>
-      <div class="budget-item"><div class="label">Remaining</div><div class="value" id="bi-remaining">£300,000</div></div>
+      <div class="budget-item"><div class="label">Remaining</div><div class="value" id="bi-remaining">£200,000</div></div>
     </div>
     <div class="defences-deployed"><div class="dd-label">ACTIVE DEFENCES</div><div class="dd-list" id="dd-list"></div></div>
     <button class="result-btn" id="result-btn">Close</button>
@@ -318,6 +324,13 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 <div class="wait-selected" id="wait-selected">
   <div class="ws-label">Defences locked in</div>
   <div class="ws-sub">Please wait for the round to continue</div>
+</div>
+
+<div class="eliminated-overlay hidden" id="eliminated-overlay">
+  <div class="eo-icon">💀</div>
+  <div class="eo-title">Eliminated</div>
+  <div class="eo-sub">Your systems have been compromised</div>
+  <div class="eo-budget">Budget depleted</div>
 </div>
 
 <script src="/shared.js"></script>
@@ -350,6 +363,7 @@ const resultOverlay=$('result-overlay'),resultTitle=$('result-title'),resultSub=
 const aIcon=$('a-icon'),aName=$('a-name'),aDesc=$('a-desc'),biImpact=$('bi-impact'),biRemaining=$('bi-remaining'),ddList=$('dd-list'),resultBtn=$('result-btn');
 const gameoverOverlay=$('gameover-overlay'),goTitle=$('go-title'),goRank=$('go-rank'),goMeta=$('go-meta'),goAttacksList=$('go-attacks-list');
 const waitingOverlay=$('waiting-overlay'),woText=$('wo-text'),woSub=$('wo-sub');
+const eliminatedOverlay=$('eliminated-overlay');
 const priorityOverlay=$('priority-overlay'),priorityList=$('priority-list'),prioritySubBtn=$('priority-sub-btn'),priorityClear=$('priority-clear');
 const wheelSpinner=$('wheel-spinner');
 
@@ -464,6 +478,7 @@ function hideAllOverlays(){
   resultOverlay.classList.add('hidden');
   gameoverOverlay.classList.add('hidden');
   waitingOverlay.classList.add('hidden');
+  eliminatedOverlay.classList.add('hidden');
   priorityOverlay.classList.add('hidden');
 }
 
@@ -490,6 +505,11 @@ function renderPhase(gs){
     roundBadge.textContent=`ROUND ${gs.round}`;
     statusText.textContent='Timer Running — Select Defences';
     renderDefences();
+    if(myData&&myData.eliminated){
+      eliminatedOverlay.classList.remove('hidden');
+      defenceGrid.style.display='none';
+      timerSection.style.display='none';
+    }
   }else if(phase==='spinning'){
     defenceGrid.style.display='none';
     timerSection.style.display='none';

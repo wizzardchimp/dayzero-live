@@ -40,7 +40,7 @@ const PRIORITY_MAP={
 const PRIORITY_EMOJIS={'Money':'💰','Data':'💾','Maintain Services':'⚙️'};
 
 const ATTACK_COST=100000;
-const START_BUDGET=300000;
+const START_BUDGET=200000;
 const MAX_ROUNDS=3;
 const SPIN_DURATION=7000;
 const DEFAULT_TIMER=120;

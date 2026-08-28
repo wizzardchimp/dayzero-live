@@ -292,8 +292,8 @@ function playWin(){dashWin.currentTime=0;dashWin.play().catch(()=>{})}
 function playLose(){dashLose.currentTime=0;dashLose.play().catch(()=>{})}
 
 
-function budgetPct(b){return Math.max(0,Math.min(100,(b/300000)*100))}
-function budgetClass(b){const p=b/300000;return p<=0.25?'critical':p<=0.5?'low':'ok'}
+function budgetPct(b){return Math.max(0,Math.min(100,(b/START_BUDGET)*100))}
+function budgetClass(b){const p=b/START_BUDGET;return p<=0.25?'critical':p<=0.5?'low':'ok'}
 
 function formatTime(s){
   const m=Math.floor(s/60),sec=s%60;

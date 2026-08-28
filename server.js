@@ -117,14 +117,14 @@ function calculateAward(player) {
   // Budget component
   const budgetPct = Math.max(0, Math.min(100, Math.round((player.budget / START_BUDGET) * 100)));
 
-  // Final score: 60% priority match, 25% speed, 15% budget
-  const score = Math.round(prioPct * 0.60 + speedPct * 0.25 + budgetPct * 0.15);
+  // Final score: 75% priority match, 25% speed
+  const score = Math.round(prioPct * 0.75 + speedPct * 0.25);
 
   let award = 'Bronze';
   if (score >= 78) award = 'Gold';
   else if (score >= 58) award = 'Silver';
 
-  return { award, score, priorityPct: prioPct, speedPct, budgetPct };
+  return { award, score, priorityPct: prioPct, speedPct, budgetPct: 0 };
 }
 
 function compileGameAudit() {
@@ -185,6 +185,7 @@ function getPlayersData() {
       name: p.name,
       connected: p.connected,
       budget: p.budget,
+      eliminated: !!p.eliminated,
       blocked: p.blocked,
       breaches: p.breaches,
       defences: [...p.carriedOver, ...p.selected],
@@ -244,6 +245,7 @@ function endRound() {
     } else {
       p.breaches++;
       p.budget = Math.max(0, p.budget - ATTACK_COST);
+      if (p.budget <= 0) p.eliminated = true;
       p.lastResult = 'breached';
       const preventers = Object.entries(EFFECTIVENESS)
         .filter(([, attacks]) => attacks.includes(attack.id))
@@ -279,6 +281,7 @@ function startRound() {
   game.currentAttack = null;
 
   Object.values(players).forEach(p => {
+    if (p.eliminated) return;
     p.carriedOver = [...p.carriedOver, ...p.selected];
     p.selected = [];
     p.maxSelect = game.round === 1 ? 3 : game.round === 2 ? 2 : 1;
@@ -316,6 +319,7 @@ function startGame() {
     p.budget = START_BUDGET;
     p.blocked = 0;
     p.breaches = 0;
+    p.eliminated = false;
     p.lastAttack = null;
     p.lastResult = null;
     p.preventInfo = null;
@@ -343,6 +347,7 @@ function resetGame() {
     p.budget = START_BUDGET;
     p.blocked = 0;
     p.breaches = 0;
+    p.eliminated = false;
     p.lastAttack = null;
     p.lastResult = null;
     p.preventInfo = null;
