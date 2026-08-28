@@ -76,6 +76,22 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .lobby-qr #lobby-qr-code canvas{border-radius:16px;background:#fff;padding:16px;box-shadow:0 4px 20px rgba(0,0,0,.2)}
 .lobby-qr .qr-code-big{font-size:48px;font-weight:900;letter-spacing:8px;margin:12px 0 4px;background:var(--accent-light);color:var(--accent2);padding:10px 32px;border-radius:14px}
 .lobby-qr .qr-sub{font-size:16px;color:var(--text2);margin-top:8px}
+.inst-btn{margin-top:16px;padding:10px 20px;font-size:14px;font-weight:600;border:1px solid var(--border);border-radius:8px;background:transparent;color:var(--text2);cursor:pointer;transition:all .2s}
+.inst-btn:hover{background:var(--card);color:var(--text)}
+.inst-overlay{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.6);backdrop-filter:blur(8px);transition:opacity .3s ease}
+.inst-overlay.hidden{opacity:0;pointer-events:none}
+.inst-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:28px 24px;max-width:500px;max-height:80vh;overflow-y:auto;width:90%}
+.inst-card h3{font-size:22px;font-weight:900;margin-bottom:16px;color:var(--text)}
+.inst-card .inst-section{margin-bottom:16px}
+.inst-card .inst-section h4{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px}
+.inst-card .inst-list{padding-left:18px;font-size:14px;color:var(--text2);line-height:1.7}
+.inst-card .inst-list li{margin-bottom:4px}
+.inst-card .inst-matrix{font-size:12px;width:100%;border-collapse:collapse;margin-top:8px}
+.inst-card .inst-matrix th{padding:5px 4px;text-align:center;color:var(--text3);font-weight:600;border-bottom:1px solid var(--border)}
+.inst-card .inst-matrix td{padding:4px;text-align:center;color:var(--text2)}
+.inst-card .inst-matrix .yes{color:var(--green);font-weight:700}
+.inst-card .inst-close{margin-top:16px;width:100%;padding:12px;font-size:15px;font-weight:700;border-radius:8px;border:none;background:var(--accent);color:#fff;cursor:pointer}
+.inst-card .inst-close:hover{filter:brightness(1.1)}
 .controls-bar{position:fixed;bottom:0;left:0;right:0;z-index:50;background:var(--card);border-top:1px solid var(--border);padding:12px 32px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-shrink:0}
 .controls-left{display:flex;align-items:center;gap:16px}
 .controls-center{display:flex;align-items:center;gap:8px;flex:1;justify-content:center;padding:0 16px}
@@ -180,6 +196,53 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 <div class="main">
   <div class="grid" id="grid"></div>
 </div>
+<div class="inst-overlay hidden" id="inst-overlay">
+  <div class="inst-card">
+    <h3>How to Play</h3>
+    <div class="inst-section">
+      <h4>🎯 Objective</h4>
+      <ul class="inst-list">
+        <li>Select cyber defences to protect against random attacks</li>
+        <li>Survive three rounds — each round brings a new attack</li>
+        <li>Build the strongest defence and select fastest for bonus points</li>
+      </ul>
+    </div>
+    <div class="inst-section">
+      <h4>💰 Budget</h4>
+      <ul class="inst-list">
+        <li>Each player starts with <strong>£200,000</strong></li>
+        <li>Each breach costs <strong>£100,000</strong></li>
+        <li>Go to £0 = <strong>eliminated</strong> (red screen, out of the game)</li>
+      </ul>
+    </div>
+    <div class="inst-section">
+      <h4>🛡️ Defence → Attack Matrix</h4>
+      <table class="inst-matrix">
+        <tr><th></th><th>🎣</th><th>🦠</th><th>🔒</th><th>🌊</th><th>💉</th><th>⚡</th><th>🏢</th><th>📤</th><th>🎭</th></tr>
+        <tr><td>🛡️</td><td class="yes">✓</td><td></td><td></td><td class="yes">✓</td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td>💻</td><td></td><td class="yes">✓</td><td class="yes">✓</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td>🔐</td><td></td><td></td><td></td><td></td><td></td><td></td><td class="yes">✓</td><td></td><td class="yes">✓</td></tr>
+        <tr><td>🔒</td><td></td><td></td><td class="yes">✓</td><td></td><td></td><td></td><td></td><td class="yes">✓</td><td></td></tr>
+        <tr><td>🔀</td><td></td><td></td><td></td><td></td><td class="yes">✓</td><td></td><td class="yes">✓</td><td></td><td></td></tr>
+        <tr><td>💾</td><td></td><td></td><td class="yes">✓</td><td class="yes">✓</td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td>👁️</td><td class="yes">✓</td><td></td><td></td><td></td><td></td><td class="yes">✓</td><td></td><td></td><td></td></tr>
+        <tr><td>🔑</td><td></td><td></td><td></td><td></td><td class="yes">✓</td><td></td><td></td><td></td><td class="yes">✓</td></tr>
+        <tr><td>📚</td><td></td><td class="yes">✓</td><td></td><td></td><td></td><td></td><td></td><td></td><td class="yes">✓</td></tr>
+        <tr><td>📊</td><td></td><td></td><td></td><td></td><td></td><td class="yes">✓</td><td></td><td class="yes">✓</td><td></td></tr>
+        <tr><td>🔑</td><td class="yes">✓</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td class="yes">✓</td></tr>
+      </table>
+    </div>
+    <div class="inst-section">
+      <h4>📊 Scoring</h4>
+      <ul class="inst-list">
+        <li><strong>75%</strong> — Priority match (higher rank = more points)</li>
+        <li><strong>25%</strong> — Speed (faster selection = more points)</li>
+      </ul>
+    </div>
+    <button class="inst-close" id="inst-close">Got it</button>
+  </div>
+</div>
+
 <div class="controls-bar">
   <div class="controls-left">
     <div class="phase-label">Timer</div>
@@ -343,6 +406,7 @@ function renderCards(players){
               <div class="info-bullet"><span class="bullet-num">3</span><span>Build the strongest defence and select fastest for bonus points</span></div>
             </div>
             <img src="/Officeguy.gif" alt="Office worker frustrated with computer" style="width:120px;height:auto;margin:0 auto;display:block">
+            <button class="inst-btn" id="inst-btn">Full Instructions</button>
           </div>
           <div class="qr-side">
             <div class="qr-label">Scan to join</div>
@@ -803,6 +867,13 @@ document.addEventListener('keydown',e=>{
     else document.exitFullscreen();
   }
 });
+
+const instBtn=document.getElementById('inst-btn');
+const instOverlay=document.getElementById('inst-overlay');
+const instClose=document.getElementById('inst-close');
+if(instBtn)instBtn.addEventListener('click',()=>{instOverlay.classList.remove('hidden')});
+if(instClose)instClose.addEventListener('click',()=>{instOverlay.classList.add('hidden')});
+if(instOverlay)instOverlay.addEventListener('click',e=>{if(e.target===instOverlay)instOverlay.classList.add('hidden')});
 
 // Initial state
 renderCards([]);
