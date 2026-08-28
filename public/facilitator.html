@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Day Zero Live — Facilitator Guide</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:#0f1117;color:#e2e8f0;padding:32px;line-height:1.5;font-size:13px}
+    h1{font-size:24px;text-align:center;margin-bottom:4px}
+    .subtitle{text-align:center;color:#94a3b8;margin-bottom:24px;font-size:13px}
+    .cols{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px}
+    .section{background:#1a1d28;border:1px solid #2d3142;border-radius:10px;padding:16px 18px}
+    .section h2{font-size:15px;margin-bottom:10px;color:#60a5fa;border-bottom:1px solid #2d3142;padding-bottom:6px}
+    .section h3{font-size:13px;margin:10px 0 6px;color:#c084fc}
+    .full{grid-column:1/-1}
+    table{width:100%;border-collapse:collapse;font-size:12px}
+    th{text-align:left;padding:6px 8px;background:#252836;color:#94a3b8;font-weight:600;border-bottom:1px solid #2d3142}
+    td{padding:5px 8px;border-bottom:1px solid #1e2030}
+    tr:hover td{background:#252836}
+    .tag{display:inline-block;padding:1px 6px;border-radius:4px;font-size:10px;font-weight:700;margin:1px}
+    .tag-block{background:#064e3b;color:#6ee7b7}
+    .tag-hit{background:#7f1d1d;color:#fca5a5}
+    .tag-carry{background:#1e3a5f;color:#93c5fd}
+    .tag-budget{background:#78350f;color:#fcd34d}
+    .tag-score{background:#581c87;color:#d8b4fe}
+    .tag-elim{background:#991b1b;color:#fff}
+    ul{padding-left:16px;margin:4px 0}
+    li{margin-bottom:3px}
+    .steps{counter-reset:step}
+    .steps li{list-style:none;counter-increment:step;padding-left:24px;position:relative;margin-bottom:6px}
+    .steps li::before{content:counter(step);position:absolute;left:0;top:0;width:20px;height:20px;border-radius:50%;background:#2563eb;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:11px}
+    .matrix td{text-align:center;font-size:11px;padding:3px 2px}
+    .matrix .yes{background:#064e3b;color:#6ee7b7;font-weight:700}
+    .matrix .no{color:#4b5563}
+    .note{background:#1e3a5f;border-left:3px solid #60a5fa;padding:8px 12px;border-radius:0 6px 6px 0;margin-top:10px;font-size:12px;color:#93c5fd}
+    @media print{body{background:#fff;color:#111;padding:16px;font-size:11px}.section{border:1px solid #ccc;background:#f9fafb}th{background:#e5e7eb}td{border-bottom:1px solid #ddd}.matrix .yes{background:#d1fae5;color:#065f46}.matrix .no{color:#9ca3af}.tag-block{background:#d1fae5;color:#065f46}.tag-hit{background:#fee2e2;color:#991b1b}.tag-carry{background:#dbeafe;color:#1e40af}.tag-budget{background:#fef3c7;color:#92400e}.tag-score{background:#ede9fe;color:#5b21b6}.tag-elim{background:#fecaca;color:#991b1b}h1{color:#111}.subtitle{color:#555}h2{color:#2563eb;border-color:#d1d5db}th{color:#555;background:#e5e7eb}}
+  </style>
+</head>
+<body>
+  <h1>Day Zero Live — Facilitator Guide</h1>
+  <p class="subtitle">Cyber Defence Multiplayer Game &bull; Run on a big screen with players on phones</p>
+
+  <div class="cols">
+
+    <div class="section">
+      <h2>1. Setup</h2>
+      <ol class="steps">
+        <li>Open <strong>dashboard.html</strong> on the big screen projector/laptop</li>
+        <li>A QR code and session code appear — players scan to join on their phones</li>
+        <li>Wait for all players to join (they appear as cards on the dashboard)</li>
+        <li>Click <strong>Start Game</strong> when ready</li>
+      </ol>
+      <div class="note">Each player starts with <strong>£200,000</strong> budget. Each breach costs £100,000. Go to £0 = <strong>eliminated</strong>.</div>
+    </div>
+
+    <div class="section">
+      <h2>2. Game Flow (per round)</h2>
+      <ol class="steps">
+        <li><strong>Priority Phase</strong> — Players rank 3 priorities (Money, Data, Maintain Services). Faster = bonus points.</li>
+        <li><strong>Selecting Phase</strong> — 120s timer. Players pick defences to deploy this round. Defences carry over.</li>
+        <li><strong>Spinning</strong> — Wheel spin animation (7s). A random attack is selected.</li>
+        <li><strong>Reveal</strong> — Each player sees if they blocked or were breached. Budget deducted on breach.</li>
+        <li>Repeat for 3 rounds. Game over → winner announced.</li>
+      </ol>
+    </div>
+
+    <div class="section full">
+      <h2>3. Round Structure & Logic</h2>
+      <table>
+        <thead>
+          <tr>
+            <th style="width:80px">Phase</th>
+            <th>What Happens</th>
+            <th>Player Action</th>
+            <th>Key Rules</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Priority</strong></td>
+            <td>Players rank 3 priorities: 💰 Money, 💾 Data, ⚙️ Maintain Services</td>
+            <td>Drag to reorder, tap to confirm</td>
+            <td><span class="tag tag-score">60% of score</span> Faster submit = more bonus. Each priority covers 3 attacks.</td>
+          </tr>
+          <tr>
+            <td><strong>Select R1</strong></td>
+            <td>Choose <strong>3 defences</strong> to deploy</td>
+            <td>Tap cards to select</td>
+            <td><span class="tag tag-carry">Carry over</span> — all 3 carry into Round 2</td>
+          </tr>
+          <tr>
+            <td><strong>Select R2</strong></td>
+            <td>Choose <strong>2 more defences</strong> (3 carried from R1 = 5 active)</td>
+            <td>Tap cards to select</td>
+            <td><span class="tag tag-carry">Carry over</span> — all 5 carry into Round 3</td>
+          </tr>
+          <tr>
+            <td><strong>Select R3</strong></td>
+            <td>Choose <strong>1 more defence</strong> (5 carried = 6 active)</td>
+            <td>Tap cards to select</td>
+            <td>Final round. Eliminated players see red screen.</td>
+          </tr>
+          <tr>
+            <td><strong>Attack</strong></td>
+            <td>Random attack selected from 9 available (weighted by priority bucket)</td>
+            <td>Watch the spin</td>
+            <td>One attack per round. Not repeated within a game.</td>
+          </tr>
+          <tr>
+            <td><strong>Result</strong></td>
+            <td>Compare active defences vs attack. If a defence counters the attack → blocked.</td>
+            <td>See blocked/breached result</td>
+            <td><span class="tag tag-block">Blocked</span> = no damage. <span class="tag tag-hit">Breached</span> = <span class="tag tag-budget">-£100k</span> and <span class="tag tag-elim">Eliminated at £0</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="section">
+      <h2>4. Defence → Attack Effectiveness</h2>
+      <table class="matrix">
+        <thead>
+          <tr>
+            <th>Defence</th>
+            <th>🎣 Phish</th>
+            <th>🦠 Mal</th>
+            <th>🔒 Ransom</th>
+            <th>🌊 DDoS</th>
+            <th>💉 SQL</th>
+            <th>⚡ 0-Day</th>
+            <th>🏢 Insider</th>
+            <th>📤 Exfil</th>
+            <th>🎭 Social</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>🛡️ Firewall</td><td class="yes">✓</td><td class="no">—</td><td class="no">—</td><td class="yes">✓</td><td class="no">—</td><td class="no">—</td><td class="no">—</td><td class="no">—</td><td class="no">—</td></tr>
+          <tr><td>💻 Endpoint</td><td class="no">—</td><td class="yes">✓</td><td class="yes">✓</td><td class="no">—</td><td class="no">—</td><td class="no">—</td><td class="no">—</td><td class="no">—</td><td class="no">—</td></tr>
+          <tr><td>🔐 MFA</td><td class="no">—</td><td class="no">—</td><td class="no">—</td><td class="no">—</td><td class="no">—</td><td class="no">—</td><td class="yes">✓</td><td class="no">—</td><td class="yes">✓</td></tr>
+          <tr><td>🔒 Encrypt</td><td class="no">—</td><td class="no">—</td><td class="yes">✓</td><td class="no">—</td><td class="no">—</td><td class="no">—</td><td class="no">—</td><td class="yes">✓</td><td class="no">—</td></tr>
+          <tr><td>🔀 Segmentation</td><td class="no">—</td><td class="no">—</td><td class="no">—</td><td class="no">—</td><td class="yes">✓</td><td class="no">—</td><td class="yes">✓</td><td class="no">—</td><td class="no">—</td></tr>
+          <tr><td>💾 Backup</td><td class="no">—</td><td class="no">—</td><td class="yes">✓</td><td class="yes">✓</td><td class="no">—</td><td class="no">—</td><td class="no">—</td><td class="no">—</td><td class="no">—</td></tr>
+          <tr><td>👁️ Threat Det.</td><td class="yes">✓</td><td class="no">—</td><td class="no">—</td><td class="no">—</td><td class="no">—</td><td class="yes">✓</td><td class="no">—</td><td class="no">—</td><td class="no">—</td></tr>
+          <tr><td>🔑 Passwords</td><td class="no">—</td><td class="no">—</td><td class="no">—</td><td class="no">—</td><td class="yes">✓</td><td class="no">—</td><td class="no">—</td><td class="no">—</td><td class="yes">✓</td></tr>
+          <tr><td>📚 Training</td><td class="no">—</td><td class="yes">✓</td><td class="no">—</td><td class="no">—</td><td class="no">—</td><td class="no">—</td><td class="no">—</td><td class="no">—</td><td class="yes">✓</td></tr>
+          <tr><td>📊 Monitoring</td><td class="no">—</td><td class="no">—</td><td class="no">—</td><td class="no">—</td><td class="no">—</td><td class="yes">✓</td><td class="no">—</td><td class="yes">✓</td><td class="no">—</td></tr>
+          <tr><td>🔑 Passkeys</td><td class="yes">✓</td><td class="no">—</td><td class="no">—</td><td class="no">—</td><td class="no">—</td><td class="no">—</td><td class="no">—</td><td class="no">—</td><td class="yes">✓</td></tr>
+        </tbody>
+      </table>
+      <div class="note">Each defence counters <strong>2 attacks</strong>. Each attack is countered by <strong>2–4 defences</strong>. Hover: Social Eng has the most counters (4).</div>
+    </div>
+
+    <div class="section">
+      <h2>5. Priority → Attack Buckets</h2>
+      <table>
+        <thead><tr><th>Priority</th><th>Covers These Attacks</th></tr></thead>
+        <tbody>
+          <tr><td>💰 <strong>Money</strong></td><td>Ransomware, Insider Threat, Social Engineering</td></tr>
+          <tr><td>💾 <strong>Data</strong></td><td>Phishing, SQL Injection, Data Exfiltration</td></tr>
+          <tr><td>⚙️ <strong>Maintain Services</strong></td><td>Malware, DDoS, Zero-Day Exploit</td></tr>
+        </tbody>
+      </table>
+      <h3>Scoring Formula</h3>
+      <table>
+        <thead><tr><th>Component</th><th>Weight</th><th>How It Works</th></tr></thead>
+        <tbody>
+          <tr><td>Priority Match</td><td><span class="tag tag-score">75%</span></td><td>Rank 1 = 3pts, Rank 2 = 2pts, Rank 3 = 1pt per matching attack</td></tr>
+          <tr><td>Speed</td><td><span class="tag tag-score">25%</span></td><td>Faster priority submit + faster defence selection = more points</td></tr>
+          <tr><td>Budget</td><td><span class="tag" style="background:#374151;color:#9ca3af">0%</span></td><td>Removed — budget is now an elimination mechanic only</td></tr>
+        </tbody>
+      </table>
+      <div class="note"><strong>Awards:</strong> Gold (≥78), Silver (≥58), Bronze (&lt;58). Tiebreaker: most breaches survived.</div>
+    </div>
+
+    <div class="section full">
+      <h2>6. Quick Reference — Budget & Elimination</h2>
+      <table>
+        <thead><tr><th>Starting Budget</th><th>Cost per Breach</th><th>After 1 Breach</th><th>After 2 Breaches</th><th>Effect</th></tr></thead>
+        <tbody>
+          <tr><td><strong>£200,000</strong></td><td>£100,000</td><td>£100,000 — still playing</td><td>£0 — <span class="tag tag-elim">Eliminated</span></td><td>Player sees red screen, cannot select in Round 3</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="section full">
+      <h2>7. Tips for Running the Game</h2>
+      <div class="cols" style="margin-bottom:0">
+        <div>
+          <h3>Before</h3>
+          <ul>
+            <li>Test the QR code on your own phone first</li>
+            <li>Have a backup session code ready in case QR doesn't scan</li>
+            <li>Set a 2-minute timer on your phone as backup</li>
+          </ul>
+          <h3>During</h3>
+          <ul>
+            <li>Keep the dashboard on the big screen at all times</li>
+            <li>Click <strong>"Next Round"</strong> after each reveal to advance</li>
+            <li>Use <strong>"Flush Players"</strong> in lobby to reset if needed</li>
+          </ul>
+        </div>
+        <div>
+          <h3>Pacing</h3>
+          <ul>
+            <li>Priority phase: ~30s is typical, 120s max</li>
+            <li>Selection: ~60s is typical, 120s max</li>
+            <li>Spin + reveal: ~15s automatically</li>
+            <li>Total game: 10–15 minutes</li>
+          </ul>
+          <h3>Troubleshooting</h3>
+          <ul>
+            <li>Player stuck? Use dashboard card "✕" to remove, they can rejoin</li>
+            <li>Need to restart? Use <strong>"Hard Reset"</strong> from dashboard</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>
