@@ -572,8 +572,11 @@ function updateButtons(gs){
   }
 }
 
+let spinTimeout=null;
+
 function showSlotMachine(attack){
   if(!attack)return;
+  if(spinTimeout){clearTimeout(spinTimeout);spinTimeout=null;}
   slotOverlay.classList.remove('hidden');
   revealOverlay.classList.add('hidden');
   gameoverReveal.classList.add('hidden');
@@ -596,13 +599,14 @@ function showSlotMachine(attack){
     if(step<totalSteps){
       interval=baseInterval+Math.pow(step/totalSteps,3)*400;
       cardFlipContainer.style.filter='blur('+(step/totalSteps*6)+'px)';
-      setTimeout(spin,interval);
+      spinTimeout=setTimeout(spin,interval);
     }else{
       cardFlipIcon.textContent=attack.icon;
       cardFlipIcon.style.transform='rotateY(0)';
       cardFlipContainer.style.filter='none';
       dashDrumroll.pause();dashDrumroll.currentTime=0;
-      setTimeout(()=>{
+      spinTimeout=setTimeout(()=>{
+        spinTimeout=null;
         slotOverlay.classList.add('hidden');
         revIcon.textContent=attack.icon;
         revName.textContent=attack.name;
