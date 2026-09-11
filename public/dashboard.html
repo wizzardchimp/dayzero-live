@@ -155,12 +155,6 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .winner-round .wr-result{font-size:19px;font-weight:700;padding:4px 14px;border-radius:6px;letter-spacing:1px;flex-shrink:0}
 .winner-round .wr-result.blocked{background:rgba(16,185,129,.2);color:var(--green)}
 .winner-round .wr-result.breached{background:rgba(239,68,68,.2);color:var(--red)}
-.winner-round .wr-btn{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.6);padding:6px 12px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;flex-shrink:0;transition:all .2s;white-space:nowrap}
-.winner-round .wr-btn:hover{background:rgba(255,255,255,.15);color:#fff}
-.winner-round .wr-defences{display:none;width:100%;padding-top:8px}
-.winner-round .wr-defences.show{display:block}
-.winner-round .wr-defences-inner{display:flex;flex-wrap:wrap;gap:6px}
-.winner-round .wr-defences-inner span{background:rgba(16,185,129,.12);color:var(--green);padding:3px 10px;border-radius:6px;font-size:13px;font-weight:600}
 .ranking-title{font-size:22px;font-weight:900;margin-bottom:20px;text-align:center;color:rgba(255,255,255,.7)}
 .podium{display:flex;align-items:flex-end;justify-content:center;gap:16px;margin-bottom:32px}
 .podium-item{text-align:center;border-radius:var(--radius);padding:20px 24px;min-width:180px;transition:all .3s}
@@ -745,21 +739,12 @@ function renderWinner(players){
   const atkEl=$('summary-attacks');
   const history = (sorted[0] && sorted[0].roundHistory) || [];
   if(atkEl && history.length){
-    atkEl.innerHTML = history.map((r,i)=>{
+    atkEl.innerHTML = history.map((r)=>{
       const icon=ATTACK_ICONS[r.attackId]||'🔓';
       const name=ATTACK_NAMES[r.attackId]||r.attackId;
       const cls=r.blocked?'blocked':'breached';
       const label=r.blocked?'BLOCKED':'BREACHED';
-      const counters=[];
-      Object.entries(EFFECTIVENESS).forEach(([defId,attacks])=>{
-        if(attacks.includes(r.attackId)){
-          const d=DEFENCES.find(x=>x.id===defId);
-          counters.push(d?`${d.icon} ${d.name}`:defId);
-        }
-      });
-      const defHtml=counters.length?`<div class="wr-defences" id="wr-def-${i}"><div class="wr-defences-inner">${counters.map(d=>`<span>${d}</span>`).join('')}</div></div>`:'';
-      const btnHtml=counters.length?`<button class="wr-btn" onclick="document.getElementById('wr-def-${i}').classList.toggle('show');this.textContent=this.textContent==='Show Defences'?'Hide Defences':'Show Defences'">Show Defences</button>`:'';
-      return `<div class="winner-round"><div class="wr-left"><span class="wr-icon">${icon}</span><span class="wr-name">${name}</span><span class="wr-result ${cls}">${label}</span></div>${btnHtml}${defHtml}</div>`;
+      return `<div class="winner-round"><div class="wr-left"><span class="wr-icon">${icon}</span><span class="wr-name">${name}</span><span class="wr-result ${cls}">${label}</span></div></div>`;
     }).join('');
   }else if(atkEl){
     atkEl.innerHTML='';
