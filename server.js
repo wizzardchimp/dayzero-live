@@ -11,7 +11,7 @@ const io = new Server(server, {
   pingTimeout: 120000,
   pingInterval: 30000,
 });
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'public'), { maxAge: 0, etag: false, lastModified: false }));
 
 const game = {
   phase: 'lobby',
