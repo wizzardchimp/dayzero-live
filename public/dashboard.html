@@ -24,14 +24,14 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .grid.scroll-active{grid-template-columns:repeat(auto-fill,minmax(140px,1fr));grid-auto-flow:dense}
 .grid.scroll-track{animation:scrollBoard var(--scroll-duration,20s) linear infinite}
 @keyframes scrollBoard{0%{transform:translateX(0)}50%{transform:translateX(calc(var(--scroll-dist,200px)*-1))}100%{transform:translateX(0)}}
-.card{background:var(--card);border-radius:var(--radius);border:1px solid var(--border);padding:16px;transition:border-color .3s}
+.card{background:var(--card);border-radius:var(--radius);border:1px solid var(--border);padding:16px;transition:border-color .3s;overflow:hidden}
 .card.playing{border-color:var(--accent)}
 .card.ready{border-color:var(--green);border-width:3px;background:rgba(16,185,129,.04)}
 .card.done{border-color:var(--green)}
 .card.bankrupt{border-color:var(--red)}
 .card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
-.card-header-left{display:flex;align-items:center;gap:8px}
-.card-name{font-size:18px;font-weight:800}
+.card-header-left{display:flex;align-items:center;gap:8px;min-width:0}
+.card-name{font-size:18px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
 .card-remove{background:none;border:none;color:var(--text3);font-size:16px;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s}
 .card-remove:hover{background:rgba(239,68,68,.15);color:var(--red)}
 .card-status{font-size:10px;font-weight:600;padding:3px 8px;border-radius:10px;letter-spacing:1px;text-transform:uppercase}
@@ -40,10 +40,10 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .card-status.intro{background:rgba(148,163,184,.15);color:var(--text2)}
 .dc-badge{font-size:9px;font-weight:700;color:var(--red);letter-spacing:1px}
 .card-body{display:flex;flex-direction:column;gap:8px}
-.stat-row{display:flex;gap:8px}
-.stat-box{flex:1;background:var(--card2);border-radius:var(--radius-sm);padding:10px;text-align:center}
+.stat-row{display:flex;gap:6px}
+.stat-box{flex:1;min-width:0;background:var(--card2);border-radius:var(--radius-sm);padding:8px 6px;text-align:center;overflow:hidden}
 .stat-box .label{font-size:9px;color:var(--text3);font-weight:600;letter-spacing:1px;text-transform:uppercase;margin-bottom:2px}
-.stat-box .value{font-size:18px;font-weight:900}
+.stat-box .value{font-size:15px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .stat-box .value.green{color:var(--green)}
 .stat-box .value.red{color:var(--red)}
 .stat-box .value.blue{color:var(--accent2)}
@@ -52,15 +52,14 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .budget-bar-fill.ok{background:var(--green)}
 .budget-bar-fill.low{background:var(--orange)}
 .budget-bar-fill.critical{background:var(--red)}
-.defence-list{display:flex;flex-direction:column;gap:4px;margin-top:4px}
-.defence-item{display:flex;align-items:center;gap:8px;background:var(--card2);border-radius:8px;padding:6px 10px}
-.defence-item .di-icon{font-size:22px;width:28px;text-align:center;flex-shrink:0}
-.defence-item .di-name{font-size:13px;font-weight:600;color:var(--text)}
-.round-dots{display:flex;gap:5px;margin-top:6px;justify-content:center}
-.round-dot{width:8px;height:8px;border-radius:50%;background:var(--card2);transition:all .3s}
-.round-dot.blocked{background:var(--green);box-shadow:0 0 4px rgba(16,185,129,.5)}
-.round-dot.breached{background:var(--red);box-shadow:0 0 4px rgba(239,68,68,.5)}
-.round-dot.future{background:var(--border)}
+.defence-list{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.defence-item{font-size:20px;line-height:1}
+.defence-item .di-name{display:none}
+.round-dots{display:flex;gap:4px;margin-top:6px;justify-content:center}
+.round-dot{font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;background:var(--card2);color:var(--text3);letter-spacing:.5px}
+.round-dot.blocked{background:rgba(16,185,129,.15);color:var(--green)}
+.round-dot.breached{background:rgba(239,68,68,.15);color:var(--red)}
+.round-dot.active{background:rgba(37,99,235,.15);color:var(--accent2);border:1px solid var(--accent)}
 .empty-state{text-align:center;padding:60px 20px;color:var(--text3)}
 .empty-state .big-icon{font-size:56px;margin-bottom:12px;opacity:.4}
 .empty-state h2{font-size:18px;font-weight:700;color:var(--text2);margin-bottom:6px}
@@ -430,12 +429,12 @@ function renderCards(players){
     let dotsHtml='<div class="round-dots">';
     for(let i=0;i<3;i++){
       if(i<p.breaches+p.blocked||(currentPhase==='gameover')){
-        const known=!!p.lastAttack;
-        dotsHtml+=`<div class="round-dot ${known?'blocked':'blocked'}" title="Round ${i+1}"></div>`;
+        const isBlocked=i<p.blocked;
+        dotsHtml+=`<div class="round-dot ${isBlocked?'blocked':'breached'}">R${i+1}</div>`;
       }else if(i===p.blocked+p.breaches&&currentPhase==='selecting'){
-        dotsHtml+=`<div class="round-dot future" style="border:2px solid var(--accent);background:transparent" title="Round ${i+1} active"></div>`;
+        dotsHtml+=`<div class="round-dot active">R${i+1}</div>`;
       }else{
-        dotsHtml+=`<div class="round-dot future" title="Round ${i+1}"></div>`;
+        dotsHtml+=`<div class="round-dot">R${i+1}</div>`;
       }
     }
     dotsHtml+='</div>';
@@ -459,7 +458,7 @@ function renderCards(players){
         </div>
         <div><div class="budget-bar"><div class="budget-bar-fill ${bc}" style="width:${budgetPct(p.budget)}%"></div></div></div>
         ${defs.length?`<div class="defence-list">${defs.map(d=>`<div class="defence-item"><span class="di-icon">${DEFENCE_ICONS[d]||'🛡️'}</span><span class="di-name">${DEFENCE_NAMES[d]||d}</span></div>`).join('')}</div>`:''}
-        ${p.priority&&p.priority.length?`<div style="font-size:11px;color:var(--text3);margin-top:4px;text-align:center">Priority: ${p.priority.map((x,i)=>`${PRIORITY_EMOJIS[x]||''} ${i+1}st:${x}`).join(' · ')}</div>`:''}
+        ${p.priority&&p.priority.length?`<div style="margin-top:4px;text-align:center"><div style="font-size:9px;color:var(--text3);font-weight:600;letter-spacing:1px;text-transform:uppercase">Priority</div><div style="font-size:16px;margin-top:2px">${p.priority.map(x=>PRIORITY_EMOJIS[x]||'').join(' ')}</div></div>`:''}
         ${p.award?`<div style="font-size:13px;font-weight:700;text-align:center;margin-top:4px;color:${p.award==='Gold'?'#f59e0b':p.award==='Silver'?'#94a3b8':'#cd7f32'}">${p.award==='Gold'?'🏆':p.award==='Silver'?'🥈':'🥉'} ${p.award}</div>`:''}
         ${dotsHtml}
       </div>
