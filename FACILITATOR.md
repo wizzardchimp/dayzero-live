@@ -12,7 +12,7 @@
 3. Wait for all players to join (they appear as cards on the dashboard)
 4. Click **Start Game** when ready
 
-> Each player starts with **£200,000** budget. Each breach costs £100,000. Go to £0 = **eliminated**.
+> Each player starts with **£200,000 ICO Budget**. Each breach incurs a **£100,000 fine**. Go to £0 = **eliminated**.
 
 ---
 
@@ -21,7 +21,7 @@
 1. **Priority Phase** — Players rank 3 priorities (Money, Data, Maintain Services). Faster = bonus points.
 2. **Selecting Phase** — 120s timer. Players pick defences to deploy this round. Defences carry over.
 3. **Spinning** — Wheel spin animation (7s). A random attack is selected.
-4. **Reveal** — Each player sees if they blocked or were breached. Budget deducted on breach.
+4. **Reveal** — Each player sees if they blocked or were breached. ICO fine of £100,000 imposed on breach.
 5. Repeat for 3 rounds. Game over → winner announced.
 
 ---
@@ -73,16 +73,16 @@
 |-----------|--------|--------------|
 | Priority Match | **75%** | Rank 1 = 3pts, Rank 2 = 2pts, Rank 3 = 1pt per matching attack |
 | Speed | **25%** | Faster priority submit + faster defence selection = more points |
-| Budget | ~~0%~~ | Removed — budget is now an elimination mechanic only |
+| ICO Budget | ~~0%~~ | Removed — ICO Budget is now an elimination mechanic only |
 
 **Awards:** Gold (≥78) · Silver (≥58) · Bronze (<58)
 **Tiebreaker:** Most breaches survived.
 
 ---
 
-## 6. Budget & Elimination
+## 6. ICO Budget & Elimination
 
-| Starting Budget | Cost per Breach | After 1 Breach | After 2 Breaches | Effect |
+| Starting ICO Budget | Fine per Breach | After 1 Breach | After 2 Breaches | Effect |
 |----------------|-----------------|----------------|-------------------|--------|
 | **£200,000** | £100,000 | £100,000 — still playing | **£0 — Eliminated** | Player sees red screen, cannot select in Round 3 |
 

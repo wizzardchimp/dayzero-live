@@ -1,1 +1,10 @@
 node_modules/
+
+# Old session data (contains secrets)
+day-zero-live.json
+.DS_Store
+
+# Duplicate root copies (actual files in public/)
+Officeguy.gif
+Winner.mp3
+cyber-range.html

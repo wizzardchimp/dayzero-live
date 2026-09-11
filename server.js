@@ -251,7 +251,7 @@ function endRound() {
         .filter(([, attacks]) => attacks.includes(attack.id))
         .map(([defId]) => defName(defId));
       p.lastAttack = { id: attack.id, name: attack.name, icon: attack.icon, desc: attack.desc, example: attack.example, preventers };
-      p.preventInfo = `Could have been prevented by: ${preventers.join(', ')}`;
+      p.preventInfo = `ICO fine of £${ATTACK_COST.toLocaleString()} imposed`;
     }
     if (!p.roundHistory) p.roundHistory = [];
     p.roundHistory.push({ attackId: attack.id, blocked });

@@ -234,7 +234,7 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 <div class="header">
   <h1>DAY ZERO</h1>
   <div class="header-right">
-    <div class="header-budget"><span class="label">Budget</span><span class="amount ok" id="header-budget">£200,000</span></div>
+    <div class="header-budget"><span class="label">ICO Budget</span><span class="amount ok" id="header-budget">£200,000</span></div>
     <div class="round-badge" id="round-badge">ROUND 1</div>
     <div class="conn-dot" id="conn-dot"></div>
   </div>
@@ -250,7 +250,7 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 </div>
 <div class="status-bar">
   <div class="status-left"><div class="status-dot"></div><span class="status-text" id="status-text">System Active</span></div>
-  <div class="status-budget"><span class="label">Budget</span><span class="amount ok" id="status-budget">£200,000</span></div>
+  <div class="status-budget"><span class="label">ICO Budget</span><span class="amount ok" id="status-budget">£200,000</span></div>
 </div>
 <div class="name-overlay" id="name-overlay">
   <div class="name-card">
@@ -299,8 +299,8 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
     <div class="verdict" id="verdict"><div class="v-icon"></div><div class="v-label"></div><div class="v-detail"></div><div class="v-prevent" style="display:none"></div></div>
     <div class="attack-info"><div class="a-header"><div class="a-icon" id="a-icon">🔓</div><div><div class="a-name" id="a-name">Attack Name</div><div class="a-desc" id="a-desc">Description</div></div></div></div>
     <div class="budget-impact">
-      <div class="budget-item"><div class="label">Impact</div><div class="value" id="bi-impact">£0</div></div>
-      <div class="budget-item"><div class="label">Remaining</div><div class="value" id="bi-remaining">£200,000</div></div>
+      <div class="budget-item"><div class="label">Fine</div><div class="value" id="bi-impact">£0</div></div>
+      <div class="budget-item"><div class="label">ICO Budget Remaining</div><div class="value" id="bi-remaining">£200,000</div></div>
     </div>
     <div class="defences-deployed"><div class="dd-label">ACTIVE DEFENCES</div><div class="dd-list" id="dd-list"></div></div>
     <button class="result-btn" id="result-btn">Close</button>
@@ -330,7 +330,7 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
   <div class="eo-icon">💀</div>
   <div class="eo-title">Eliminated</div>
   <div class="eo-sub">Your systems have been compromised</div>
-  <div class="eo-budget">Budget depleted</div>
+  <div class="eo-budget">ICO Budget depleted</div>
 </div>
 
 <script src="/shared.js"></script>
@@ -609,7 +609,7 @@ function showResult(){
     vIcon.textContent='💥';vLabel.textContent='BREACHED';
     const needed = effective.map(id => { const d=DEFENCES.find(x=>x.id===id); return d ? `${d.icon} ${d.name}` : id; });
     vDetail.textContent = needed.length ? `You needed: ${needed.join(' or ')}` : 'No defence countered this attack.';
-    if(vPrevent){vPrevent.style.display='';vPrevent.textContent=(myData.preventInfo)||'';}
+    if(vPrevent){vPrevent.style.display='';vPrevent.textContent=`ICO fine of £${ATTACK_COST.toLocaleString()} imposed`;}
   }
 
   const blockerName=myData.lastResult==='blocked'?myData.lastAttack.blockedBy:null;
