@@ -31,9 +31,9 @@
 | Phase | What Happens | Player Action | Key Rules |
 |-------|-------------|---------------|-----------|
 | **Priority** | Players rank 3 priorities: 💰 Money, 💾 Data, ⚙️ Maintain Services | Drag to reorder, tap to confirm | 60% of score. Faster submit = more bonus. Each priority covers 3 attacks. |
-| **Select R1** | Choose **3 defences** to deploy | Tap cards to select | Carry over — all 3 carry into Round 2 |
-| **Select R2** | Choose **2 more defences** (3 carried from R1 = 5 active) | Tap cards to select | Carry over — all 5 carry into Round 3 |
-| **Select R3** | Choose **1 more defence** (5 carried = 6 active) | Tap cards to select | Final round. Eliminated players see red screen. |
+| **Select R1** | Choose **2 defences** to deploy | Tap cards to select | Carry over — all 2 carry into Round 2 |
+| **Select R2** | Choose **1 more defence** (2 carried from R1 = 3 active) | Tap cards to select | Carry over — all 3 carry into Round 3 |
+| **Select R3** | Choose **1 more defence** (3 carried = 4 active) | Tap cards to select | Final round. Eliminated players see red screen. |
 | **Attack** | Random attack selected from 9 available (weighted by priority bucket) | Watch the spin | One attack per round. Not repeated within a game. |
 | **Result** | Compare active defences vs attack. If a defence counters the attack → blocked. | See blocked/breached result | Blocked = no damage. Breached = -£100k and Eliminated at £0 |
 

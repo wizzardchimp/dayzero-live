@@ -228,6 +228,15 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .eliminated-overlay .eo-title{font-size:36px;font-weight:900;color:#fff;letter-spacing:4px;text-transform:uppercase}
 .eliminated-overlay .eo-sub{font-size:18px;color:rgba(255,255,255,.7);margin-top:8px}
 .eliminated-overlay .eo-budget{font-size:16px;color:rgba(255,255,255,.5);margin-top:16px}
+.round-intro-overlay{position:fixed;inset:0;z-index:180;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.7);backdrop-filter:blur(8px);transition:opacity .3s ease}
+.round-intro-overlay.hidden{opacity:0;pointer-events:none}
+.ri-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:40px 48px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:12px;animation:slideUp .3s ease-out}
+.ri-round{font-size:14px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--accent2)}
+.ri-icon{font-size:64px}
+.ri-title{font-size:28px;font-weight:900;color:var(--text)}
+.ri-sub{font-size:16px;color:var(--text3);max-width:320px;line-height:1.5}
+.ri-btn{margin-top:8px;padding:14px 48px;border:none;border-radius:var(--radius-sm);font-size:17px;font-weight:700;background:linear-gradient(135deg,var(--accent),var(--purple));color:#fff;cursor:pointer;transition:transform .15s}
+.ri-btn:active{transform:scale(.97)}
 </style>
 </head>
 <body>
@@ -332,6 +341,15 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
   <div class="eo-sub">Your systems have been compromised</div>
   <div class="eo-budget">ICO Budget depleted</div>
 </div>
+<div class="round-intro-overlay hidden" id="round-intro-overlay">
+  <div class="ri-card">
+    <div class="ri-round" id="ri-round">ROUND 1</div>
+    <div class="ri-icon">🛡️</div>
+    <div class="ri-title" id="ri-title">Select 2 defences</div>
+    <div class="ri-sub" id="ri-sub">Choose wisely — once locked in, you cannot change your selection.</div>
+    <button class="ri-btn" id="ri-btn">Got it</button>
+  </div>
+</div>
 
 <script src="/shared.js"></script>
 <script>
@@ -364,6 +382,7 @@ const aIcon=$('a-icon'),aName=$('a-name'),aDesc=$('a-desc'),biImpact=$('bi-impac
 const gameoverOverlay=$('gameover-overlay'),goTitle=$('go-title'),goRank=$('go-rank'),goMeta=$('go-meta'),goAttacksList=$('go-attacks-list');
 const waitingOverlay=$('waiting-overlay'),woText=$('wo-text'),woSub=$('wo-sub');
 const eliminatedOverlay=$('eliminated-overlay');
+const roundIntroOverlay=$('round-intro-overlay'),riRound=$('ri-round'),riTitle=$('ri-title'),riSub=$('ri-sub'),riBtn=$('ri-btn');
 const priorityOverlay=$('priority-overlay'),priorityList=$('priority-list'),prioritySubBtn=$('priority-sub-btn'),priorityClear=$('priority-clear');
 const wheelSpinner=$('wheel-spinner');
 
@@ -500,7 +519,7 @@ function renderPhase(gs){
     document.querySelector('.main').classList.add('selecting');
     timerSection.style.display='flex';
     roundTitle.textContent='Select Your Defences';
-    const maxDesc=['','Choose 3 defence mechanisms to deploy','- Previous carried over — select 2 more','- Previous carried over — select 1 more'];
+    const maxDesc=['','Choose 2 defences to deploy','- Previous carried over — select 1 more','- Previous carried over — select 1 more'];
     roundSub.textContent=maxDesc[gs.round]||'';
     roundBadge.textContent=`ROUND ${gs.round}`;
     statusText.textContent='Timer Running — Select Defences';
@@ -718,6 +737,13 @@ socket.on('game-state',(gs)=>{
       priorityOverlay.classList.remove('hidden');
     }else{
       renderPhase(gs);
+      if(!myData||!myData.eliminated){
+        const n=gs.round===1?2:1;
+        riRound.textContent=`ROUND ${gs.round}`;
+        riTitle.textContent=`Select ${n} defence${n>1?'s':''}`;
+        riSub.textContent=n===1?'Choose 1 defence to deploy this round. Once locked in, you cannot change your selection.':'Choose 2 defences to deploy this round. Once locked in, you cannot change your selection.';
+        roundIntroOverlay.classList.remove('hidden');
+      }
     }
   }else if(gs.phase==='spinning'){
     document.querySelector('.main').classList.remove('selecting');
@@ -790,6 +816,10 @@ codeInput.addEventListener('keydown',e=>{if(e.key==='Enter')joinGame()});
 resultBtn.addEventListener('click',()=>{
   resultOverlay.classList.add('hidden');
   waitingOverlay.classList.remove('hidden');
+});
+
+riBtn.addEventListener('click',()=>{
+  roundIntroOverlay.classList.add('hidden');
 });
 
 document.addEventListener('keydown',e=>{

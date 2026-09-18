@@ -284,7 +284,7 @@ function startRound() {
     if (p.eliminated) return;
     p.carriedOver = [...p.carriedOver, ...p.selected];
     p.selected = [];
-    p.maxSelect = game.round === 1 ? 3 : game.round === 2 ? 2 : 1;
+    p.maxSelect = game.round === 1 ? 2 : 1;
     p.lastAttack = null;
     p.lastResult = null;
     p.preventInfo = null;
@@ -323,7 +323,7 @@ function startGame() {
     p.lastAttack = null;
     p.lastResult = null;
     p.preventInfo = null;
-    p.maxSelect = 3;
+    p.maxSelect = 2;
     p.roundHistory = [];
     p.priority = [];
     p.prioritySubmitTime = null;
@@ -351,7 +351,7 @@ function resetGame() {
     p.lastAttack = null;
     p.lastResult = null;
     p.preventInfo = null;
-    p.maxSelect = 3;
+    p.maxSelect = 2;
     p.roundHistory = [];
     p.priority = [];
   });
@@ -394,7 +394,7 @@ io.on('connection', (socket) => {
       lastAttack: null,
       lastResult: null,
       preventInfo: null,
-      maxSelect: 3,
+      maxSelect: 2,
       roundHistory: [],
       priority: [],
     };
