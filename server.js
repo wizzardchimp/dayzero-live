@@ -28,6 +28,23 @@ const game = {
   plannedAttacks: [],
 };
 const players = {};
+let lastActivity = Date.now();
+const IDLE_RESET_MS = 60 * 60 * 1000; // 1 hour
+
+function hardResetGame() {
+  Object.keys(players).forEach(key => {
+    const p = players[key];
+    if (p) { io.to(key).emit('flushed'); delete players[key]; }
+  });
+  resetGame();
+}
+
+setInterval(() => {
+  if (Date.now() - lastActivity < IDLE_RESET_MS) return;
+  if (game.phase === 'lobby' && Object.keys(players).length === 0) return;
+  console.log(`Idle timeout (${IDLE_RESET_MS / 60000} min) reached — forcing hard reset`);
+  hardResetGame();
+}, 60000);
 
 function genCode(){
   return String(Math.floor(100 + Math.random() * 900));
@@ -209,6 +226,7 @@ function getPlayersData() {
 }
 
 function broadcast() {
+  lastActivity = Date.now();
   io.emit('game-state', getGameState());
   io.emit('players-update', getPlayersData());
 }
@@ -442,12 +460,7 @@ io.on('connection', (socket) => {
   });
 
   socket.on('hard-reset', () => {
-    Object.keys(players).forEach(key => {
-      const p = players[key];
-      if (p) io.to(key).emit('flushed');
-      delete players[key];
-    });
-    resetGame();
+    hardResetGame();
   });
 
   socket.on('remove-player', (playerId) => {
