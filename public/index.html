@@ -25,7 +25,8 @@
       display:flex;
       flex-direction:column;
       align-items:center;
-      justify-content:center;
+      justify-content:flex-end;
+      padding-bottom:22vh;
     }
     .stage::after{
       content:'';
@@ -52,8 +53,8 @@
       letter-spacing:1px;
       text-transform:uppercase;
       color:#fff;
-      background:linear-gradient(135deg,#2563eb,#7c3aed);
-      box-shadow:0 10px 40px rgba(37,99,235,.45);
+      background:linear-gradient(135deg,#ef4444,#b91c1c);
+      box-shadow:0 10px 40px rgba(239,68,68,.45);
       cursor:pointer;
       text-decoration:none;
       transition:transform .2s,box-shadow .2s;
@@ -61,13 +62,13 @@
     }
     .btn-start:hover{
       transform:translateY(-3px) scale(1.03);
-      box-shadow:0 16px 56px rgba(124,58,237,.55);
+      box-shadow:0 16px 56px rgba(220,38,38,.55);
     }
     .btn-start:active{transform:translateY(0) scale(.98)}
     .btn-start .ic{font-size:26px}
     @keyframes glow{
-      0%,100%{box-shadow:0 10px 40px rgba(37,99,235,.45)}
-      50%{box-shadow:0 10px 60px rgba(124,58,237,.75)}
+      0%,100%{box-shadow:0 10px 40px rgba(239,68,68,.45)}
+      50%{box-shadow:0 10px 60px rgba(220,38,38,.75)}
     }
     .hint{
       position:relative;
