@@ -5,23 +5,88 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Day Zero Live</title>
   <style>
-    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:#0f1117;color:#e2e8f0;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0}
-    .card{background:#1a1d28;border:1px solid #2d3142;border-radius:14px;padding:28px 32px;text-align:center;max-width:420px}
-    .card h1{font-size:22px;margin:0 0 8px}
-    .card p{color:#94a3b8;margin:0 0 20px}
-    a{display:inline-block;margin:6px 8px;padding:10px 18px;border-radius:8px;text-decoration:none;font-weight:700}
-    .dash{background:#2563eb;color:#fff}
-    .play{background:#1a1a2e;color:#e2e8f0;border:1px solid #2d3142}
-    a:hover{filter:brightness(1.1)}
+    *{margin:0;padding:0;box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+      background:#0f1117;
+      color:#fff;
+      overflow:hidden;
+      -webkit-font-smoothing:antialiased;
+    }
+    .stage{
+      position:relative;
+      width:100vw;
+      height:100vh;
+      background-image:url('/Landing.png');
+      background-size:cover;
+      background-position:center;
+      background-repeat:no-repeat;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+    }
+    .stage::after{
+      content:'';
+      position:absolute;
+      inset:0;
+      background:radial-gradient(ellipse at center,rgba(0,0,0,.12) 0%,rgba(0,0,0,.55) 100%);
+      pointer-events:none;
+    }
+    .content{
+      position:relative;
+      z-index:2;
+      text-align:center;
+      padding:24px;
+    }
+    .btn-start{
+      display:inline-flex;
+      align-items:center;
+      gap:12px;
+      padding:20px 56px;
+      border:none;
+      border-radius:16px;
+      font-size:20px;
+      font-weight:800;
+      letter-spacing:1px;
+      text-transform:uppercase;
+      color:#fff;
+      background:linear-gradient(135deg,#2563eb,#7c3aed);
+      box-shadow:0 10px 40px rgba(37,99,235,.45);
+      cursor:pointer;
+      text-decoration:none;
+      transition:transform .2s,box-shadow .2s;
+      animation:glow 2.2s ease-in-out infinite;
+    }
+    .btn-start:hover{
+      transform:translateY(-3px) scale(1.03);
+      box-shadow:0 16px 56px rgba(124,58,237,.55);
+    }
+    .btn-start:active{transform:translateY(0) scale(.98)}
+    .btn-start .ic{font-size:26px}
+    @keyframes glow{
+      0%,100%{box-shadow:0 10px 40px rgba(37,99,235,.45)}
+      50%{box-shadow:0 10px 60px rgba(124,58,237,.75)}
+    }
+    .hint{
+      position:relative;
+      z-index:2;
+      margin-top:28px;
+      font-size:14px;
+      color:rgba(255,255,255,.75);
+      letter-spacing:.5px;
+    }
+    @media(max-width:600px){
+      .btn-start{padding:18px 40px;font-size:18px}
+    }
   </style>
 </head>
 <body>
-  <div class="card">
-    <h1>Day Zero Live</h1>
-    <p>Choose how you want to join</p>
-    <div>
-      <a class="dash" href="/dashboard.html">Open Dashboard</a>
-      <a class="play" href="/play.html">Join as Player</a>
+  <div class="stage">
+    <div class="content">
+      <a class="btn-start" href="/dashboard.html"><span class="ic">🛡️</span>Start</a>
+      <div class="hint">Smartphone players scan the QR code on the dashboard</div>
     </div>
   </div>
 </body>
