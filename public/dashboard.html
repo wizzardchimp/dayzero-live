@@ -401,6 +401,8 @@ function updateQrPopup(){
     qrPopupImg.src=`https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(playUrl)}&color=111827&bgcolor=ffffff`;
     qrPopupCode.textContent=currentSessionCode;
     qrPopupPlayers.innerHTML=lastPlayers.map((p,i)=>`<div class="qp-row"><span class="qp-num">${i+1}.</span><span>${p.name}</span></div>`).join('');
+    qrPopupStart.disabled=false;
+    qrPopupStart.textContent='Start Game';
     qrPopup.classList.remove('hidden');
   }else{
     qrPopup.classList.add('hidden');
