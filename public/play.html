@@ -140,6 +140,7 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .zr-content{text-align:center}
 .zr-icon{font-size:80px;margin-bottom:12px}
 .zr-name{font-size:32px;font-weight:900;color:#fff}
+.zr-plain{font-size:18px;font-weight:600;color:#fff;margin-top:14px;max-width:420px;text-align:center;line-height:1.4;padding:0 20px}
 .zr-example{font-size:16px;color:rgba(255,255,255,.7);margin-top:10px;max-width:500px;text-align:center;font-style:italic;padding:0 16px}
 
 /* ===== RESULT CARD ===== */
@@ -308,7 +309,7 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
   </div>
 </div>
 <div class="zoom-reveal hidden" id="zoom-reveal">
-  <div class="zr-content"><div class="zr-icon" id="zr-icon"></div><div class="zr-name" id="zr-name"></div><div class="zr-example" id="zr-example"></div></div>
+  <div class="zr-content"><div class="zr-icon" id="zr-icon"></div><div class="zr-name" id="zr-name"></div><div class="zr-plain" id="zr-plain"></div><div class="zr-example" id="zr-example"></div></div>
 </div>
 
 <div class="result-overlay hidden" id="result-overlay">
@@ -364,7 +365,7 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 <script src="/shared.js"></script>
 <script>
 const $=id=>document.getElementById(id);
-const{ATTACKS,DEFENCES,EFFECTIVENESS,PRIORITY_MAP,PRIORITY_EMOJIS,ATTACK_COST,START_BUDGET,MAX_ROUNDS,DEFAULT_TIMER}=GAME_DATA;
+const{ATTACKS,DEFENCES,EFFECTIVENESS,PRIORITY_MAP,PRIORITY_EMOJIS,ATTACK_COST,START_BUDGET,MAX_ROUNDS,DEFAULT_TIMER,SPIN_DURATION}=GAME_DATA;
 const PRIORITY_OPTIONS=[
   {id:'Money',icon:'💰',name:'Money'},
   {id:'Data',icon:'💾',name:'Data'},
@@ -401,13 +402,14 @@ function showWaitingPicks(){
 }
 let lastGameState=null;
 let revealTimer=null;
+let earlyRevealTimer=null;
 
 const connDot=$('conn-dot'),nameOverlay=$('name-overlay'),nameInput=$('name-input'),codeInput=$('code-input'),nameSubBtn=$('name-sub-btn'),joinError=$('join-error'),connMsg=$('connecting-msg');
 const defenceGrid=$('defence-grid'),roundTitle=$('round-title'),roundSub=$('round-sub'),roundBadge=$('round-badge'),selectionCounter=$('selection-counter'),waitSelected=$('wait-selected');
 const timerDisplay=$('timer-display'),timerSection=$('timer-section');
 const headerBudget=$('header-budget'),headerTimer=$('header-timer'),statusText=$('status-text'),statusBudget=$('status-budget');
 const wheelOverlay=$('wheel-overlay'),wheelLabel=$('wheel-label');
-const zoomReveal=$('zoom-reveal'),zrIcon=$('zr-icon'),zrName=$('zr-name'),zrExample=$('zr-example');
+const zoomReveal=$('zoom-reveal'),zrIcon=$('zr-icon'),zrName=$('zr-name'),zrPlain=$('zr-plain'),zrExample=$('zr-example');
 const resultOverlay=$('result-overlay'),resultTitle=$('result-title'),resultSub=$('result-sub'),verdict=$('verdict'),vIcon=verdict.querySelector('.v-icon'),vLabel=verdict.querySelector('.v-label'),vDetail=verdict.querySelector('.v-detail'),vPrevent=verdict.querySelector('.v-prevent');
 const aIcon=$('a-icon'),aName=$('a-name'),aDesc=$('a-desc'),biImpact=$('bi-impact'),biRemaining=$('bi-remaining'),ddList=$('dd-list'),resultBtn=$('result-btn');
 const gameoverOverlay=$('gameover-overlay'),goTitle=$('go-title'),goRank=$('go-rank'),goMeta=$('go-meta'),goAttacksList=$('go-attacks-list');
@@ -533,8 +535,44 @@ function hideAllOverlays(){
   priorityOverlay.classList.add('hidden');
 }
 
+function matchingDefence(attack){
+  if(!attack)return null;
+  if(myData&&myData.lastAttack&&myData.lastAttack.id===attack.id&&myData.lastAttack.blockedBy){
+    const mine=DEFENCES.find(x=>x.name===myData.lastAttack.blockedBy);
+    if(mine)return mine;
+  }
+  return DEFENCES.find(d=>(d.counters||[]).includes(attack.id))||null;
+}
+function defenceSummary(attack){
+  const d=matchingDefence(attack);
+  if(!d)return (attack&&(attack.plain||attack.desc))||'';
+  return (d.plain||d.desc);
+}
+function showAttackZoom(){
+  if(!currentAttack)return;
+  if(!zoomReveal.classList.contains('hidden'))return;
+  zrIcon.textContent=currentAttack.icon;
+  zrName.textContent=currentAttack.name;
+  const stopper=matchingDefence(currentAttack);
+  zrPlain.textContent=stopper?(stopper.name+' — '+defenceSummary(currentAttack)):defenceSummary(currentAttack);
+  zrExample.textContent=currentAttack.example?('e.g. '+currentAttack.example):'';
+  wheelOverlay.classList.add('hidden');
+  zoomReveal.classList.remove('hidden');
+  zoomReveal.classList.remove('out');
+  clearTimeout(revealTimer);
+  revealTimer=setTimeout(()=>{
+    zoomReveal.classList.add('out');
+    setTimeout(()=>{
+      zoomReveal.classList.add('hidden');
+      zoomReveal.classList.remove('out');
+      wheelOverlay.classList.add('hidden');
+      setTimeout(showResult,500);
+    },350);
+  },3000);
+}
 function renderPhase(gs){
   const phase=gs.phase;
+  if(phase!=='spinning')clearTimeout(earlyRevealTimer);
   hideAllOverlays();
   if(phase==='lobby'){
     defenceGrid.style.display='none';
@@ -572,23 +610,12 @@ function renderPhase(gs){
     wheelOverlay.classList.remove('hidden');
     wheelLabel.textContent='Incoming Attack...';
     wheelSpinner.style.display='';
+    clearTimeout(earlyRevealTimer);
+    earlyRevealTimer=setTimeout(showAttackZoom, Math.max(0, SPIN_DURATION-500));
   }else if(phase==='reveal'){
     if(headerTimer)headerTimer.classList.add('hidden');
-    clearTimeout(revealTimer);
-    if(currentAttack&&!zoomReveal.classList.contains('hidden')&&zoomReveal.classList.contains('out')){}else{
-      zrIcon.textContent=currentAttack.icon;
-      zrName.textContent=currentAttack.name;
-      zrExample.textContent='e.g. '+currentAttack.example;
-      zoomReveal.classList.remove('hidden');zoomReveal.classList.remove('out');
-      revealTimer=setTimeout(()=>{
-        zoomReveal.classList.add('out');
-        setTimeout(()=>{
-          zoomReveal.classList.add('hidden');zoomReveal.classList.remove('out');
-          wheelOverlay.classList.add('hidden');
-          setTimeout(showResult,500);
-        },350);
-      },3000);
-    }
+    clearTimeout(earlyRevealTimer);
+    showAttackZoom();
   }else if(phase==='gameover'){
     if(!myData){
       waitingOverlay.classList.remove('hidden');
@@ -662,13 +689,13 @@ function showResult(){
     verdict.className='verdict blocked';
     vIcon.textContent='🛡️';vLabel.textContent='DEFENDED';
     const blockerName = la.blockedBy || 'your defences';
-    vDetail.textContent = `${la.name} was stopped by ${blockerName}.`;
+    vDetail.textContent = `${la.name} was stopped by ${blockerName}. ${defenceSummary(la)}`;
     if(vPrevent)vPrevent.style.display='none';
   }else{
     verdict.className='verdict breached';
     vIcon.textContent='💥';vLabel.textContent='BREACHED';
     const needed = effective.map(id => { const d=DEFENCES.find(x=>x.id===id); return d ? `${d.icon} ${d.name}` : id; });
-    vDetail.textContent = needed.length ? `You needed: ${needed.join(' or ')}` : 'No defence countered this attack.';
+    vDetail.textContent = (needed.length ? `You needed: ${needed.join(' or ')}. ` : '') + defenceSummary(la);
     if(vPrevent){vPrevent.style.display='';vPrevent.textContent=`ICO fine of £${ATTACK_COST.toLocaleString()} imposed`;}
   }
 
@@ -768,7 +795,7 @@ socket.on('joined',(data)=>{
 socket.on('game-state',(gs)=>{
   const prevPhase=lastGameState&&lastGameState.phase;
   lastGameState=gs;
-  if(gs.phase!=='reveal')clearTimeout(revealTimer);
+  if(gs.phase!=='reveal'&&gs.phase!=='spinning')clearTimeout(revealTimer);
   if(gs.phase==='priority'){
     roundIntroShown=0;
     hideAllOverlays();

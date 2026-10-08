@@ -4,29 +4,29 @@
 
 (function(root){
 const ATTACKS=[
-  {id:'phishing',name:'Phishing',icon:'🎣',desc:'Deceptive emails to steal credentials',example:'An email from your "CEO" requests urgent gift card purchases'},
-  {id:'malware',name:'Malware',icon:'🦠',desc:'Malicious software to compromise systems',example:'An innocent-looking PDF attachment installs a keylogger'},
-  {id:'ransomware',name:'Ransomware',icon:'🔒',desc:'Encrypts data and demands payment',example:'All company files encrypted — pay 10 BTC within 48 hours'},
-  {id:'ddos',name:'DDoS',icon:'🌊',desc:'Overwhelming traffic to disrupt services',example:'A sudden flood of website requests overwhelmed the servers and shut customer contact down'},
-  {id:'sql_injection',name:'SQL Injection',icon:'💉',desc:'Database manipulation via input fields',example:'A hacker has exploited the customer login screen to dump the entire user database contents!'},
-  {id:'zero_day',name:'Zero-Day Exploit',icon:'⚡',desc:'Attacking unknown vulnerabilities',example:'An unpatched router vulnerability gives attackers full network access'},
-  {id:'insider',name:'Insider Threat',icon:'🏢',desc:'Malicious or negligent internal actors',example:'A departing employee copies the entire client database before leaving'},
-  {id:'data_exfil',name:'Data Exfiltration',icon:'📤',desc:'Stealing sensitive data from systems',example:'Sensitive spreadsheets are accidentally uploaded to a personal cloud account!'},
-  {id:'social_eng',name:'Social Engineering',icon:'🎭',desc:'Psychological manipulation to gain access',example:'Caller posing as IT support asks you to "verify" your password'}
+  {id:'phishing',name:'Phishing',icon:'🎣',desc:'Deceptive emails to steal credentials',plain:'A fake message that tries to steal a password or get someone to click a bad link.',example:'An email from your "CEO" requests urgent gift card purchases'},
+  {id:'malware',name:'Malware',icon:'🦠',desc:'Malicious software to compromise systems',plain:'Harmful software that gets onto a device and spies, damages, or takes control.',example:'An innocent-looking PDF attachment installs a keylogger'},
+  {id:'ransomware',name:'Ransomware',icon:'🔒',desc:'Encrypts data and demands payment',plain:'Software that locks your files and demands money to give them back.',example:'All company files encrypted — pay 10 BTC within 48 hours'},
+  {id:'ddos',name:'DDoS',icon:'🌊',desc:'Overwhelming traffic to disrupt services',plain:'So much fake traffic that a website or service falls over.',example:'A sudden flood of website requests overwhelmed the servers and shut customer contact down'},
+  {id:'sql_injection',name:'SQL Injection',icon:'💉',desc:'Database manipulation via input fields',plain:'A trick that uses a login or search box to steal what is in the database.',example:'A hacker has exploited the customer login screen to dump the entire user database contents!'},
+  {id:'zero_day',name:'Zero-Day Exploit',icon:'⚡',desc:'Attacking unknown vulnerabilities',plain:'An attack that uses a flaw nobody has patched yet.',example:'An unpatched router vulnerability gives attackers full network access'},
+  {id:'insider',name:'Insider Threat',icon:'🏢',desc:'Malicious or negligent internal actors',plain:'Someone who already works there misusing their access.',example:'A departing employee copies the entire client database before leaving'},
+  {id:'data_exfil',name:'Data Exfiltration',icon:'📤',desc:'Stealing sensitive data from systems',plain:'Sensitive files being copied out of the organisation.',example:'Sensitive spreadsheets are accidentally uploaded to a personal cloud account!'},
+  {id:'social_eng',name:'Social Engineering',icon:'🎭',desc:'Psychological manipulation to gain access',plain:'Someone talked into giving access, often by a person pretending to be IT.',example:'Caller posing as IT support asks you to "verify" your password'}
 ];
 
 const DEFENCES=[
-  {id:'firewall',name:'Firewall',icon:'🛡️',desc:'Monitors and controls network traffic',counters:['phishing','ddos']},
-  {id:'endpoint',name:'Endpoint Protection',icon:'💻',desc:'Secure individual devices',counters:['malware','ransomware']},
-  {id:'mfa',name:'Multi-Factor Auth',icon:'🔐',desc:'Requires multiple verification methods',counters:['insider','social_eng']},
-  {id:'encryption',name:'Encryption',icon:'🔒',desc:'Scrambles data to prevent unauthorised access',counters:['data_exfil','ransomware']},
-  {id:'seg',name:'Network Segmentation',icon:'🔀',desc:'Separates the network into departmental areas',counters:['sql_injection','insider']},
-  {id:'backup',name:'Backup & Recovery',short:'Backup',icon:'🗄️',desc:'Restores data after loss or attack',counters:['ransomware','ddos']},
-  {id:'threat',name:'Threat Detection',icon:'👁️',desc:'Uses AI to monitor network usage of individuals',counters:['zero_day','phishing']},
-  {id:'passwords',name:'Secure Passwords',short:'Passwords',icon:'🔑',desc:'Enforces strong password policies',counters:['sql_injection','social_eng']},
-  {id:'training',name:'Security Training',icon:'📚',desc:'Educates users to recognise threats',counters:['malware','social_eng']},
-  {id:'monitoring',name:'Continuous Monitoring',icon:'📊',desc:'Tracks systems for unusual behaviour',counters:['data_exfil','zero_day']},
-  {id:'passkeys',name:'Passkeys - User Account',short:'Passkeys',icon:'🗝️',desc:'Phishing-resistant authentication bound to user devices',counters:['phishing','social_eng']}
+  {id:'firewall',name:'Firewall',icon:'🛡️',desc:'Monitors and controls network traffic',plain:'A gate that checks what is allowed in and out of the network.',counters:['phishing','ddos']},
+  {id:'endpoint',name:'Endpoint Protection',icon:'💻',desc:'Secure individual devices',plain:'Software that protects each laptop and phone from harmful programs.',counters:['malware','ransomware']},
+  {id:'mfa',name:'Multi-Factor Auth',icon:'🔐',desc:'Requires multiple verification methods',plain:'An extra check, like a code or fingerprint, so a password alone is not enough.',counters:['insider','social_eng']},
+  {id:'encryption',name:'Encryption',icon:'🔒',desc:'Scrambles data to prevent unauthorised access',plain:'Scrambles data so stolen files cannot be read.',counters:['data_exfil','ransomware']},
+  {id:'seg',name:'Network Segmentation',icon:'🔀',desc:'Separates the network into departmental areas',plain:'Splits the network so one break-in cannot reach everything.',counters:['sql_injection','insider']},
+  {id:'backup',name:'Backup & Recovery',short:'Backup',icon:'🗄️',desc:'Restores data after loss or attack',plain:'A spare copy of files so you can recover after an attack.',counters:['ransomware','ddos']},
+  {id:'threat',name:'Threat Detection',icon:'👁️',desc:'Uses AI to monitor network usage of individuals',plain:'Watches for odd behaviour and flags an attack early.',counters:['zero_day','phishing']},
+  {id:'passwords',name:'Secure Passwords',short:'Passwords',icon:'🔑',desc:'Enforces strong password policies',plain:'Strong, unique passwords that are hard to guess.',counters:['sql_injection','social_eng']},
+  {id:'training',name:'Security Training',icon:'📚',desc:'Educates users to recognise threats',plain:'Teaches people to spot scams and not click risky links.',counters:['malware','social_eng']},
+  {id:'monitoring',name:'Continuous Monitoring',icon:'📊',desc:'Tracks systems for unusual behaviour',plain:'Keeps an eye on systems for anything unusual.',counters:['data_exfil','zero_day']},
+  {id:'passkeys',name:'Passkeys - User Account',short:'Passkeys',icon:'🗝️',desc:'Phishing-resistant authentication bound to user devices',plain:'A login tied to your device, so a fake site cannot steal the password.',counters:['phishing','social_eng']}
 ];
 
 const EFFECTIVENESS={};
