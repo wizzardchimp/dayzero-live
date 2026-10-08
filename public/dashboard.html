@@ -631,6 +631,23 @@ function showReveal(attack){
 }
 
 function updateRoundAttacks(){
+  const played=[];
+  if(currentPhase!=='lobby'){
+    let src=null;
+    (lastPlayers||[]).forEach(p=>{
+      const h=p.roundHistory||[];
+      if(!src||h.length>(src.roundHistory||[]).length)src=p;
+    });
+    function add(a){
+      if(!a||!a.id)return;
+      if(played.find(x=>x.id===a.id))return;
+      const info=ATTACK_DATA.find(x=>x.id===a.id)||a;
+      played.push({id:info.id,icon:info.icon||'🎯',name:info.name||info.id});
+    }
+    if(src){for(let i=0;i<(src.roundHistory||[]).length;i++)add(src.roundHistory[i]);}
+    add(currentAttack);
+  }
+  roundAttacks=played;
   roundAttacksBar.innerHTML=roundAttacks.map((a,i)=>`<div class="ra-chip"><span class="ra-round">RD${i+1}</span><span class="ra-icon">${a.icon||''}</span><span>${a.name||''}</span></div>`).join('');
 }
 
@@ -814,11 +831,12 @@ socket.on('game-state',(gs)=>{
     showSlotMachine(gs.currentAttack);
     stopAllAudio();
     playDrumroll();
-    if(gs.currentAttack){roundAttacks.push(gs.currentAttack);updateRoundAttacks()}
+    updateRoundAttacks();
     dingPlayedForRound=0;
   }else if(gs.phase==='reveal'){
     showReveal(gs.currentAttack);
     stopAllAudio();
+    updateRoundAttacks();
     dashChime.currentTime=0;dashChime.play().catch(()=>{});
   }else if(gs.phase==='gameover'){
     showGameOver();
@@ -830,6 +848,7 @@ socket.on('players-update',(players)=>{
   lastPlayers=players;
   renderCards(players);
   updateReadyCount(players);
+  updateRoundAttacks();
   if(currentPhase==='gameover')renderWinner(players);
   if(currentPhase==='priority'){updateButtons({phase:'priority'});renderPriorityCharts(players)}
   if(currentPhase==='selecting'){
