@@ -15,20 +15,20 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .header{display:flex;align-items:center;justify-content:space-between;padding:12px 32px;border-bottom:1px solid var(--border);flex-shrink:0}
 .header-left{flex:1;display:flex;align-items:center;gap:8px}.header-center{flex:1;display:flex;align-items:center;justify-content:center;gap:12px}.header-right{flex:1;display:flex;align-items:center;justify-content:flex-end;gap:16px;font-size:14px;color:var(--text2)}
 .header-logo{height:28px;width:auto;object-fit:contain}
-.session-code{font-size:13px;font-weight:800;color:var(--accent2);background:var(--accent-light);padding:4px 12px;border-radius:6px;letter-spacing:3px}
-.reset-btn{width:14px;height:14px;border-radius:50%;background:var(--red);border:2px solid rgba(255,255,255,.3);cursor:pointer;padding:0;flex-shrink:0;transition:transform .15s,box-shadow .15s;box-shadow:0 0 4px rgba(239,68,68,.4)}
-.reset-btn:hover{transform:scale(1.2);box-shadow:0 0 8px rgba(239,68,68,.7)}
+.session-code{font-size:18px;font-weight:800;color:var(--accent2);background:var(--accent-light);padding:6px 14px;border-radius:8px;letter-spacing:3px}
+.session-code.lobby-code{font-size:28px;padding:8px 16px}
+.end-session-btn{padding:8px 14px;border-radius:8px;background:transparent;border:1px solid rgba(239,68,68,.45);color:var(--red);font-size:12px;font-weight:700;letter-spacing:.4px;cursor:pointer}
+.end-session-btn:hover{background:rgba(239,68,68,.12)}
 .player-count{font-weight:700;color:var(--accent2);font-size:18px}
 .main{flex:1;overflow-y:auto;overflow-x:hidden;padding:20px 32px;padding-bottom:120px}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(var(--card-min,300px),1fr));gap:12px;transition:grid-template-columns .3s}
-.grid.scroll-active{grid-template-columns:repeat(auto-fill,minmax(140px,1fr));grid-auto-flow:dense}
-.grid.scroll-track{animation:scrollBoard var(--scroll-duration,20s) linear infinite}
-@keyframes scrollBoard{0%{transform:translateX(0)}50%{transform:translateX(calc(var(--scroll-dist,200px)*-1))}100%{transform:translateX(0)}}
+.grid.dense{grid-template-columns:repeat(auto-fill,minmax(160px,1fr))}
 .card{background:var(--card);border-radius:var(--radius);border:1px solid var(--border);padding:16px;transition:border-color .3s;overflow:hidden}
 .card.playing{border-color:var(--accent)}
 .card.ready{border-color:var(--green);border-width:3px;background:rgba(16,185,129,.04)}
 .card.done{border-color:var(--green)}
 .card.bankrupt{border-color:var(--red)}
+.card.eliminated{opacity:.55;border-color:var(--red)}
 .card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
 .card-header-left{display:flex;align-items:center;gap:8px;min-width:0}
 .card-name{font-size:18px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
@@ -52,9 +52,9 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .budget-bar-fill.ok{background:var(--green)}
 .budget-bar-fill.low{background:var(--orange)}
 .budget-bar-fill.critical{background:var(--red)}
-.defence-list{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin-top:4px}
-.defence-item{font-size:40px;line-height:1}
-.defence-item .di-name{display:none}
+.defence-list{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:4px}
+.defence-item{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:28px;line-height:1;max-width:76px}
+.defence-item .di-name{display:block;font-size:10px;font-weight:700;color:var(--text2);text-align:center;line-height:1.15}
 .round-dots{display:flex;gap:4px;margin-top:6px;justify-content:center}
 .round-dot{font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;background:var(--card2);color:var(--text3);letter-spacing:.5px}
 .round-dot.blocked{background:rgba(16,185,129,.15);color:var(--green)}
@@ -112,8 +112,8 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .dash-timer{font-size:40px;font-weight:900;font-variant-numeric:tabular-nums;min-width:100px;text-align:center}
 .dash-timer.warning{color:var(--orange)}
 .dash-timer.danger{color:var(--red);animation:dashPulse .5s infinite}
-.ra-chip{display:flex;align-items:center;gap:6px;background:var(--card2);border-radius:8px;padding:4px 10px;font-size:13px;font-weight:600;color:var(--text2)}
-.ra-chip .ra-icon{font-size:18px}
+.ra-chip{display:flex;align-items:center;gap:6px;background:var(--card2);border-radius:8px;padding:6px 12px;font-size:16px;font-weight:700;color:var(--text)}
+.ra-chip .ra-icon{font-size:22px}
 .ra-chip .ra-round{font-size:10px;font-weight:700;color:var(--text3);letter-spacing:1px;margin-right:2px}
 @keyframes dashPulse{0%,100%{opacity:1}50%{opacity:.5}}
 .timer-adjust{width:36px;height:36px;border-radius:50%;background:var(--card2);border:1px solid var(--border);font-size:18px;font-weight:700;color:var(--text2);transition:all .2s;display:flex;align-items:center;justify-content:center}
@@ -136,8 +136,9 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .slot-overlay{position:fixed;inset:0;z-index:99;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,0,0,.6);animation:pulseBg 2s ease-in-out infinite alternate}
 .slot-overlay.hidden{display:none}
 .slot-label{color:#fff;font-size:24px;font-weight:700;margin-bottom:24px;text-align:center}
-.card-flip-container{width:220px;height:280px;background:var(--card);border-radius:var(--radius);display:flex;align-items:center;justify-content:center;box-shadow:0 8px 40px rgba(0,0,0,.4);transition:filter .1s,transform .3s}
-.card-flip-icon{font-size:100px;transition:filter .1s,transform .3s}
+.card-flip-container{width:260px;height:320px;background:var(--card);border-radius:var(--radius);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;box-shadow:0 8px 40px rgba(0,0,0,.4);transition:filter .1s,transform .3s}
+.card-flip-icon{font-size:110px;transition:filter .1s,transform .3s}
+.card-flip-name{font-size:22px;font-weight:800;color:#fff;min-height:28px;text-align:center;padding:0 12px}
 .phase-indicator{display:flex;align-items:center;gap:8px;background:var(--card2);padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;color:var(--text2)}
 .phase-dot{width:8px;height:8px;border-radius:50%}
 .phase-dot.green{background:var(--green)}
@@ -162,13 +163,13 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .podium-item.silver{background:linear-gradient(135deg,#94a3b8,#64748b);order:1;padding-bottom:16px}
 .podium-item.bronze{background:linear-gradient(135deg,#cd7f32,#a0522d);order:3;padding-bottom:12px}
 .podium-rank{font-size:32px;font-weight:900;color:#fff;margin-bottom:4px}
-.podium-name{font-size:20px;font-weight:800;color:#fff;margin-bottom:4px}
+.podium-name{font-size:28px;font-weight:800;color:#fff;margin-bottom:4px}
 .podium-score{font-size:14px;color:rgba(255,255,255,.8)}
 .podium-priority{font-size:12px;color:rgba(255,255,255,.7);margin-bottom:4px}
 .podium-budget{font-size:16px;font-weight:700;color:rgba(255,255,255,.9);margin-top:4px}
 .podium-award{display:inline-block;font-size:28px;margin-top:6px}
 .ranking-table{background:rgba(255,255,255,.05);border-radius:var(--radius);overflow:hidden}
-.ranking-row{display:grid;grid-template-columns:50px 1fr 130px 100px 130px 120px;align-items:center;padding:12px 20px;border-bottom:1px solid rgba(255,255,255,.08);font-size:14px;color:rgba(255,255,255,.8);gap:8px}
+.ranking-row{display:grid;grid-template-columns:56px 1fr 90px 80px;align-items:center;padding:14px 20px;border-bottom:1px solid rgba(255,255,255,.08);font-size:20px;color:rgba(255,255,255,.9);gap:8px}
 .ranking-row:last-child{border-bottom:none}
 .ranking-row.header{font-size:11px;color:rgba(255,255,255,.4);font-weight:600;letter-spacing:1px;text-transform:uppercase}
 .ranking-row .rr-rank{font-weight:800;font-size:16px;text-align:center}
@@ -193,11 +194,31 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .po-legend-item{display:flex;align-items:center;gap:4px;font-size:12px;font-weight:600;color:var(--text2)}
 .po-legend-swatch{width:10px;height:10px;border-radius:2px;flex-shrink:0}
 .po-bar{display:flex;height:36px;border-radius:8px;overflow:hidden;background:#1a1a2e;margin:6px 0 10px}
+.po-big{display:flex;gap:24px;justify-content:center;width:100%}
+.po-big-item{min-width:180px;text-align:center;background:rgba(255,255,255,.06);border-radius:16px;padding:28px 16px}
+.po-big-pct{font-size:64px;font-weight:900;color:#fff;line-height:1}
+.po-big-label{font-size:20px;font-weight:700;margin-top:8px;color:rgba(255,255,255,.85)}
+.pin-overlay{position:fixed;inset:0;z-index:400;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.82)}
+.pin-overlay.hidden{display:none}
+.pin-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:32px;width:360px;text-align:center}
+.pin-card h2{font-size:22px;margin-bottom:8px}
+.pin-card p{color:var(--text2);font-size:14px;margin-bottom:16px}
+.pin-card input{width:100%;padding:14px;font-size:28px;font-weight:800;text-align:center;letter-spacing:8px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);margin-bottom:12px}
+.pin-err{color:var(--red);font-size:13px;font-weight:700;min-height:18px;margin-bottom:8px}
 </style>
 </head>
 <body>
+<div class="pin-overlay" id="pin-overlay">
+  <div class="pin-card">
+    <h2>Facilitator PIN</h2>
+    <p>Controls stay locked until this screen is unlocked. The pin is the FACILITATOR_PIN env var, or the number printed in the server log.</p>
+    <input id="pin-input" inputmode="numeric" maxlength="8" autocomplete="off" placeholder="PIN">
+    <div class="pin-err" id="pin-err"></div>
+    <button class="ctrl-btn primary" id="pin-btn" style="width:100%;padding:14px">Unlock</button>
+  </div>
+</div>
 <div class="header">
-  <div class="header-left"><button class="reset-btn" id="reset-btn" title="Hard reset: clears game, flushes all players, new code"></button><span class="session-code" id="session-code"></span></div>
+  <div class="header-left"><button class="end-session-btn" id="reset-btn" title="Hard reset: clears game, flushes all players, new code">End Session</button><span class="session-code" id="session-code"></span><button class="ctrl-btn secondary" id="btn-matrix" style="padding:8px 14px;font-size:13px">Matrix</button></div>
   <div class="header-center">
     <img src="rocu-logo.png" alt="ROCU" class="header-logo" onerror="this.style.display='none';this.parentNode.innerHTML='<h1 style=&quot;font-size:20px;font-weight:900;background:linear-gradient(135deg,#2563eb,#8b5cf6);-webkit-background-clip:text;-webkit-text-fill-color:transparent&quot;>DAY ZERO LIVE</h1>'">
   </div>
@@ -238,12 +259,12 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
         <tr><td>🔐 MFA</td><td></td><td></td><td></td><td></td><td></td><td></td><td class="yes">✓</td><td></td><td class="yes">✓</td></tr>
         <tr><td>🔒 Encrypt</td><td></td><td></td><td class="yes">✓</td><td></td><td></td><td></td><td></td><td class="yes">✓</td><td></td></tr>
         <tr><td>🔀 Segmentation</td><td></td><td></td><td></td><td></td><td class="yes">✓</td><td></td><td class="yes">✓</td><td></td><td></td></tr>
-        <tr><td>💾 Backup</td><td></td><td></td><td class="yes">✓</td><td class="yes">✓</td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td>🗄️ Backup</td><td></td><td></td><td class="yes">✓</td><td class="yes">✓</td><td></td><td></td><td></td><td></td><td></td></tr>
         <tr><td>👁️ Threat Det.</td><td class="yes">✓</td><td></td><td></td><td></td><td></td><td class="yes">✓</td><td></td><td></td><td></td></tr>
         <tr><td>🔑 Passwords</td><td></td><td></td><td></td><td></td><td class="yes">✓</td><td></td><td></td><td></td><td class="yes">✓</td></tr>
         <tr><td>📚 Training</td><td></td><td class="yes">✓</td><td></td><td></td><td></td><td></td><td></td><td></td><td class="yes">✓</td></tr>
         <tr><td>📊 Monitoring</td><td></td><td></td><td></td><td></td><td></td><td class="yes">✓</td><td></td><td class="yes">✓</td><td></td></tr>
-        <tr><td>🔑 Passkeys</td><td class="yes">✓</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td class="yes">✓</td></tr>
+        <tr><td>🗝️ Passkeys</td><td class="yes">✓</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td class="yes">✓</td></tr>
       </table>
     </div>
     <div class="inst-section">
@@ -294,6 +315,7 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
   <div class="slot-label">Incoming Attack...</div>
   <div class="card-flip-container" id="card-flip-container">
     <div class="card-flip-icon" id="card-flip-icon">🎣</div>
+    <div class="card-flip-name" id="card-flip-name"></div>
   </div>
 </div>
 <div class="reveal-overlay hidden" id="reveal-overlay">
@@ -317,7 +339,10 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
     <div class="section-title">Rank</div>
     <div class="podium" id="podium"></div>
   </div>
-  <button class="ctrl-btn primary" id="btn-gov-lobby" style="font-size:18px;padding:14px 48px;margin-top:12px">End Game</button>
+  <div style="display:flex;gap:12px;margin-top:12px">
+    <button class="ctrl-btn primary" id="btn-gov-lobby" style="font-size:18px;padding:14px 48px">Return to Lobby</button>
+    <button class="ctrl-btn danger" id="btn-gov-end" style="font-size:18px;padding:14px 32px">End Session</button>
+  </div>
 </div>
 <div class="priority-overlay hidden" id="priority-overlay">
   <div class="po-title">Priority Selections</div>
@@ -344,9 +369,9 @@ const $=id=>document.getElementById(id);
 const grid=$('grid'),playerCount=$('player-count'),sessionCode=$('session-code'),resetBtn=$('reset-btn');
 const dashTimer=$('dash-timer'),timerDec=$('timer-dec'),timerInc=$('timer-inc');
 const btnStartGame=$('btn-start-game'),btnFlush=$('btn-flush-players'),btnForceEnd=$('btn-force-end'),btnNextRound=$('btn-next-round');
-const slotOverlay=$('slot-overlay'),cardFlipContainer=$('card-flip-container'),cardFlipIcon=$('card-flip-icon'),slotLabel=$('slot-label');
+const slotOverlay=$('slot-overlay'),cardFlipContainer=$('card-flip-container'),cardFlipIcon=$('card-flip-icon'),cardFlipName=$('card-flip-name'),slotLabel=$('slot-label');
 const revealOverlay=$('reveal-overlay'),revIcon=$('rev-icon'),revName=$('rev-name'),revExample=$('rev-example'),btnRevealNext=$('btn-reveal-next');
-const gameoverReveal=$('gameover-reveal'),govName=$('gov-name'),govSub=$('gov-sub'),btnGovLobby=$('btn-gov-lobby');
+const gameoverReveal=$('gameover-reveal'),btnGovLobby=$('btn-gov-lobby'),btnGovEnd=$('btn-gov-end');
 const phaseIndicator=$('phase-indicator'),phaseDot=$('phase-dot'),phaseLabel=$('phase-label');
 const roundAttacksBar=$('round-attacks-bar');
 const qrPopup=$('qr-popup'),qrPopupImg=$('qr-popup-img'),qrPopupCode=$('qr-popup-code'),qrPopupPlayers=$('qr-popup-players'),qrPopupStart=$('qr-popup-start');
@@ -371,18 +396,42 @@ let currentSessionCode = '';
 const ATTACK_NAMES={};ATTACK_DATA.forEach(a=>{ATTACK_NAMES[a.id]=a.name});
 const ATTACK_ICONS={};ATTACK_DATA.forEach(a=>{ATTACK_ICONS[a.id]=a.icon});
 
-function stopAllAudio(){
-  dashMusic.pause();dashMusic.currentTime=0;dashMusic.removeAttribute('loop');
-  dashDrumroll.pause();dashDrumroll.currentTime=0;
-  dashWin.pause();dashWin.currentTime=0;dashWin.removeAttribute('loop');
-  dashLose.pause();dashLose.currentTime=0;
-  dashChime.pause();dashChime.currentTime=0;
-  dashDing.pause();dashDing.currentTime=0;
+function stopTracks(keep){
+  [dashMusic,dashDrumroll,dashWin,dashLose,dashDing,dashChime].forEach(a=>{
+    if(a===keep)return;
+    a.pause();a.currentTime=0;
+  });
+}
+function stopAllAudio(){stopTracks(null)}
+function esc(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function byScore(a,b){return (b.score||0)-(a.score||0)||(a.breaches||0)-(b.breaches||0)}
+function qrSrc(playUrl){return '/qr?data='+encodeURIComponent(playUrl)}
+function setQr(img,playUrl){
+  const src=qrSrc(playUrl);
+  if(img.dataset.src===src)return;
+  img.dataset.src=src;
+  img.src=src;
+}
+let facilitatorOk=false;
+function tryAuth(pin){
+  socket.emit('facilitator-auth',pin,(res)=>{
+    facilitatorOk=!!(res&&res.ok);
+    const overlay=$('pin-overlay');
+    if(facilitatorOk){
+      sessionStorage.setItem('dz-pin',pin);
+      overlay.classList.add('hidden');
+      $('pin-err').textContent='';
+    }else{
+      facilitatorOk=false;
+      overlay.classList.remove('hidden');
+      $('pin-err').textContent='Wrong PIN';
+    }
+  });
 }
 
 function playMusic(){dashMusic.setAttribute('loop','');dashMusic.currentTime=0;dashMusic.play().catch(()=>{})}
 function playDrumroll(){dashDrumroll.currentTime=0;dashDrumroll.play().catch(()=>{})}
-function playWin(){dashWin.currentTime=0;dashWin.play().catch(()=>{})}
+function playWin(){stopTracks(dashWin);dashWin.currentTime=0;dashWin.play().catch(()=>{})}
 function playLose(){dashLose.currentTime=0;dashLose.play().catch(()=>{})}
 
 
@@ -398,9 +447,9 @@ function updateQrPopup(){
   if(currentPhase==='lobby'&&currentSessionCode&&lastPlayers.length>0){
     const origin=window.location.origin;
     const playUrl=`${origin}/play.html?code=${currentSessionCode}`;
-    qrPopupImg.src=`https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(playUrl)}&color=111827&bgcolor=ffffff`;
+    setQr(qrPopupImg,playUrl);
     qrPopupCode.textContent=currentSessionCode;
-    qrPopupPlayers.innerHTML=lastPlayers.map((p,i)=>`<div class="qp-row"><span class="qp-num">${i+1}.</span><span>${p.name}</span></div>`).join('');
+    qrPopupPlayers.innerHTML=lastPlayers.map((p,i)=>`<div class="qp-row"><span class="qp-num">${i+1}.</span><span>${esc(p.name)}</span></div>`).join('');
     qrPopupStart.disabled=false;
     qrPopupStart.textContent='Start Game';
     qrPopup.classList.remove('hidden');
@@ -410,27 +459,14 @@ function updateQrPopup(){
 }
 
 function adjustGridForPlayers(count){
-  const vw=window.innerWidth-64;
   let minCard=300;
   if(count<=4)minCard=300;
   else if(count<=6)minCard=240;
   else if(count<=8)minCard=200;
-  else if(count<=10)minCard=170;
-  else if(count<=12)minCard=145;
-  else minCard=140;
+  else if(count<=12)minCard=170;
+  else minCard=150;
   grid.style.setProperty('--card-min',minCard+'px');
-  grid.classList.remove('scroll-active','scroll-track');
-  grid.scrollLeft=0;
-  if(count>12){
-    grid.classList.add('scroll-active');
-    const totalCols=Math.ceil(count/3);
-    const totalWidth=totalCols*(minCard+12);
-    const scrollDist=Math.max(0,totalWidth-vw);
-    const duration=Math.max(15,scrollDist/30);
-    grid.style.setProperty('--scroll-dist',scrollDist+'px');
-    grid.style.setProperty('--scroll-duration',duration+'s');
-    grid.classList.add('scroll-track');
-  }
+  grid.classList.toggle('dense',count>12);
 }
 
 function renderCards(players){
@@ -441,7 +477,7 @@ function renderCards(players){
     if(currentPhase==='lobby' && currentSessionCode){
       const origin = window.location.origin;
       const playUrl = `${origin}/play.html?code=${currentSessionCode}`;
-      const qrImg = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(playUrl)}&color=111827&bgcolor=ffffff`;
+      const qrImg = qrSrc(playUrl);
       grid.innerHTML = `
         <div class="lobby-qr">
           <div class="info-side">
@@ -470,14 +506,13 @@ function renderCards(players){
   adjustGridForPlayers(players.length);
   const sorted = currentPhase==='lobby' ? players : [...players].sort((a,b)=>b.budget-a.budget);
   grid.innerHTML=sorted.map(p=>{
-    const r=currentPhase==='reveal'||currentPhase==='gameover'?3:(currentPhase==='selecting'?p.defences.length:0);
-    const dots='';
+    const hist=p.roundHistory||[];
     let dotsHtml='<div class="round-dots">';
     for(let i=0;i<3;i++){
-      if(i<p.breaches+p.blocked||(currentPhase==='gameover')){
-        const isBlocked=i<p.blocked;
-        dotsHtml+=`<div class="round-dot ${isBlocked?'blocked':'breached'}">R${i+1}</div>`;
-      }else if(i===p.blocked+p.breaches&&currentPhase==='selecting'){
+      const h=hist[i];
+      if(h){
+        dotsHtml+=`<div class="round-dot ${h.blocked?'blocked':'breached'}">R${i+1}</div>`;
+      }else if(i===hist.length&&currentPhase==='selecting'&&!p.eliminated){
         dotsHtml+=`<div class="round-dot active">R${i+1}</div>`;
       }else{
         dotsHtml+=`<div class="round-dot">R${i+1}</div>`;
@@ -486,26 +521,23 @@ function renderCards(players){
     dotsHtml+='</div>';
     const defs=p.defences||[];
     const bc=budgetClass(p.budget);
-    const readyClass=currentPhase==='selecting'&&p.selected&&p.selected.length>=p.maxSelect?' ready':'';
+    const readyClass=!p.eliminated&&currentPhase==='selecting'&&p.selected&&p.selected.length>=p.maxSelect?' ready':'';
     const priReady=currentPhase==='priority'&&p.priority&&p.priority.length===3?' ready':'';
-    return `<div class="card ${currentPhase==='selecting'?'playing':currentPhase==='gameover'?(p.budget>0?'done':'bankrupt'):''}${readyClass}${priReady}" data-id="${p.id}">
+    const elimClass=p.eliminated?' eliminated':'';
+    const status = p.eliminated ? 'Eliminated' : (currentPhase==='priority'?(p.priority&&p.priority.length===3?'Ready':'Waiting'):(p.selected.length+'/'+p.maxSelect));
+    return `<div class="card ${currentPhase==='selecting'?'playing':currentPhase==='gameover'?(p.budget>0?'done':'bankrupt'):''}${readyClass}${priReady}${elimClass}" data-id="${esc(p.id)}">
       <div class="card-header">
         <div class="card-header-left">
-          <div class="card-name">${p.name}</div>
-          <div class="card-status ${currentPhase==='priority'?'intro':currentPhase==='selecting'?'playing':''}">${currentPhase==='priority'?(p.priority&&p.priority.length===3?'Ready':'Waiting'):(p.selected.length+'/'+p.maxSelect)}</div>${!p.connected?'<div class="dc-badge">DISCONNECTED</div>':''}
+          <div class="card-name">${esc(p.name)}</div>
+          <div class="card-status ${p.eliminated?'':currentPhase==='priority'?'intro':currentPhase==='selecting'?'playing':''}">${status}</div>${!p.connected?'<div class="dc-badge">DISCONNECTED</div>':''}
         </div>
-        <button class="card-remove" data-id="${p.id}" title="Remove player">✕</button>
+        <button class="card-remove" data-id="${esc(p.id)}" title="Remove player">✕</button>
       </div>
       <div class="card-body">
-        <div class="stat-row">
-          <div class="stat-box"><div class="label">Blocked</div><div class="value green">${p.blocked||0}</div></div>
-          <div class="stat-box"><div class="label">Breaches</div><div class="value red">${p.breaches||0}</div></div>
-          <div class="stat-box"><div class="label">ICO Budget</div><div class="value ${bc}">£${(p.budget||0).toLocaleString()}</div></div>
-        </div>
-        <div><div class="budget-bar"><div class="budget-bar-fill ${bc}" style="width:${budgetPct(p.budget)}%"></div></div></div>
-        ${defs.length?`<div class="defence-list">${defs.map(d=>`<div class="defence-item"><span class="di-icon">${DEFENCE_ICONS[d]||'🛡️'}</span><span class="di-name">${DEFENCE_NAMES[d]||d}</span></div>`).join('')}</div>`:''}
-        ${p.priority&&p.priority.length?`<div style="margin-top:4px;text-align:center"><div style="font-size:18px;color:var(--text3);font-weight:600;letter-spacing:1px;text-transform:uppercase">Priority</div><div style="font-size:32px;margin-top:2px">${p.priority.map(x=>PRIORITY_EMOJIS[x]||'').join(' ')}</div></div>`:''}
-        ${p.award?`<div style="font-size:13px;font-weight:700;text-align:center;margin-top:4px;color:${p.award==='Gold'?'#f59e0b':p.award==='Silver'?'#94a3b8':'#cd7f32'}">${p.award==='Gold'?'🏆':p.award==='Silver'?'🥈':'🥉'} ${p.award}</div>`:''}
+        <div class="stat-box"><div class="label">ICO Budget</div><div class="value ${bc}">£${(p.budget||0).toLocaleString()}</div></div>
+        <div class="budget-bar"><div class="budget-bar-fill ${bc}" style="width:${budgetPct(p.budget)}%"></div></div>
+        ${defs.length?`<div class="defence-list">${defs.map(d=>{const def=DEFENCES.find(x=>x.id===d);return `<div class="defence-item"><span class="di-icon">${DEFENCE_ICONS[d]||'🛡️'}</span><span class="di-name">${esc((def&&def.short)||DEFENCE_NAMES[d]||d)}</span></div>`}).join('')}</div>`:''}
+        ${p.priority&&p.priority.length?`<div style="margin-top:4px;text-align:center;font-size:28px">${p.priority.map(x=>PRIORITY_EMOJIS[x]||'').join(' ')}</div>`:''}
         ${dotsHtml}
       </div>
     </div>`;
@@ -531,8 +563,10 @@ function updateReadyCount(players){
   if(currentPhase==='priority'){
     ready = connected.filter(p=>p.priority && p.priority.length===3).length;
   }else{
-    const need = connected[0] ? connected[0].maxSelect : 3;
-    ready = connected.filter(p=>p.selected && p.selected.length>=need).length;
+    const active = connected.filter(p=>!p.eliminated);
+    ready = active.filter(p=>p.selected && p.selected.length>=p.maxSelect).length;
+    readyCountEl.textContent = `${ready}/${active.length} ready`;
+    return;
   }
   readyCountEl.textContent = `${ready}/${connected.length} ready`;
 }
@@ -560,7 +594,9 @@ function updateButtons(gs){
     btnForceEnd.textContent='Force End Round';
   }else if(gs.phase==='reveal'){
     btnNextRound.style.display='';
-    btnNextRound.textContent=gs.round>=3?'End Game':'Start Round '+(gs.round+1);
+    const label=gs.round>=3?'End Game':'Start Round '+(gs.round+1);
+    btnNextRound.textContent=label;
+    if(btnRevealNext){btnRevealNext.style.display='';btnRevealNext.textContent=label;}
   }else if(gs.phase==='gameover'){
     btnNextRound.style.display='';
     btnNextRound.textContent='Return to Lobby';
@@ -598,15 +634,19 @@ function showSlotMachine(attack){
     const a=atts[step%atts.length];
     cardFlipIcon.textContent=a.icon;
     cardFlipIcon.style.transform='rotateY('+((step%2)*180)+'deg)';
+    const shownAt=times[Math.max(0,step-1)]||0;
+    cardFlipName.textContent=shownAt>spinMs-1000?a.name:'';
     step++;
     if(step<totalSteps){
-      cardFlipContainer.style.filter='blur('+((step/totalSteps)*6)+'px)';
+      cardFlipContainer.style.filter='blur('+((1-step/totalSteps)*8)+'px)';
       const delay=Math.max(30,times[step]-times[step-1]);
       spinTimeout=setTimeout(spin,delay);
     }else{
       cardFlipIcon.textContent=attack.icon;
+      cardFlipName.textContent=attack.name;
       cardFlipIcon.style.transform='rotateY(0)';
       cardFlipContainer.style.filter='none';
+      if(btnRevealNext)btnRevealNext.style.display='none';
       // Keep the drumroll playing — its last second lands on the reveal
       spinTimeout=setTimeout(()=>{
         spinTimeout=null;
@@ -639,10 +679,11 @@ function updateRoundAttacks(){
       if(!src||h.length>(src.roundHistory||[]).length)src=p;
     });
     function add(a){
-      if(!a||!a.id)return;
-      if(played.find(x=>x.id===a.id))return;
-      const info=ATTACK_DATA.find(x=>x.id===a.id)||a;
-      played.push({id:info.id,icon:info.icon||'🎯',name:info.name||info.id});
+      const id=a&&(a.id||a.attackId);
+      if(!id)return;
+      if(played.find(x=>x.id===id))return;
+      const info=ATTACK_DATA.find(x=>x.id===id)||a;
+      played.push({id:info.id||id,icon:info.icon||'🎯',name:info.name||id});
     }
     if(src){for(let i=0;i<(src.roundHistory||[]).length;i++)add(src.roundHistory[i]);}
     add(currentAttack);
@@ -682,40 +723,31 @@ function svgPie(container, counts, colors, size=180){
 }
 
 function renderPriorityCharts(players){
-  const allConnected=players.filter(p=>p.connected);
-  const readyPlayers=allConnected.filter(p=>p.priority&&p.priority.length===3);
-  if(allConnected.length===0||readyPlayers.length!==allConnected.length){return}
-  const charts=$('po-charts');charts.innerHTML='';
-  const labels=['1st Priority','2nd Priority','3rd Priority'];
-  const colors={'Money':'#f59e0b','Data':'#3b82f6','Maintain Services':'#8b5cf6'};
-  const total = readyPlayers.length;
-  for(let i=0;i<3;i++){
-    const counts={'Money':0,'Data':0,'Maintain Services':0};
-    readyPlayers.forEach(p=>{const v=p.priority[i];if(counts[v]!==undefined)counts[v]++});
-    const box=document.createElement('div');box.className='po-chart-box';
-    const label=document.createElement('div');label.className='po-chart-label';label.textContent=`${labels[i]} (${total} players)`;
-    box.appendChild(label);
-    const bar=document.createElement('div');
-    bar.className='po-bar';
-    bar.style.cssText='display:flex;height:36px;border-radius:8px;overflow:hidden;background:#1a1a2e;margin:8px 0';
-    Object.entries(counts).forEach(([key,val])=>{
-      const pct = total>0 ? Math.round(val/total*100) : 0;
-      if(val===0) return;
-      const seg=document.createElement('div');
-      seg.style.cssText=`width:${pct}%;background:${colors[key]};display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:15px;min-width:28px`;
-      seg.textContent = pct+'%';
-      bar.appendChild(seg);
-    });
-    box.appendChild(bar);
-    const breakEl=document.createElement('div');
-    breakEl.style.cssText='font-size:13px;color:var(--text2);margin-bottom:16px;line-height:1.5';
-    breakEl.innerHTML = Object.entries(counts).map(([k,v])=>{
-      const pct = total>0 ? Math.round(v/total*100) : 0;
-      return `${PRIORITY_EMOJIS[k]||''} ${k} <strong style="font-size:15px">${pct}%</strong> (${v})`;
-    }).join(' &nbsp;·&nbsp; ');
-    box.appendChild(breakEl);
-    charts.appendChild(box);
+  const readyPlayers=players.filter(p=>p.connected&&p.priority&&p.priority.length===3);
+  const charts=$('po-charts');
+  if(!charts)return;
+  charts.innerHTML='';
+  if(!readyPlayers.length){
+    charts.innerHTML='<div style="color:rgba(255,255,255,.6);font-size:20px">Waiting for priorities</div>';
+    return;
   }
+  const counts={'Money':0,'Data':0,'Maintain Services':0};
+  readyPlayers.forEach(p=>{const v=p.priority[0];if(counts[v]!==undefined)counts[v]++});
+  const total=readyPlayers.length;
+  const row=document.createElement('div');
+  row.className='po-big';
+  Object.keys(counts).forEach(k=>{
+    const pct=Math.round(counts[k]/total*100);
+    const item=document.createElement('div');
+    item.className='po-big-item';
+    item.innerHTML=`<div class="po-big-pct">${pct}%</div><div class="po-big-label">${PRIORITY_EMOJIS[k]||''} ${esc(k)}</div>`;
+    row.appendChild(item);
+  });
+  charts.appendChild(row);
+  const note=document.createElement('div');
+  note.style.cssText='margin-top:18px;color:rgba(255,255,255,.55);font-size:16px';
+  note.textContent=`1st priority · ${total} players`;
+  charts.appendChild(note);
 }
 
 function renderWinner(players){
@@ -724,7 +756,7 @@ function renderWinner(players){
     const atkEl=$('summary-attacks'); if(atkEl) atkEl.innerHTML='';
     return;
   }
-  const sorted=[...players].sort((a,b)=>(b.score||0)-(a.score||0));
+  const sorted=[...players].sort(byScore);
   const top3=sorted.slice(0,3);
 
   // Podium
@@ -737,7 +769,7 @@ function renderWinner(players){
     div.className='podium-item '+rankClasses[i];
     const pr=p.priority&&p.priority[0]?`${PRIORITY_EMOJIS[p.priority[0]]||''} ${p.priority[0]}`:'—';
     const match = (p.priorityPct!=null) ? `Match ${p.priorityPct}%` : '';
-    div.innerHTML=`<div class="podium-rank">${rankLabels[i]}</div><div class="podium-name">${p.name}</div><div class="podium-priority">${pr}</div><div class="podium-score">Score: ${p.score||0}</div><div class="podium-budget">£${(p.budget||0).toLocaleString()}</div><div class="podium-award">${p.award==='Gold'?'🏆':p.award==='Silver'?'🥈':p.award==='Bronze'?'🥉':'—'}</div><div style="font-size:11px;color:rgba(255,255,255,.85);margin-top:4px">${match}</div>`;
+    div.innerHTML=`<div class="podium-rank">${rankLabels[i]}</div><div class="podium-name">${esc(p.name)}</div><div class="podium-priority">${pr}</div><div class="podium-score">Score: ${p.score||0}</div><div class="podium-award">${p.award==='Gold'?'🏆':p.award==='Silver'?'🥈':p.award==='Bronze'?'🥉':'—'}</div><div style="font-size:14px;color:rgba(255,255,255,.85);margin-top:4px">${match}</div>`;
     podiumEl.appendChild(div);
   });
   if(podiumEl.children.length<3){
@@ -751,26 +783,25 @@ function renderWinner(players){
 
   // Full ranking table (70% side)
   const tableEl=$('ranking-table');
-  tableEl.innerHTML='<div class="ranking-row header"><span class="rr-rank">Rank</span><span class="rr-name">Name</span><span class="rr-priority">Priority Match</span><span class="rr-speed">Speed</span><span class="rr-budget">ICO Budget</span><span class="rr-award">Award</span></div>';
+  tableEl.innerHTML='<div class="ranking-row header"><span class="rr-rank">Rank</span><span class="rr-name">Name</span><span class="rr-priority">Score</span><span class="rr-award">Award</span></div>';
   sorted.forEach((p,i)=>{
     const row=document.createElement('div');
     row.className='ranking-row';
-    const prio = (p.priorityPct!=null) ? `${p.priorityPct}%` : '—';
-    const spd = (p.speedPct!=null) ? `${p.speedPct}%` : '—';
-    row.innerHTML=`<span class="rr-rank">#${i+1}</span><span class="rr-name">${p.name}</span><span class="rr-priority">${prio}</span><span class="rr-speed">${spd}</span><span class="rr-budget">£${(p.budget||0).toLocaleString()}</span><span class="rr-award">${p.award==='Gold'?'🏆 Gold':p.award==='Silver'?'🥈 Silver':p.award==='Bronze'?'🥉 Bronze':'—'}</span>`;
+    row.innerHTML=`<span class="rr-rank">#${i+1}</span><span class="rr-name">${esc(p.name)}</span><span class="rr-priority">${p.score||0}</span><span class="rr-award">${p.award==='Gold'?'🏆':p.award==='Silver'?'🥈':p.award==='Bronze'?'🥉':'—'}</span>`;
     tableEl.appendChild(row);
   });
 
   // All Attacks (30% side) - list what was faced across game
   const atkEl=$('summary-attacks');
-  const history = (sorted[0] && sorted[0].roundHistory) || [];
-  if(atkEl && history.length){
-    atkEl.innerHTML = history.map((r)=>{
-      const icon=ATTACK_ICONS[r.attackId]||'🔓';
-      const name=ATTACK_NAMES[r.attackId]||r.attackId;
-      const cls=r.blocked?'blocked':'breached';
-      const label=r.blocked?'BLOCKED':'BREACHED';
-      return `<div class="winner-round"><div class="wr-left"><span class="wr-icon">${icon}</span><span class="wr-name">${name}</span><span class="wr-result ${cls}">${label}</span></div></div>`;
+  const rounds=Math.max(0,...sorted.map(p=>(p.roundHistory||[]).length));
+  if(atkEl && rounds){
+    atkEl.innerHTML = Array.from({length:rounds},(_,i)=>{
+      const sample=(sorted.find(p=>(p.roundHistory||[])[i])||{}).roundHistory[i];
+      const icon=ATTACK_ICONS[sample.attackId]||'🔓';
+      const name=ATTACK_NAMES[sample.attackId]||sample.attackId;
+      const faced=sorted.filter(p=>(p.roundHistory||[])[i]);
+      const blocked=faced.filter(p=>p.roundHistory[i].blocked).length;
+      return `<div class="winner-round"><div class="wr-left"><span class="wr-icon">${icon}</span><span class="wr-name">${esc(name)}</span><span class="wr-result blocked">${blocked}/${faced.length} blocked</span></div></div>`;
     }).join('');
   }else if(atkEl){
     atkEl.innerHTML='';
@@ -803,6 +834,7 @@ socket.on('game-state',(gs)=>{
   updatePhase(gs);
   updateButtons(gs);
   sessionCode.textContent=gs.sessionCode?'CODE '+gs.sessionCode:'';
+  sessionCode.classList.toggle('lobby-code',gs.phase==='lobby');
   currentSessionCode = gs.sessionCode || '';
   btnFlush.style.display=gs.phase==='lobby'?'':'none';
 
@@ -828,19 +860,22 @@ socket.on('game-state',(gs)=>{
     if(prevPhase!=='selecting')playMusic();
     updateRoundAttacks();
   }else if(gs.phase==='spinning'){
-    showSlotMachine(gs.currentAttack);
-    stopAllAudio();
-    playDrumroll();
+    if(prevPhase!=='spinning'){
+      showSlotMachine(gs.currentAttack);
+      stopAllAudio();
+      playDrumroll();
+    }
     updateRoundAttacks();
     dingPlayedForRound=0;
   }else if(gs.phase==='reveal'){
-    showReveal(gs.currentAttack);
-    stopAllAudio();
+    if(prevPhase!=='reveal'){
+      showReveal(gs.currentAttack);
+      stopTracks(dashChime);
+      dashChime.currentTime=0;dashChime.play().catch(()=>{});
+    }
     updateRoundAttacks();
-    dashChime.currentTime=0;dashChime.play().catch(()=>{});
   }else if(gs.phase==='gameover'){
-    showGameOver();
-    stopAllAudio();
+    if(prevPhase!=='gameover')showGameOver();
   }
 });
 
@@ -892,7 +927,7 @@ qrPopupStart.addEventListener('click',()=>{
 });
 
 btnForceEnd.addEventListener('click',()=>{
-  socket.emit('adjust-timer',-9999);
+  socket.emit('force-end');
 });
 
 btnFlush.addEventListener('click',()=>{
@@ -914,8 +949,13 @@ btnRevealNext.addEventListener('click',()=>{
 });
 
 btnGovLobby.addEventListener('click',()=>{
-  socket.emit('hard-reset');
-  setTimeout(()=>location.reload(),500);
+  socket.emit('reset-game');
+});
+if(btnGovEnd)btnGovEnd.addEventListener('click',()=>{
+  if(confirm('End session — this removes every player and creates a new join code. Are you sure?')){
+    socket.emit('hard-reset');
+    setTimeout(()=>location.reload(),500);
+  }
 });
 
 resetBtn.addEventListener('click',()=>{
@@ -937,7 +977,7 @@ grid.addEventListener('click',(e)=>{
   const btn=e.target.closest('.card-remove');
   if(!btn)return;
   const id=btn.dataset.id;
-  if(confirm('Remove this player? They can rejoin with the same session code.')){
+  if(confirm('Remove this player? They cannot rejoin once the game has started.')){
     socket.emit('remove-player',id);
   }
 });
@@ -952,6 +992,24 @@ document.addEventListener('keydown',e=>{
   }
 });
 
+$('btn-matrix').addEventListener('click',()=>instOverlay.classList.remove('hidden'));
+function unlockPin(){tryAuth($('pin-input').value.trim())}
+$('pin-btn').addEventListener('click',unlockPin);
+$('pin-input').addEventListener('keydown',e=>{if(e.key==='Enter')unlockPin()});
+function authOnConnect(){
+  const saved=sessionStorage.getItem('dz-pin');
+  if(saved)tryAuth(saved);
+  else $('pin-overlay').classList.remove('hidden');
+}
+socket.on('connect',authOnConnect);
+if(socket.connected)authOnConnect();
+document.addEventListener('pointerdown',function prime(){
+  [dashMusic,dashDrumroll,dashWin,dashLose,dashDing,dashChime].forEach(a=>{
+    const p=a.play();
+    if(p)p.then(()=>{a.pause();a.currentTime=0}).catch(()=>{});
+  });
+  document.removeEventListener('pointerdown',prime);
+},{once:true});
 const instOverlay=document.getElementById('inst-overlay');
 const instClose=document.getElementById('inst-close');
 document.addEventListener('click',e=>{

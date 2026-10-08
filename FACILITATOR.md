@@ -7,10 +7,11 @@
 
 ## 1. Setup
 
-1. Open `dashboard.html` on the big screen projector/laptop
-2. A QR code and session code appear — players scan to join on their phones
-3. Wait for all players to join (they appear as cards on the dashboard)
-4. Click **Start Game** when ready
+1. Set `FACILITATOR_PIN` on the host (Railway env). If unset, the server logs a one-off pin at startup — enter it on the dashboard unlock screen. Player phones cannot start, reset, or flush the game.
+2. Open `dashboard.html` on the big screen projector/laptop and enter the facilitator PIN
+3. A QR code and session code appear — players scan to join on their phones
+4. Wait for all players to join (they appear as cards on the dashboard)
+5. Click **Start Game** when ready
 
 > Each player starts with **£200,000 ICO Budget**. Each breach incurs a **£100,000 fine**. Go to £0 = **eliminated**.
 
@@ -20,7 +21,7 @@
 
 1. **Priority Phase** — Players rank 3 priorities (Money, Data, Maintain Services). Faster = bonus points.
 2. **Selecting Phase** — 120s timer. Players pick defences to deploy this round. Defences carry over.
-3. **Spinning** — Wheel spin animation (7s). A random attack is selected.
+3. **Spinning** — Wheel spins for about 5.5s (drumroll is ~6.5s). One attack is revealed, pre-drawn so each round is from a different priority bucket.
 4. **Reveal** — Each player sees if they blocked or were breached. ICO fine of £100,000 imposed on breach.
 5. Repeat for 3 rounds. Game over → winner announced.
 
@@ -30,11 +31,11 @@
 
 | Phase | What Happens | Player Action | Key Rules |
 |-------|-------------|---------------|-----------|
-| **Priority** | Players rank 3 priorities: 💰 Money, 💾 Data, ⚙️ Maintain Services | Drag to reorder, tap to confirm | 60% of score. Faster submit = more bonus. Each priority covers 3 attacks. |
+| **Priority** | Players rank 3 priorities: 💰 Money, 💾 Data, ⚙️ Maintain Services | Tap each item in order, then confirm | 75% of score. Untimed. Each priority covers 3 attacks. |
 | **Select R1** | Choose **2 defences** to deploy | Tap cards to select | Carry over — all 2 carry into Round 2 |
 | **Select R2** | Choose **1 more defence** (2 carried from R1 = 3 active) | Tap cards to select | Carry over — all 3 carry into Round 3 |
 | **Select R3** | Choose **1 more defence** (3 carried = 4 active) | Tap cards to select | Final round. Eliminated players see red screen. |
-| **Attack** | Random attack selected from 9 available (weighted by priority bucket) | Watch the spin | One attack per round. Not repeated within a game. |
+| **Attack** | One attack pre-drawn from each priority bucket, then shuffled | Watch the spin | One attack per round. Not repeated within a game. |
 | **Result** | Compare active defences vs attack. If a defence counters the attack → blocked. | See blocked/breached result | Blocked = no damage. Breached = -£100k and Eliminated at £0 |
 
 ---
@@ -72,11 +73,11 @@
 | Component | Weight | How It Works |
 |-----------|--------|--------------|
 | Priority Match | **75%** | Rank 1 = 3pts, Rank 2 = 2pts, Rank 3 = 1pt per matching attack |
-| Speed | **25%** | Faster priority submit + faster defence selection = more points |
+| Speed | **25%** | Faster defence selection under the round timer = more points. Priority time is not scored. |
 | ICO Budget | ~~0%~~ | Removed — ICO Budget is now an elimination mechanic only |
 
 **Awards:** Gold (≥78) · Silver (≥58) · Bronze (<58)
-**Tiebreaker:** Most breaches survived.
+**Tiebreaker:** Fewest breaches.
 
 ---
 
@@ -149,14 +150,12 @@
 
 | Sound | Trigger |
 |-------|---------|
-| Success chime | Defence blocked |
-| Error buzz | Breach |
-| Click | Defence selection |
-| Priority chime | Priority selection |
-| Warning chime (15s) | Timer low warning |
-| Drumroll | Wheel spin |
-| Win fanfare | Game over |
-| Music (loop) | During game phases |
+| Click | Defence selection on the phone |
+| Beep | Phone timer at 15s and 5s |
+| Drumroll | Dashboard wheel spin |
+| Reveal chime | Dashboard attack reveal |
+| Win fanfare | Dashboard game over |
+| Music (loop) | Dashboard during selection |
 
 ---
 

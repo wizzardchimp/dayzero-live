@@ -1,7 +1,9 @@
 const express = require('express');
 const http = require('http');
+const crypto = require('crypto');
 const { Server } = require('socket.io');
 const path = require('path');
+const QRCode = require('qrcode');
 const { ATTACKS, DEFENCES, EFFECTIVENESS, PRIORITY_MAP, PRIORITY_EMOJIS,
   ATTACK_COST, START_BUDGET, MAX_ROUNDS, SPIN_DURATION, DEFAULT_TIMER } = require('./public/shared');
 
@@ -12,6 +14,18 @@ const io = new Server(server, {
   pingInterval: 30000,
 });
 app.use(express.static(path.join(__dirname, 'public'), { maxAge: 0, etag: false, lastModified: false }));
+
+const FACILITATOR_PIN = process.env.FACILITATOR_PIN || String(Math.floor(1000 + Math.random() * 9000));
+if (!process.env.FACILITATOR_PIN) {
+  console.log('FACILITATOR PIN (set FACILITATOR_PIN to override): ' + FACILITATOR_PIN);
+}
+
+app.get('/qr', (req, res) => {
+  const data = String(req.query.data || '').slice(0, 400);
+  if (!/^https?:\/\//.test(data)) return res.status(400).end();
+  res.type('png');
+  QRCode.toFileStream(res, data, { width: 300, margin: 1, color: { dark: '#111827', light: '#ffffff' } });
+});
 
 const game = {
   phase: 'lobby',
@@ -26,6 +40,7 @@ const game = {
   priorityStartTime: null,
   roundStartTimes: [],
   plannedAttacks: [],
+  queuedNext: false,
 };
 const players = {};
 let lastActivity = Date.now();
@@ -42,6 +57,7 @@ function hardResetGame() {
 setInterval(() => {
   if (Date.now() - lastActivity < IDLE_RESET_MS) return;
   if (game.phase === 'lobby' && Object.keys(players).length === 0) return;
+  if (game.phase === 'reveal' || game.phase === 'gameover') return;
   console.log(`Idle timeout (${IDLE_RESET_MS / 60000} min) reached — forcing hard reset`);
   hardResetGame();
 }, 60000);
@@ -51,7 +67,15 @@ function genCode(){
 }
 
 function sanitise(name) {
-  return name.trim().slice(0, 20) || 'Anonymous';
+  return String(name || '').trim().slice(0, 20) || 'Anonymous';
+}
+
+function newToken() {
+  return crypto.randomBytes(16).toString('hex');
+}
+
+function isFac(socket) {
+  return !!(socket.data && socket.data.facilitator);
 }
 
 function getAttack(id) {
@@ -116,18 +140,17 @@ function calculateAward(player) {
 
   const prioPct = maxPoints > 0 ? Math.round((points / maxPoints) * 100) : 50;
 
-  // Speed scoring (lower time = better)
   let speedPct = 50;
+  const cap = (game.timerDuration || 120) * 1000;
   const times = [];
-  if (player.prioritySubmitTime && game.priorityStartTime) {
-    times.push(player.prioritySubmitTime - game.priorityStartTime);
-  }
   (player.roundSelectTimes || []).forEach((t, idx) => {
-    if (t && game.roundStartTimes[idx]) times.push(t - game.roundStartTimes[idx]);
+    if (t && game.roundStartTimes[idx]) {
+      times.push(Math.min(cap, Math.max(0, t - game.roundStartTimes[idx])));
+    }
   });
   if (times.length > 0) {
     const avg = times.reduce((a,b)=>a+b,0) / times.length;
-    const norm = Math.max(0, Math.min(1, 1 - (avg / 120000)));
+    const norm = Math.max(0, Math.min(1, 1 - (avg / cap)));
     speedPct = Math.round(norm * 100);
   }
 
@@ -233,6 +256,7 @@ function broadcast() {
 
 function startTimer() {
   clearInterval(game.timerInterval);
+  io.emit('timer-update', game.timerRemaining);
   game.timerInterval = setInterval(() => {
     game.timerRemaining--;
     io.emit('timer-update', game.timerRemaining);
@@ -250,6 +274,12 @@ function endRound() {
   game.currentAttack = attack;
 
   Object.values(players).forEach(p => {
+    if (p.eliminated) {
+      p.lastAttack = null;
+      p.lastResult = null;
+      p.preventInfo = null;
+      return;
+    }
     const allDefences = [...p.carriedOver, ...p.selected];
     const blocker = allDefences.find(d => EFFECTIVENESS[d] && EFFECTIVENESS[d].includes(attack.id));
     p.lastAttack = null;
@@ -281,6 +311,10 @@ function endRound() {
     if (game.phase === 'spinning') {
       game.phase = 'reveal';
       broadcast();
+      if (game.queuedNext) {
+        game.queuedNext = false;
+        startRound();
+      }
     }
   }, SPIN_DURATION);
 }
@@ -320,6 +354,7 @@ function startGame() {
   game.round = 0;
   game.usedAttacks = [];
   game.currentAttack = null;
+  game.queuedNext = false;
   // Pre-draw 3 attacks: one from each priority bucket, shuffled
   const buckets = [
     ['ransomware', 'insider', 'social_eng'],
@@ -357,8 +392,10 @@ function resetGame() {
   game.timerRemaining = DEFAULT_TIMER;
   game.currentAttack = null;
   game.usedAttacks = [];
-  game.sessionCode = genCode();
+  game.queuedNext = false;
   game.startTime = null;
+  game.priorityStartTime = null;
+  game.roundStartTimes = [];
   Object.values(players).forEach(p => {
     p.selected = [];
     p.carriedOver = [];
@@ -372,6 +409,8 @@ function resetGame() {
     p.maxSelect = 2;
     p.roundHistory = [];
     p.priority = [];
+    p.prioritySubmitTime = null;
+    p.roundSelectTimes = [null, null, null];
   });
   broadcast();
 }
@@ -380,26 +419,53 @@ io.on('connection', (socket) => {
   console.log(`Client connected: ${socket.id}`);
   socket.emit('game-state', getGameState());
 
-  socket.on('join', (code, name) => {
+  socket.on('facilitator-auth', (pin, ack) => {
+    const ok = String(pin || '') === String(FACILITATOR_PIN);
+    socket.data.facilitator = ok;
+    if (typeof ack === 'function') ack({ ok });
+  });
+
+  function reclaim(existing) {
+    if (existing.id !== socket.id) {
+      io.to(existing.id).emit('session-taken');
+      delete players[existing.id];
+    }
+    existing.id = socket.id;
+    existing.connected = true;
+    if (!existing.rejoinToken) existing.rejoinToken = newToken();
+    if (!existing.roundSelectTimes) existing.roundSelectTimes = [null, null, null];
+    players[socket.id] = existing;
+    socket.emit('joined', { id: socket.id, rejoinToken: existing.rejoinToken, name: existing.name });
+    broadcast();
+  }
+
+  socket.on('join', (code, name, token) => {
     if (code !== game.sessionCode) {
       socket.emit('joined', { id: socket.id, error: 'Invalid session code' });
       return;
     }
+    if (token) {
+      const byToken = Object.values(players).find(p => p.rejoinToken && p.rejoinToken === token);
+      if (byToken) {
+        reclaim(byToken);
+        return;
+      }
+    }
     const cleanName = sanitise(name);
     const existing = Object.values(players).find(p => p.name === cleanName);
     if (existing) {
-      delete players[existing.id];
-      existing.id = socket.id;
-      existing.connected = true;
-      players[socket.id] = existing;
-      socket.emit('joined', { id: socket.id });
-      broadcast();
+      if (existing.connected && existing.id !== socket.id) {
+        socket.emit('joined', { id: socket.id, error: 'That name is already in use. Pick another.' });
+        return;
+      }
+      reclaim(existing);
       return;
     }
     if (game.phase !== 'lobby') {
       socket.emit('joined', { id: socket.id, error: 'Game already in progress' });
       return;
     }
+    const rejoinToken = newToken();
     players[socket.id] = {
       id: socket.id,
       name: cleanName,
@@ -415,41 +481,53 @@ io.on('connection', (socket) => {
       maxSelect: 2,
       roundHistory: [],
       priority: [],
+      rejoinToken,
+      roundSelectTimes: [null, null, null],
     };
-    socket.emit('joined', { id: socket.id });
+    socket.emit('joined', { id: socket.id, rejoinToken, name: cleanName });
     broadcast();
-    console.log(`${players[socket.id].name} joined`);
+    console.log(`${cleanName} joined`);
   });
 
   socket.on('start-game', () => {
+    if (!isFac(socket)) return;
+    if (game.phase !== 'lobby') return;
     if (Object.keys(players).length === 0) return;
     startGame();
   });
 
   socket.on('adjust-timer', (amount) => {
-    if (game.phase === 'selecting') {
-      game.timerRemaining = Math.max(1, Math.min(600, game.timerRemaining + amount));
-      io.emit('timer-update', game.timerRemaining);
-    }
+    if (!isFac(socket)) return;
+    if (game.phase !== 'selecting') return;
+    const n = Number(amount) || 0;
+    game.timerDuration = Math.max(30, Math.min(600, game.timerDuration + n));
+    game.timerRemaining = Math.max(1, Math.min(600, game.timerRemaining + n));
+    io.emit('timer-update', game.timerRemaining);
+  });
+
+  socket.on('force-end', () => {
+    if (!isFac(socket)) return;
+    if (game.phase === 'selecting') endRound();
   });
 
   socket.on('start-next-round', () => {
-    if (game.phase === 'reveal') {
-      startRound();
-    }
+    if (!isFac(socket)) return;
+    if (game.phase === 'reveal') startRound();
+    else if (game.phase === 'spinning') game.queuedNext = true;
   });
 
   socket.on('start-first-round', () => {
-    if (game.phase === 'priority') {
-      startRound();
-    }
+    if (!isFac(socket)) return;
+    if (game.phase === 'priority') startRound();
   });
 
   socket.on('reset-game', () => {
+    if (!isFac(socket)) return;
     resetGame();
   });
 
   socket.on('flush-players', () => {
+    if (!isFac(socket)) return;
     Object.keys(players).forEach(key => {
       const p = players[key];
       if (p) io.to(key).emit('flushed');
@@ -460,10 +538,12 @@ io.on('connection', (socket) => {
   });
 
   socket.on('hard-reset', () => {
+    if (!isFac(socket)) return;
     hardResetGame();
   });
 
   socket.on('remove-player', (playerId) => {
+    if (!isFac(socket)) return;
     const p = players[playerId];
     if (p) {
       io.to(playerId).emit('flushed');
@@ -474,20 +554,23 @@ io.on('connection', (socket) => {
 
   socket.on('select-defence', (defenceId) => {
     const p = players[socket.id];
-    if (!p || game.phase !== 'selecting') return;
+    if (!p || p.eliminated || game.phase !== 'selecting') return;
     if (p.selected.includes(defenceId)) return;
     if (p.selected.length >= p.maxSelect) return;
     if (p.carriedOver.includes(defenceId)) return;
+    if (!p.roundSelectTimes) p.roundSelectTimes = [null, null, null];
     p.selected.push(defenceId);
-    if (p.selected.length === p.maxSelect && !p.roundSelectTimes[game.round-1]) {
-      p.roundSelectTimes[game.round-1] = Date.now();
+    if (p.selected.length === p.maxSelect && !p.roundSelectTimes[game.round - 1]) {
+      p.roundSelectTimes[game.round - 1] = Date.now();
     }
     broadcast();
   });
 
   socket.on('set-priority', (priority) => {
     const p = players[socket.id];
-    if (!p || priority.length !== 3) return;
+    if (!p || game.phase !== 'priority') return;
+    if (!Array.isArray(priority) || priority.length !== 3) return;
+    if (new Set(priority).size !== 3) return;
     const validPriorities = Object.keys(PRIORITY_MAP);
     if (!priority.every(v => validPriorities.includes(v))) return;
     p.priority = priority;
@@ -499,7 +582,8 @@ io.on('connection', (socket) => {
 
   socket.on('deselect-defence', (defenceId) => {
     const p = players[socket.id];
-    if (!p || game.phase !== 'selecting') return;
+    if (!p || p.eliminated || game.phase !== 'selecting') return;
+    if (p.selected.length >= p.maxSelect) return;
     const idx = p.selected.indexOf(defenceId);
     if (idx >= 0) p.selected.splice(idx, 1);
     broadcast();

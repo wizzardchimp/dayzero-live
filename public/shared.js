@@ -21,12 +21,12 @@ const DEFENCES=[
   {id:'mfa',name:'Multi-Factor Auth',icon:'🔐',desc:'Requires multiple verification methods',counters:['insider','social_eng']},
   {id:'encryption',name:'Encryption',icon:'🔒',desc:'Scrambles data to prevent unauthorised access',counters:['data_exfil','ransomware']},
   {id:'seg',name:'Network Segmentation',icon:'🔀',desc:'Separates the network into departmental areas',counters:['sql_injection','insider']},
-  {id:'backup',name:'Backup & Recovery',icon:'💾',desc:'Restores data after loss or attack',counters:['ransomware','ddos']},
+  {id:'backup',name:'Backup & Recovery',short:'Backup',icon:'🗄️',desc:'Restores data after loss or attack',counters:['ransomware','ddos']},
   {id:'threat',name:'Threat Detection',icon:'👁️',desc:'Uses AI to monitor network usage of individuals',counters:['zero_day','phishing']},
-  {id:'passwords',name:'Secure Passwords',icon:'🔑',desc:'Enforces strong password policies',counters:['sql_injection','social_eng']},
+  {id:'passwords',name:'Secure Passwords',short:'Passwords',icon:'🔑',desc:'Enforces strong password policies',counters:['sql_injection','social_eng']},
   {id:'training',name:'Security Training',icon:'📚',desc:'Educates users to recognise threats',counters:['malware','social_eng']},
   {id:'monitoring',name:'Continuous Monitoring',icon:'📊',desc:'Tracks systems for unusual behaviour',counters:['data_exfil','zero_day']},
-  {id:'passkeys',name:'Passkeys - User Account',icon:'🔑',desc:'Phishing-resistant authentication bound to user devices',counters:['phishing','social_eng']}
+  {id:'passkeys',name:'Passkeys - User Account',short:'Passkeys',icon:'🗝️',desc:'Phishing-resistant authentication bound to user devices',counters:['phishing','social_eng']}
 ];
 
 const EFFECTIVENESS={};

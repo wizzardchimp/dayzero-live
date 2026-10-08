@@ -59,7 +59,7 @@
       <ol class="steps">
         <li><strong>Priority Phase</strong> — Players rank 3 priorities (Money, Data, Maintain Services). Faster = bonus points.</li>
         <li><strong>Selecting Phase</strong> — 120s timer. Players pick defences to deploy this round. Defences carry over.</li>
-        <li><strong>Spinning</strong> — Wheel spin animation (7s). A random attack is selected.</li>
+        <li><strong>Spinning</strong> — Wheel spins for about 5.5s. One attack per round, pre-drawn from each priority bucket.</li>
         <li><strong>Reveal</strong> — Each player sees if they blocked or were breached. ICO fine of £100,000 imposed on breach.</li>
         <li>Repeat for 3 rounds. Game over → winner announced.</li>
       </ol>
@@ -80,8 +80,8 @@
           <tr>
             <td><strong>Priority</strong></td>
             <td>Players rank 3 priorities: 💰 Money, 💾 Data, ⚙️ Maintain Services</td>
-            <td>Drag to reorder, tap to confirm</td>
-            <td><span class="tag tag-score">60% of score</span> Faster submit = more bonus. Each priority covers 3 attacks.</td>
+            <td>Tap each item in order, then confirm</td>
+            <td><span class="tag tag-score">75% of score</span> Untimed. Each priority covers 3 attacks.</td>
           </tr>
           <tr>
             <td><strong>Select R1</strong></td>
@@ -103,7 +103,7 @@
           </tr>
           <tr>
             <td><strong>Attack</strong></td>
-            <td>Random attack selected from 9 available (weighted by priority bucket)</td>
+            <td>One attack pre-drawn from each priority bucket, then shuffled</td>
             <td>Watch the spin</td>
             <td>One attack per round. Not repeated within a game.</td>
           </tr>
@@ -166,11 +166,11 @@
         <thead><tr><th>Component</th><th>Weight</th><th>How It Works</th></tr></thead>
         <tbody>
           <tr><td>Priority Match</td><td><span class="tag tag-score">75%</span></td><td>Rank 1 = 3pts, Rank 2 = 2pts, Rank 3 = 1pt per matching attack</td></tr>
-          <tr><td>Speed</td><td><span class="tag tag-score">25%</span></td><td>Faster priority submit + faster defence selection = more points</td></tr>
+          <tr><td>Speed</td><td><span class="tag tag-score">25%</span></td><td>Faster defence selection under the round timer. Priority time is not scored.</td></tr>
           <tr><td>ICO Budget</td><td><span class="tag" style="background:#374151;color:#9ca3af">0%</span></td><td>Removed — ICO Budget is now an elimination mechanic only</td></tr>
         </tbody>
       </table>
-      <div class="note"><strong>Awards:</strong> Gold (≥78), Silver (≥58), Bronze (&lt;58). Tiebreaker: most breaches survived.</div>
+      <div class="note"><strong>Awards:</strong> Gold (≥78), Silver (≥58), Bronze (&lt;58). Tiebreaker: fewest breaches.</div>
     </div>
 
     <div class="section full">
