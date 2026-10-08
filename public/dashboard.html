@@ -583,23 +583,31 @@ function showSlotMachine(attack){
   if(targetIdx<0)return;
   cardFlipContainer.style.filter='none';
   cardFlipContainer.style.transform='scale(1)';
-  const totalCycles=3;let step=0;
+  // Tie the spin to the drumroll: read the loaded audio duration, fall back to SPIN_DURATION
+  const audioMs = (dashDrumroll && dashDrumroll.duration && isFinite(dashDrumroll.duration) && dashDrumroll.duration>0)
+    ? Math.round(dashDrumroll.duration*1000)
+    : SPIN_DURATION;
+  // Spin for one second LESS than the audio, so the final second of the drumroll rolls through the reveal
+  const spinMs=Math.max(1000,audioMs-1000);
+  const totalCycles=3;
   const totalSteps=totalCycles*atts.length+targetIdx;
-  const baseInterval=100;let interval=baseInterval;
+  const times=[];
+  for(let i=1;i<=totalSteps;i++)times.push(spinMs*Math.pow(i/totalSteps,1.7));
+  let step=0;
   function spin(){
     const a=atts[step%atts.length];
     cardFlipIcon.textContent=a.icon;
     cardFlipIcon.style.transform='rotateY('+((step%2)*180)+'deg)';
     step++;
     if(step<totalSteps){
-      interval=baseInterval+Math.pow(step/totalSteps,3)*400;
-      cardFlipContainer.style.filter='blur('+(step/totalSteps*6)+'px)';
-      spinTimeout=setTimeout(spin,interval);
+      cardFlipContainer.style.filter='blur('+((step/totalSteps)*6)+'px)';
+      const delay=Math.max(30,times[step]-times[step-1]);
+      spinTimeout=setTimeout(spin,delay);
     }else{
       cardFlipIcon.textContent=attack.icon;
       cardFlipIcon.style.transform='rotateY(0)';
       cardFlipContainer.style.filter='none';
-      dashDrumroll.pause();dashDrumroll.currentTime=0;
+      // Keep the drumroll playing — its last second lands on the reveal
       spinTimeout=setTimeout(()=>{
         spinTimeout=null;
         slotOverlay.classList.add('hidden');
@@ -607,7 +615,7 @@ function showSlotMachine(attack){
         revName.textContent=attack.name;
         revExample.textContent='e.g. '+attack.example;
         revealOverlay.classList.remove('hidden');
-      },600);
+      },150);
     }
   }
   spin();

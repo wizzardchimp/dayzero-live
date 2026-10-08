@@ -42,7 +42,7 @@ const PRIORITY_EMOJIS={'Money':'💰','Data':'💾','Maintain Services':'⚙️'
 const ATTACK_COST=100000;
 const START_BUDGET=200000;
 const MAX_ROUNDS=3;
-const SPIN_DURATION=7000;
+const SPIN_DURATION=6500;
 const DEFAULT_TIMER=120;
 
 const GAME_DATA={
