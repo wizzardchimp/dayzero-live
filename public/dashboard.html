@@ -203,7 +203,7 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .pin-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:32px;width:360px;text-align:center}
 .pin-card h2{font-size:22px;margin-bottom:8px}
 .pin-card p{color:var(--text2);font-size:14px;margin-bottom:16px}
-.pin-card input{width:100%;padding:14px;font-size:28px;font-weight:800;text-align:center;letter-spacing:8px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);margin-bottom:12px}
+.pin-card input{width:100%;padding:14px;font-size:22px;font-weight:700;text-align:center;letter-spacing:2px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);margin-bottom:12px}
 .pin-err{color:var(--red);font-size:13px;font-weight:700;min-height:18px;margin-bottom:8px}
 </style>
 </head>
@@ -211,8 +211,8 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 <div class="pin-overlay" id="pin-overlay">
   <div class="pin-card">
     <h2>Facilitator PIN</h2>
-    <p>Controls stay locked until this screen is unlocked. The pin is the FACILITATOR_PIN env var, or the number printed in the server log.</p>
-    <input id="pin-input" inputmode="numeric" maxlength="8" autocomplete="off" placeholder="PIN">
+    <p>Controls stay locked until this screen is unlocked.</p>
+    <input id="pin-input" maxlength="32" autocomplete="off" placeholder="Phrase" autocapitalize="off" spellcheck="false">
     <div class="pin-err" id="pin-err"></div>
     <button class="ctrl-btn primary" id="pin-btn" style="width:100%;padding:14px">Unlock</button>
   </div>

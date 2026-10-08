@@ -15,10 +15,7 @@ const io = new Server(server, {
 });
 app.use(express.static(path.join(__dirname, 'public'), { maxAge: 0, etag: false, lastModified: false }));
 
-const FACILITATOR_PIN = process.env.FACILITATOR_PIN || String(Math.floor(1000 + Math.random() * 9000));
-if (!process.env.FACILITATOR_PIN) {
-  console.log('FACILITATOR PIN (set FACILITATOR_PIN to override): ' + FACILITATOR_PIN);
-}
+const FACILITATOR_PIN = process.env.FACILITATOR_PIN || 'wmrocu';
 
 app.get('/qr', (req, res) => {
   const data = String(req.query.data || '').slice(0, 400);
@@ -420,7 +417,7 @@ io.on('connection', (socket) => {
   socket.emit('game-state', getGameState());
 
   socket.on('facilitator-auth', (pin, ack) => {
-    const ok = String(pin || '') === String(FACILITATOR_PIN);
+    const ok = String(pin || '').trim().toLowerCase() === String(FACILITATOR_PIN).trim().toLowerCase();
     socket.data.facilitator = ok;
     if (typeof ack === 'function') ack({ ok });
   });

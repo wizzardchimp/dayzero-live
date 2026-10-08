@@ -7,7 +7,7 @@
 
 ## 1. Setup
 
-1. Set `FACILITATOR_PIN` on the host (Railway env). If unset, the server logs a one-off pin at startup — enter it on the dashboard unlock screen. Player phones cannot start, reset, or flush the game.
+1. Unlock the dashboard with the facilitator phrase `wmrocu` (override with the `FACILITATOR_PIN` env var). Player phones cannot start, reset, or flush the game.
 2. Open `dashboard.html` on the big screen projector/laptop and enter the facilitator PIN
 3. A QR code and session code appear — players scan to join on their phones
 4. Wait for all players to join (they appear as cards on the dashboard)
