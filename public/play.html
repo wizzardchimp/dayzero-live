@@ -797,7 +797,10 @@ socket.on('game-state',(gs)=>{
   lastGameState=gs;
   if(gs.phase!=='reveal'&&gs.phase!=='spinning')clearTimeout(revealTimer);
   if(gs.phase==='priority'){
-    roundIntroShown=0;
+    if(prevPhase!=='priority'){
+      roundIntroShown=0;
+      if(!prioritySubmitted)priorityOrder=[];
+    }
     hideAllOverlays();
     defenceGrid.style.display='none';
     timerSection.style.display='none';
@@ -805,7 +808,6 @@ socket.on('game-state',(gs)=>{
     roundSub.textContent='';
     document.querySelector('.main').classList.remove('selecting');
     if(!prioritySubmitted){
-      priorityOrder=[];
       renderPriority();
       priorityOverlay.classList.remove('hidden');
     }else{
