@@ -419,21 +419,27 @@ function stopTracks(keep){
 function stopAllAudio(){stopTracks(null)}
 function esc(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function byScore(a,b){return (b.score||0)-(a.score||0)||(a.breaches||0)-(b.breaches||0)}
-function qrSrc(playUrl){return '/qr?data='+encodeURIComponent(playUrl)}
-function setQr(img,playUrl){
-  const src=qrSrc(playUrl);
-  if(img.dataset.src===src)return;
-  img.dataset.src=src;
+function qrSrc(code){return '/qr/'+encodeURIComponent(code)+'.png?t='+Date.now()}
+function setQr(img,code){
+  if(!img||!code)return;
+  const src=qrSrc(code);
+  img.dataset.code=code;
   img.src=src;
+}
+function refreshSessionQr(){
+  if(!currentSessionCode)return;
+  document.querySelectorAll('.js-open-qr,#qr-full-img,#qr-popup-img').forEach(img=>setQr(img,currentSessionCode));
+  const big=document.querySelector('.qr-code-big');
+  if(big)big.textContent=currentSessionCode;
+  if(qrPopupCode)qrPopupCode.textContent=currentSessionCode;
+  const full=$('qr-full-code');
+  if(full)full.textContent=currentSessionCode;
 }
 let facilitatorOk=false;
 let showWelcome=false;
-function playJoinUrl(){
-  return window.location.origin+'/play.html?code='+currentSessionCode;
-}
 function openQrFull(){
   if(!currentSessionCode)return;
-  setQr($('qr-full-img'),playJoinUrl());
+  setQr($('qr-full-img'),currentSessionCode);
   $('qr-full-code').textContent=currentSessionCode;
   $('qr-full').classList.remove('hidden');
 }
@@ -474,15 +480,10 @@ function formatTime(s){
 }
 
 function updateQrPopup(){
-  if(!$('qr-full').classList.contains('hidden')&&currentSessionCode){
-    setQr($('qr-full-img'),playJoinUrl());
-    $('qr-full-code').textContent=currentSessionCode;
-  }
+  if(currentSessionCode)refreshSessionQr();
   if(showWelcome){qrPopup.classList.add('hidden');return}
   if(currentPhase==='lobby'&&currentSessionCode&&lastPlayers.length>0){
-    const origin=window.location.origin;
-    const playUrl=`${origin}/play.html?code=${currentSessionCode}`;
-    setQr(qrPopupImg,playUrl);
+    setQr(qrPopupImg,currentSessionCode);
     qrPopupCode.textContent=currentSessionCode;
     qrPopupPlayers.innerHTML=lastPlayers.map((p,i)=>`<div class="qp-row"><span class="qp-num">${i+1}.</span><span>${esc(p.name)}</span></div>`).join('');
     qrPopupStart.disabled=false;
@@ -510,9 +511,7 @@ function renderCards(players){
     grid.classList.remove('scroll-active','scroll-track');
     grid.style.removeProperty('--card-min');
     if(currentPhase==='lobby' && currentSessionCode){
-      const origin = window.location.origin;
-      const playUrl = `${origin}/play.html?code=${currentSessionCode}`;
-      const qrImg = qrSrc(playUrl);
+      const qrImg = qrSrc(currentSessionCode);
       grid.innerHTML = `
         <div class="lobby-qr">
           <div class="info-side">
@@ -873,6 +872,8 @@ socket.on('game-state',(gs)=>{
   sessionCode.classList.toggle('lobby-code',gs.phase==='lobby');
   currentSessionCode = gs.sessionCode || '';
   if(currentPhase!=='lobby')showWelcome=false;
+  if(currentPhase==='lobby')renderCards(lastPlayers);
+  refreshSessionQr();
   btnFlush.style.display=gs.phase==='lobby'?'':'none';
 
   // If in lobby with no players yet, show QR immediately when code arrives

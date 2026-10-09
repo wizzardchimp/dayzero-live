@@ -17,11 +17,15 @@ app.use(express.static(path.join(__dirname, 'public'), { maxAge: 0, etag: false,
 
 const FACILITATOR_PIN = process.env.FACILITATOR_PIN || 'wmrocu';
 
-app.get('/qr', (req, res) => {
-  const data = String(req.query.data || '').slice(0, 400);
-  if (!/^https?:\/\//.test(data)) return res.status(400).end();
+app.get('/qr/:file', (req, res) => {
+  const code = String(req.params.file || '').replace(/\.png$/i, '');
+  if (!/^\d{3}$/.test(code)) return res.status(400).end();
+  const proto = req.get('x-forwarded-proto') || req.protocol;
+  const data = `${proto}://${req.get('host')}/play.html?code=${code}`;
+  res.set('Cache-Control', 'no-store, no-cache, must-revalidate');
+  res.set('Pragma', 'no-cache');
   res.type('png');
-  QRCode.toFileStream(res, data, { width: 300, margin: 1, color: { dark: '#111827', light: '#ffffff' } });
+  QRCode.toFileStream(res, data, { width: 420, margin: 1, color: { dark: '#111827', light: '#ffffff' } });
 });
 
 const game = {
