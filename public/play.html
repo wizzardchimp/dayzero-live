@@ -472,6 +472,11 @@ prioritySubBtn.addEventListener('click',()=>{
   socket.emit('set-priority',priorityOrder);
   priorityOverlay.classList.add('hidden');
   prioritySubmitted=true;
+  if(lastGameState&&lastGameState.phase==='selecting'){
+    renderPhase(lastGameState);
+    if(typeof lastGameState.timerRemaining==='number')paintTimer(lastGameState.timerRemaining);
+    return;
+  }
   waitingOverlay.classList.remove('hidden');
   woText.textContent='Priority Submitted';
   woSub.textContent='Waiting for the round to start...';
@@ -823,7 +828,7 @@ socket.on('game-state',(gs)=>{
     hideAllOverlays();
     if(myData&&myData.priority&&myData.priority.length===3)prioritySubmitted=true;
     if(!prioritySubmitted){
-      priorityOrder=[];
+      if(prevPhase!=='selecting'&&prevPhase!=='priority')priorityOrder=[];
       renderPriority();
       priorityOverlay.classList.remove('hidden');
     }else{

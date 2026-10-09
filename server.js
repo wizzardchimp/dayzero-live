@@ -467,7 +467,7 @@ io.on('connection', (socket) => {
       reclaim(existing);
       return;
     }
-    if (game.phase !== 'lobby') {
+    if (game.phase === 'gameover') {
       socket.emit('joined', { id: socket.id, error: 'Game already in progress' });
       return;
     }
@@ -484,7 +484,7 @@ io.on('connection', (socket) => {
       lastAttack: null,
       lastResult: null,
       preventInfo: null,
-      maxSelect: 2,
+      maxSelect: game.round === 3 ? 1 : 2,
       roundHistory: [],
       priority: [],
       rejoinToken,
@@ -579,7 +579,7 @@ io.on('connection', (socket) => {
 
   socket.on('set-priority', (priority) => {
     const p = players[socket.id];
-    if (!p || game.phase !== 'priority') return;
+    if (!p || (game.phase !== 'priority' && game.phase !== 'selecting')) return;
     if (!Array.isArray(priority) || priority.length !== 3) return;
     if (new Set(priority).size !== 3) return;
     const validPriorities = Object.keys(PRIORITY_MAP);
