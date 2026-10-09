@@ -105,7 +105,7 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .qr-popup-players{display:flex;flex-direction:column;gap:6px;max-height:320px;overflow-y:auto}
 .qr-popup-players .qp-row{display:flex;align-items:center;gap:10px;background:var(--card2);border-radius:var(--radius-sm);padding:10px 14px;font-size:16px;color:var(--text)}
 .qr-popup-players .qp-num{font-weight:800;color:var(--accent2);min-width:24px}
-.controls-bar{position:fixed;bottom:0;left:0;right:0;z-index:50;background:var(--card);border-top:1px solid var(--border);padding:12px 32px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-shrink:0}
+.controls-bar{position:fixed;bottom:0;left:0;right:0;z-index:120;background:var(--card);border-top:1px solid var(--border);padding:12px 32px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-shrink:0}
 .controls-left{display:flex;align-items:center;gap:16px}
 .controls-center{display:flex;align-items:center;gap:8px;flex:1;justify-content:center;padding:0 16px}
 .controls-right{display:flex;align-items:center;gap:12px}
@@ -322,7 +322,10 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
   <div class="rev-icon" id="rev-icon">🎣</div>
   <div class="rev-name" id="rev-name">Phishing</div>
   <div class="rev-example" id="rev-example">e.g. An email from your "CEO" requests urgent gift card purchases</div>
-  <button class="ctrl-btn primary" id="btn-reveal-next" style="font-size:18px;padding:14px 48px">Start Next Round</button>
+  <div style="display:flex;gap:12px">
+    <button class="ctrl-btn secondary" id="btn-reveal-hide" style="font-size:18px;padding:14px 32px">View players</button>
+    <button class="ctrl-btn primary" id="btn-reveal-next" style="font-size:18px;padding:14px 48px">Start Next Round</button>
+  </div>
 </div>
 <div class="reveal-overlay hidden" id="gameover-reveal">
   <div class="summary-split">
@@ -594,7 +597,7 @@ function updateButtons(gs){
     btnForceEnd.textContent='Force End Round';
   }else if(gs.phase==='reveal'){
     btnNextRound.style.display='';
-    const label=gs.round>=3?'End Game':'Start Round '+(gs.round+1);
+    const label=gs.round>=3?'End Game':'Start Round '+(gs.round+1)+' Timer';
     btnNextRound.textContent=label;
     if(btnRevealNext){btnRevealNext.style.display='';btnRevealNext.textContent=label;}
   }else if(gs.phase==='gameover'){
@@ -947,6 +950,9 @@ btnNextRound.addEventListener('click',()=>{
 
 btnRevealNext.addEventListener('click',()=>{
   socket.emit('start-next-round');
+});
+$('btn-reveal-hide').addEventListener('click',()=>{
+  revealOverlay.classList.add('hidden');
 });
 
 btnGovLobby.addEventListener('click',()=>{
