@@ -756,6 +756,10 @@ socket.on('disconnect',()=>{connDot.className='conn-dot disconnected'});
 
 socket.on('joined',(data)=>{
   if(data.error){
+    clearRejoin();
+    playerCode='';
+    if(codeInput)codeInput.value='';
+    nameOverlay.classList.remove('hidden');
     joinError.textContent=data.error;
     joinError.classList.remove('hidden');
     nameSubBtn.disabled=false;nameSubBtn.textContent='Join Game';
@@ -868,7 +872,18 @@ roundIntroShown=0;
 socket.on('players-update',(players)=>{
   allPlayers=players;
   const me=players.find(p=>p.id===playerId);
-  if(!me)return;
+  if(!me){
+    if(playerId){
+      clearRejoin();
+      playerId=null;playerCode='';playerName='';myData=null;
+      if(codeInput)codeInput.value='';
+      if(nameInput)nameInput.value='';
+      nameOverlay.classList.remove('hidden');
+      nameSubBtn.disabled=false;nameSubBtn.textContent='Join Game';
+      connMsg.textContent='Session cleared. Enter the new code to join.';
+    }
+    return;
+  }
   myData=me;
   if(myData.priority&&myData.priority.length===3)prioritySubmitted=true;
   updateBudgetDisplay();

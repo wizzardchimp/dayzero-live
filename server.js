@@ -47,13 +47,16 @@ const players = {};
 let lastActivity = Date.now();
 const IDLE_RESET_MS = 60 * 60 * 1000; // 1 hour
 
+function pinOk(pin) {
+  return String(pin || '').trim().toLowerCase() === String(FACILITATOR_PIN).trim().toLowerCase();
+}
+
 function hardResetGame() {
-  Object.keys(players).forEach(key => {
-    const p = players[key];
-    if (p) { io.to(key).emit('flushed'); delete players[key]; }
-  });
+  io.emit('flushed');
+  Object.keys(players).forEach(key => { delete players[key]; });
   game.sessionCode = genCode();
   game.plannedAttacks = [];
+  console.log('Session cleared. New join code: ' + game.sessionCode);
   resetGame();
 }
 
@@ -540,9 +543,14 @@ io.on('connection', (socket) => {
     broadcast();
   });
 
-  socket.on('hard-reset', () => {
-    if (!isFac(socket)) return;
+  socket.on('hard-reset', (pin, ack) => {
+    if (!isFac(socket) && !pinOk(pin)) {
+      if (typeof ack === 'function') ack({ ok: false });
+      return;
+    }
+    socket.data.facilitator = true;
     hardResetGame();
+    if (typeof ack === 'function') ack({ ok: true, code: game.sessionCode });
   });
 
   socket.on('remove-player', (playerId) => {
@@ -593,6 +601,11 @@ io.on('connection', (socket) => {
   });
 
   socket.on('disconnect', () => {
+    if (socket.data && socket.data.facilitator) {
+      console.log('Dashboard disconnected — flushing players and rotating join code');
+      hardResetGame();
+      return;
+    }
     const p = players[socket.id];
     if (p) {
       console.log(`${p.name} disconnected`);

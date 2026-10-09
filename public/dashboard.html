@@ -996,18 +996,24 @@ $('btn-reveal-hide').addEventListener('click',()=>{
 btnGovLobby.addEventListener('click',()=>{
   socket.emit('reset-game');
 });
+function clearDashboard(){
+  const pin=sessionStorage.getItem('dz-pin')||'';
+  socket.emit('hard-reset', pin, ()=>location.reload());
+  setTimeout(()=>location.reload(),1500);
+}
 if(btnGovEnd)btnGovEnd.addEventListener('click',()=>{
   if(confirm('End session — this removes every player and creates a new join code. Are you sure?')){
-    socket.emit('hard-reset');
-    setTimeout(()=>location.reload(),500);
+    clearDashboard();
   }
 });
 
 resetBtn.addEventListener('click',()=>{
   if(confirm('End session — this removes every player, sends phones back to the code screen, and creates a new join code. Are you sure?')){
-    socket.emit('hard-reset');
-    setTimeout(()=>location.reload(),500);
+    clearDashboard();
   }
+});
+window.addEventListener('pagehide',()=>{
+  socket.emit('hard-reset', sessionStorage.getItem('dz-pin')||'');
 });
 
 btnHidePriority.addEventListener('click',()=>{
