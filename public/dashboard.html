@@ -94,6 +94,12 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .inst-card .inst-close:hover{filter:brightness(1.1)}
 .qr-popup{position:fixed;inset:0;z-index:150;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.5);backdrop-filter:blur(8px);transition:opacity .3s ease}
 .qr-popup.hidden{opacity:0;pointer-events:none}
+.qr-full{position:fixed;inset:0;z-index:180;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;background:#0f1117;cursor:pointer}
+.qr-full.hidden{display:none}
+.qr-full img{width:min(72vh,72vw);height:min(72vh,72vw);background:#fff;border-radius:24px;padding:16px}
+.qr-full-code{font-size:64px;font-weight:900;letter-spacing:10px;color:#fff}
+.qr-full-hint{font-size:16px;color:rgba(255,255,255,.6)}
+.lobby-qr img,.qr-popup img{cursor:pointer}
 .qr-popup-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:32px 40px;display:flex;flex-direction:column;align-items:center;gap:12px}
 .qr-popup-top{display:flex;gap:40px;align-items:flex-start}
 .qr-popup-left{display:flex;flex-direction:column;align-items:center;gap:10px}
@@ -278,12 +284,17 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
   </div>
 </div>
 
+<div class="qr-full hidden" id="qr-full">
+  <img id="qr-full-img" alt="QR code to join">
+  <div class="qr-full-code" id="qr-full-code"></div>
+  <div class="qr-full-hint">Click to close</div>
+</div>
 <div class="qr-popup hidden" id="qr-popup">
   <div class="qr-popup-card">
     <div class="qr-popup-top">
       <div class="qr-popup-left">
         <div class="qr-popup-label">Scan to join</div>
-        <img id="qr-popup-img" src="" alt="QR code to join" style="width:260px;height:260px;border-radius:16px;background:white;padding:8px;box-shadow:0 4px 20px rgba(0,0,0,0.3);">
+        <img id="qr-popup-img" class="js-open-qr" src="" alt="QR code to join" style="width:260px;height:260px;border-radius:16px;background:white;padding:8px;box-shadow:0 4px 20px rgba(0,0,0,0.3);">
         <div class="qr-popup-code" id="qr-popup-code"></div>
         <div class="qr-popup-sub">Players scan this to enter the game</div>
       </div>
@@ -416,6 +427,22 @@ function setQr(img,playUrl){
   img.src=src;
 }
 let facilitatorOk=false;
+let showWelcome=false;
+function playJoinUrl(){
+  return window.location.origin+'/play.html?code='+currentSessionCode;
+}
+function openQrFull(){
+  if(!currentSessionCode)return;
+  setQr($('qr-full-img'),playJoinUrl());
+  $('qr-full-code').textContent=currentSessionCode;
+  $('qr-full').classList.remove('hidden');
+}
+function closeQrFull(){
+  $('qr-full').classList.add('hidden');
+  showWelcome=true;
+  qrPopup.classList.add('hidden');
+  if(currentPhase==='lobby')renderCards(lastPlayers);
+}
 function tryAuth(pin){
   socket.emit('facilitator-auth',pin,(res)=>{
     facilitatorOk=!!(res&&res.ok);
@@ -447,6 +474,11 @@ function formatTime(s){
 }
 
 function updateQrPopup(){
+  if(!$('qr-full').classList.contains('hidden')&&currentSessionCode){
+    setQr($('qr-full-img'),playJoinUrl());
+    $('qr-full-code').textContent=currentSessionCode;
+  }
+  if(showWelcome){qrPopup.classList.add('hidden');return}
   if(currentPhase==='lobby'&&currentSessionCode&&lastPlayers.length>0){
     const origin=window.location.origin;
     const playUrl=`${origin}/play.html?code=${currentSessionCode}`;
@@ -474,7 +506,7 @@ function adjustGridForPlayers(count){
 
 function renderCards(players){
   playerCount.textContent=players.length;
-  if(players.length===0){
+  if(players.length===0||(showWelcome&&currentPhase==='lobby')){
     grid.classList.remove('scroll-active','scroll-track');
     grid.style.removeProperty('--card-min');
     if(currentPhase==='lobby' && currentSessionCode){
@@ -495,7 +527,7 @@ function renderCards(players){
           </div>
           <div class="qr-side">
             <div class="qr-label">Scan to join</div>
-            <img src="${qrImg}" alt="QR code to join" style="width:280px;height:280px;border-radius:16px;background:white;padding:8px;box-shadow:0 4px 20px rgba(0,0,0,0.3);">
+            <img class="js-open-qr" src="${qrImg}" alt="QR code to join" style="width:280px;height:280px;border-radius:16px;background:white;padding:8px;box-shadow:0 4px 20px rgba(0,0,0,0.3);">
             <div class="qr-code-big">${currentSessionCode}</div>
             <div class="qr-sub">Players scan this to enter the game</div>
           </div>
@@ -840,6 +872,7 @@ socket.on('game-state',(gs)=>{
   sessionCode.textContent=gs.sessionCode?'CODE '+gs.sessionCode:'';
   sessionCode.classList.toggle('lobby-code',gs.phase==='lobby');
   currentSessionCode = gs.sessionCode || '';
+  if(currentPhase!=='lobby')showWelcome=false;
   btnFlush.style.display=gs.phase==='lobby'?'':'none';
 
   // If in lobby with no players yet, show QR immediately when code arrives
@@ -921,6 +954,10 @@ btnStartGame.addEventListener('click',()=>{
   }
 });
 
+document.addEventListener('click',(e)=>{
+  if(e.target.closest('.js-open-qr')){openQrFull();return}
+  if(e.target.closest('#qr-full'))closeQrFull();
+});
 qrPopupStart.addEventListener('click',()=>{
   qrPopupStart.disabled=true;
   qrPopupStart.textContent='Starting...';
