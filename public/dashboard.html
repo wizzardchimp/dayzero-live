@@ -959,8 +959,9 @@ if(btnGovEnd)btnGovEnd.addEventListener('click',()=>{
 });
 
 resetBtn.addEventListener('click',()=>{
-  if(confirm('Hard reset — this will clear the game, remove all players, and generate a new join code. Are you sure?')){
+  if(confirm('End session — this removes every player, sends phones back to the code screen, and creates a new join code. Are you sure?')){
     socket.emit('hard-reset');
+    setTimeout(()=>location.reload(),500);
   }
 });
 

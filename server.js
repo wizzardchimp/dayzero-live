@@ -48,6 +48,8 @@ function hardResetGame() {
     const p = players[key];
     if (p) { io.to(key).emit('flushed'); delete players[key]; }
   });
+  game.sessionCode = genCode();
+  game.plannedAttacks = [];
   resetGame();
 }
 
