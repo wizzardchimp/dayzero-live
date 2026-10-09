@@ -591,7 +591,7 @@ function renderPhase(gs){
     timerSection.style.display='none';
     if(headerTimer)headerTimer.classList.remove('hidden');
     roundTitle.textContent='Select Your Defences';
-    const maxDesc=['','Choose 2 defences to deploy','Previous defences carried over — select 1 more','Previous defences carried over — select 1 more'];
+    const maxDesc=['','Choose 2 defences to deploy','Previous defences carried over — select 2 more','Previous defences carried over — select 1 more'];
     roundSub.textContent=maxDesc[gs.round]||'';
     roundBadge.textContent=`ROUND ${gs.round}`;
     statusText.textContent='Timer Running — Select Defences';
@@ -825,7 +825,7 @@ socket.on('game-state',(gs)=>{
       if(typeof gs.timerRemaining==='number')paintTimer(gs.timerRemaining);
       if(!myData||!myData.eliminated){
         if(roundIntroShown!==gs.round){
-          const n=gs.round===1?2:1;
+          const n=gs.round===3?1:2;
           riRound.textContent=`ROUND ${gs.round}`;
           riTitle.textContent=`Select ${n} defence${n>1?'s':''}`;
           riSub.textContent=n===1?'Choose 1 defence to deploy this round. Once locked in, you cannot change your selection.':'Choose 2 defences to deploy this round. Once locked in, you cannot change your selection.';

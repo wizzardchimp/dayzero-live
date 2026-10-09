@@ -33,8 +33,8 @@
 |-------|-------------|---------------|-----------|
 | **Priority** | Players rank 3 priorities: 💰 Money, 💾 Data, ⚙️ Maintain Services | Tap each item in order, then confirm | 75% of score. Untimed. Each priority covers 3 attacks. |
 | **Select R1** | Choose **2 defences** to deploy | Tap cards to select | Carry over — all 2 carry into Round 2 |
-| **Select R2** | Choose **1 more defence** (2 carried from R1 = 3 active) | Tap cards to select | Carry over — all 3 carry into Round 3 |
-| **Select R3** | Choose **1 more defence** (3 carried = 4 active) | Tap cards to select | Final round. Eliminated players see red screen. |
+| **Select R2** | Choose **2 more defences** (2 carried from R1 = 4 active) | Tap cards to select | Carry over — all 4 carry into Round 3 |
+| **Select R3** | Choose **1 more defence** (4 carried = 5 active) | Tap cards to select | Final round. Eliminated players see red screen. |
 | **Attack** | One attack pre-drawn from each priority bucket, then shuffled | Watch the spin | One attack per round. Not repeated within a game. |
 | **Result** | Compare active defences vs attack. If a defence counters the attack → blocked. | See blocked/breached result | Blocked = no damage. Breached = -£100k and Eliminated at £0 |
 

@@ -335,7 +335,7 @@ function startRound() {
     if (p.eliminated) return;
     p.carriedOver = [...p.carriedOver, ...p.selected];
     p.selected = [];
-    p.maxSelect = game.round === 1 ? 2 : 1;
+    p.maxSelect = game.round === 3 ? 1 : 2;
     p.lastAttack = null;
     p.lastResult = null;
     p.preventInfo = null;
