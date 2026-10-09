@@ -350,7 +350,7 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
   <button class="ctrl-btn secondary" id="btn-hide-priority" style="font-size:14px;padding:10px 24px">Hide</button>
 </div>
 <audio id="dash-music" loop src="music.mp3"></audio>
-<audio id="dash-drumroll" src="drumroll.mp3"></audio>
+<audio id="dash-drumroll" src="drumroll.mp3" preload="auto"></audio>
 <audio id="dash-win" src="Winner.mp3"></audio>
 <audio id="dash-lose" src="lose.mp3"></audio>
 <audio id="dash-ding" src="Ding.mp3"></audio>
@@ -619,12 +619,12 @@ function showSlotMachine(attack){
   if(targetIdx<0)return;
   cardFlipContainer.style.filter='none';
   cardFlipContainer.style.transform='scale(1)';
-  // Tie the spin to the drumroll: read the loaded audio duration, fall back to SPIN_DURATION
+  // Drumroll file is 6478ms. Stop the reel 2s before that so it does not outlast the sound.
   const audioMs = (dashDrumroll && dashDrumroll.duration && isFinite(dashDrumroll.duration) && dashDrumroll.duration>0)
     ? Math.round(dashDrumroll.duration*1000)
-    : SPIN_DURATION;
-  // Spin for one second LESS than the audio, so the final second of the drumroll rolls through the reveal
-  const spinMs=Math.max(1000,audioMs-1000);
+    : 6478;
+  const spinMs=Math.max(1000,audioMs-2000);
+  const started=performance.now();
   const totalCycles=3;
   const totalSteps=totalCycles*atts.length+targetIdx;
   const times=[];
@@ -637,9 +637,10 @@ function showSlotMachine(attack){
     const shownAt=times[Math.max(0,step-1)]||0;
     cardFlipName.textContent=shownAt>spinMs-1000?a.name:'';
     step++;
-    if(step<totalSteps){
-      cardFlipContainer.style.filter='blur('+((1-step/totalSteps)*8)+'px)';
-      const delay=Math.max(30,times[step]-times[step-1]);
+    const elapsed=performance.now()-started;
+    if(step<totalSteps && elapsed<spinMs){
+      cardFlipContainer.style.filter='blur('+((1-Math.min(1,elapsed/spinMs))*8)+'px)';
+      const delay=Math.max(16,Math.min(times[step]-times[step-1], spinMs-elapsed));
       spinTimeout=setTimeout(spin,delay);
     }else{
       cardFlipIcon.textContent=attack.icon;
