@@ -46,8 +46,8 @@
 |---------|---------|--------|----------|---------|--------|---------|-----------|---------|----------|
 | 🛡️ Firewall | ✅ | — | — | ✅ | — | — | — | — | — |
 | 💻 Endpoint | — | ✅ | ✅ | — | — | — | — | — | — |
-| 🔐 MFA | — | — | — | — | — | — | ✅ | — | ✅ |
-| 🔒 Encryption | — | — | ✅ | — | — | — | — | ✅ | — |
+| 🔐 MFA | — | — | — | — | — | — | — | — | ✅ |
+| 🔒 Encryption | — | — | ✅ | — | — | — | — | — | — |
 | 🔀 Segmentation | — | — | — | — | ✅ | — | ✅ | — | — |
 | 💾 Backup | — | — | ✅ | ✅ | — | — | — | — | — |
 | 👁️ Threat Det. | ✅ | — | — | — | — | ✅ | — | — | — |
@@ -55,6 +55,7 @@
 | 📚 Training | — | ✅ | — | — | — | — | — | — | ✅ |
 | 📊 Monitoring | — | — | — | — | — | ✅ | — | ✅ | — |
 | 🔑 Passkeys | ✅ | — | — | — | — | — | — | — | ✅ |
+| 📋 Policy & Procedure | — | — | — | — | — | — | ✅ | ✅ | — |
 
 > Each defence counters **2 attacks**. Each attack is countered by **2–4 defences**. Social Engineering has the most counters (4).
 

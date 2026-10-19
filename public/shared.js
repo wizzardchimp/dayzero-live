@@ -18,15 +18,16 @@ const ATTACKS=[
 const DEFENCES=[
   {id:'firewall',name:'Firewall',icon:'🛡️',desc:'Monitors and controls network traffic',plain:'A gate that checks what is allowed in and out of the network.',counters:['phishing','ddos']},
   {id:'endpoint',name:'Endpoint Protection',icon:'💻',desc:'Secure individual devices',plain:'Software that protects each laptop and phone from harmful programs.',counters:['malware','ransomware']},
-  {id:'mfa',name:'Multi-Factor Auth',icon:'🔐',desc:'Requires multiple verification methods',plain:'An extra check, like a code or fingerprint, so a password alone is not enough.',counters:['insider','social_eng']},
-  {id:'encryption',name:'Encryption',icon:'🔒',desc:'Scrambles data to prevent unauthorised access',plain:'Scrambles data so stolen files cannot be read.',counters:['data_exfil','ransomware']},
+  {id:'mfa',name:'Multi-Factor Auth',icon:'🔐',desc:'Requires multiple verification methods',plain:'An extra check, like a code or fingerprint, so a password alone is not enough.',counters:['social_eng']},
+  {id:'encryption',name:'Encryption',icon:'🔒',desc:'Scrambles data to prevent unauthorised access',plain:'Scrambles data so stolen files cannot be read.',counters:['ransomware']},
   {id:'seg',name:'Network Segmentation',icon:'🔀',desc:'Separates the network into departmental areas',plain:'Splits the network so one break-in cannot reach everything.',counters:['sql_injection','insider']},
   {id:'backup',name:'Backup & Recovery',short:'Backup',icon:'🗄️',desc:'Restores data after loss or attack',plain:'A spare copy of files so you can recover after an attack.',counters:['ransomware','ddos']},
   {id:'threat',name:'Threat Detection',icon:'👁️',desc:'Uses AI to monitor network usage of individuals',plain:'Watches for odd behaviour and flags an attack early.',counters:['zero_day','phishing']},
   {id:'passwords',name:'Secure Passwords',short:'Passwords',icon:'🔑',desc:'Enforces strong password policies',plain:'Strong, unique passwords that are hard to guess.',counters:['sql_injection','social_eng']},
   {id:'training',name:'Security Training',icon:'📚',desc:'Educates users to recognise threats',plain:'Teaches people to spot scams and not click risky links.',counters:['malware','social_eng']},
   {id:'monitoring',name:'Continuous Monitoring',icon:'📊',desc:'Tracks systems for unusual behaviour',plain:'Keeps an eye on systems for anything unusual.',counters:['data_exfil','zero_day']},
-  {id:'passkeys',name:'Passkeys - User Account',short:'Passkeys',icon:'🗝️',desc:'Phishing-resistant authentication bound to user devices',plain:'A login tied to your device, so a fake site cannot steal the password.',counters:['phishing','social_eng']}
+  {id:'passkeys',name:'Passkeys - User Account',short:'Passkeys',icon:'🗝️',desc:'Phishing-resistant authentication bound to user devices',plain:'A login tied to your device, so a fake site cannot steal the password.',counters:['phishing','social_eng']},
+  {id:'policy',name:'Policy & Procedure',short:'Policy',icon:'📋',desc:'Ensuring robust processes are in place',plain:'Written rules and checks so the right security steps are followed every time.',counters:['insider','data_exfil']}
 ];
 
 const EFFECTIVENESS={};
