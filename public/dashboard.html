@@ -304,7 +304,7 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
         <div class="qr-popup-players" id="qr-popup-players"></div>
       </div>
     </div>
-    <button class="ctrl-btn primary" id="qr-popup-start" style="font-size:18px;padding:14px 48px;margin-top:8px">Start Game</button>
+    <button class="ctrl-btn primary" id="qr-popup-start" style="font-size:18px;padding:14px 48px;margin-top:8px">Start game and select priorities</button>
   </div>
 </div>
 <div class="controls-bar">
@@ -362,7 +362,11 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 <div class="priority-overlay hidden" id="priority-overlay">
   <div class="po-title">Priority Selections</div>
   <div class="po-charts" id="po-charts"></div>
-  <button class="ctrl-btn secondary" id="btn-hide-priority" style="font-size:14px;padding:10px 24px">Hide</button>
+  <div style="display:flex;gap:12px;margin-top:16px">
+    <button class="ctrl-btn secondary" id="btn-show-priority" style="font-size:18px;padding:12px 32px">Show</button>
+    <button class="ctrl-btn primary" id="btn-start-round1" style="font-size:18px;padding:12px 32px">Start Round 1</button>
+    <button class="ctrl-btn secondary" id="btn-hide-priority" style="font-size:18px;padding:12px 24px">Close</button>
+  </div>
 </div>
 <audio id="dash-music" loop src="music.mp3"></audio>
 <audio id="dash-drumroll" src="drumroll.mp3" preload="auto"></audio>
@@ -390,7 +394,7 @@ const gameoverReveal=$('gameover-reveal'),btnGovLobby=$('btn-gov-lobby'),btnGovE
 const phaseIndicator=$('phase-indicator'),phaseDot=$('phase-dot'),phaseLabel=$('phase-label');
 const roundAttacksBar=$('round-attacks-bar');
 const qrPopup=$('qr-popup'),qrPopupImg=$('qr-popup-img'),qrPopupCode=$('qr-popup-code'),qrPopupPlayers=$('qr-popup-players'),qrPopupStart=$('qr-popup-start');
-const priorityOverlay=$('priority-overlay'),btnHidePriority=$('btn-hide-priority'),btnPriorityCharts=$('btn-priority-charts');
+const priorityOverlay=$('priority-overlay'),btnHidePriority=$('btn-hide-priority'),btnPriorityCharts=$('btn-priority-charts'),btnShowPriority=$('btn-show-priority'),btnStartRound1=$('btn-start-round1');
 const readyCountEl=$('ready-count');
 
 const dashMusic=$('dash-music'),dashDrumroll=$('dash-drumroll'),dashWin=$('dash-win'),dashLose=$('dash-lose'),dashDing=$('dash-ding'),dashChime=$('dash-chime');
@@ -404,6 +408,7 @@ let currentRound=0;
 let currentAttack=null;
 let roundAttacks=[];
 let dingPlayedForRound=0;
+let priorityRevealed=false;
 
 let lastPlayers=[];
 let currentSessionCode = '';
@@ -776,13 +781,13 @@ function renderPriorityCharts(players){
     const pct=Math.round(counts[k]/total*100);
     const item=document.createElement('div');
     item.className='po-big-item';
-    item.innerHTML=`<div class="po-big-pct">${pct}%</div><div class="po-big-label">${PRIORITY_EMOJIS[k]||''} ${esc(k)}</div>`;
+    item.innerHTML=`<div class="po-big-pct">${priorityRevealed?pct+'%':'🔒'}</div><div class="po-big-label">${PRIORITY_EMOJIS[k]||''} ${esc(k)}</div>`;
     row.appendChild(item);
   });
   charts.appendChild(row);
   const note=document.createElement('div');
   note.style.cssText='margin-top:18px;color:rgba(255,255,255,.55);font-size:16px';
-  note.textContent=`1st priority · ${total} players`;
+  note.textContent=priorityRevealed?`1st priority · ${total} players`:`Press Show to reveal · ${total} submitted`;
   charts.appendChild(note);
 }
 
@@ -889,10 +894,18 @@ socket.on('game-state',(gs)=>{
     updateRoundAttacks();
     btnStartGame.textContent='Start Game';
     if(readyCountEl) readyCountEl.textContent='';
-  }else if(gs.phase==='priority'){
-    hideAll();
+}else if(gs.phase==='priority'){
     stopAllAudio();
+    slotOverlay.classList.add('hidden');
+    revealOverlay.classList.add('hidden');
+    gameoverReveal.classList.add('hidden');
     btnStartGame.textContent='Start Round 1';
+    if(prevPhase!=='priority'){
+      priorityRevealed=false;
+      if(btnShowPriority)btnShowPriority.textContent='Show';
+      renderPriorityCharts(lastPlayers);
+      priorityOverlay.classList.remove('hidden');
+    }
   }else if(gs.phase==='selecting'){
     hideAll();
     dashTimer.className='dash-timer';
@@ -966,6 +979,8 @@ qrPopupStart.addEventListener('click',()=>{
   btnStartGame.disabled=true;
   btnStartGame.textContent='Starting...';
   qrPopup.classList.add('hidden');
+  priorityRevealed=false;
+  if(btnShowPriority)btnShowPriority.textContent='Show';
   socket.emit('start-game');
 });
 
@@ -1021,8 +1036,21 @@ btnHidePriority.addEventListener('click',()=>{
   priorityOverlay.classList.add('hidden');
 });
 
+if(btnShowPriority)btnShowPriority.addEventListener('click',()=>{
+  priorityRevealed=!priorityRevealed;
+  btnShowPriority.textContent=priorityRevealed?'Hide':'Show';
+  renderPriorityCharts(lastPlayers);
+});
+
+if(btnStartRound1)btnStartRound1.addEventListener('click',()=>{
+  if(currentPhase!=='priority')return;
+  priorityOverlay.classList.add('hidden');
+  socket.emit('start-first-round');
+});
+
 btnPriorityCharts.addEventListener('click',()=>{
   priorityOverlay.classList.remove('hidden');
+  renderPriorityCharts(lastPlayers);
 });
 
 // Remove player via delegated click on grid
