@@ -512,8 +512,7 @@ function renderDefences(){
     else if(isSelected)card.classList.add('selected');
     else if(maxed)card.classList.add('locked');
     card.dataset.id=d.id;
-    const stops=(d.counters||[]).map(id=>{const a=ATTACKS.find(x=>x.id===id);return a?a.name:id}).join(' · ');
-    card.innerHTML=`<div class="defence-icon">${d.icon}</div><div class="defence-card-body"><div class="defence-name">${d.name}</div><div class="defence-counters">Stops: ${stops}</div></div>`;
+    card.innerHTML=`<div class="defence-icon">${d.icon}</div><div class="defence-card-body"><div class="defence-name">${d.name}</div><div class="defence-counters">${d.plain||d.desc}</div></div>`;
     if(!isCarried && !maxed){
       card.addEventListener('click',()=>{
         const now = Date.now();

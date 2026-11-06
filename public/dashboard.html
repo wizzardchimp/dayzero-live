@@ -75,6 +75,10 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .lobby-qr #lobby-qr-code canvas{border-radius:16px;background:#fff;padding:16px;box-shadow:0 4px 20px rgba(0,0,0,.2)}
 .lobby-qr .qr-code-big{font-size:48px;font-weight:900;letter-spacing:8px;margin:12px 0 4px;background:var(--accent-light);color:var(--accent2);padding:10px 32px;border-radius:14px}
 .lobby-qr .qr-sub{font-size:16px;color:var(--text2);margin-top:8px}
+.qr-link-btn{margin-top:10px;width:38px;height:38px;border-radius:50%;border:1px solid var(--border);background:var(--card2);color:var(--text2);font-size:17px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s}
+.qr-link-btn:hover{background:var(--accent-light);color:var(--accent2);border-color:var(--accent)}
+.qr-link-url{margin-top:8px;max-width:320px;padding:8px 12px;font-size:13px;color:var(--text2);background:var(--card2);border:1px solid var(--border);border-radius:8px;word-break:break-all;text-align:center;line-height:1.4}
+.qr-link-url.hidden{display:none}
 .inst-btn{margin-top:16px;padding:10px 20px;font-size:14px;font-weight:600;border:1px solid var(--border);border-radius:8px;background:transparent;color:var(--text2);cursor:pointer;transition:all .2s}
 .inst-btn:hover{background:var(--card);color:var(--text)}
 .inst-overlay{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.8);backdrop-filter:blur(10px);transition:opacity .3s ease}
@@ -426,6 +430,14 @@ function stopAllAudio(){stopTracks(null)}
 function esc(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function byScore(a,b){return (b.score||0)-(a.score||0)||(a.breaches||0)-(b.breaches||0)}
 function qrSrc(code){return '/qr/'+encodeURIComponent(code)+'.png?t='+Date.now()}
+let lobbyUrlShown=false;
+function lobbyJoinUrl(){return location.origin+'/play.html?code='+encodeURIComponent(currentSessionCode)}
+function copyText(text){
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).catch(()=>{});return}
+  const t=document.createElement('textarea');t.value=text;t.style.position='fixed';t.style.opacity='0';document.body.appendChild(t);t.select();
+  try{document.execCommand('copy')}catch(e){}
+  t.remove();
+}
 function setQr(img,code){
   if(!img||!code)return;
   const src=qrSrc(code);
@@ -535,6 +547,8 @@ function renderCards(players){
             <img class="js-open-qr" src="${qrImg}" alt="QR code to join" style="width:280px;height:280px;border-radius:16px;background:white;padding:8px;box-shadow:0 4px 20px rgba(0,0,0,0.3);">
             <div class="qr-code-big">${currentSessionCode}</div>
             <div class="qr-sub">Players scan this to enter the game</div>
+            <button class="qr-link-btn" id="lobby-link-btn" title="Show player link">🔗</button>
+            <div class="qr-link-url ${lobbyUrlShown?'':'hidden'}" id="lobby-link-url">${lobbyUrlShown?lobbyJoinUrl():''}</div>
           </div>
         </div>
       `;
@@ -970,6 +984,14 @@ btnStartGame.addEventListener('click',()=>{
 });
 
 document.addEventListener('click',(e)=>{
+  if(e.target.closest('#lobby-link-btn')){
+    lobbyUrlShown=!lobbyUrlShown;
+    const box=$('lobby-link-url');
+    if(box){box.textContent=lobbyUrlShown?lobbyJoinUrl():'';box.classList.toggle('hidden',!lobbyUrlShown)}
+    if(lobbyUrlShown){copyText(lobbyJoinUrl());const btn=$('lobby-link-btn');if(btn)btn.textContent='✅'}
+    else{const btn=$('lobby-link-btn');if(btn)btn.textContent='🔗'}
+    return;
+  }
   if(e.target.closest('.js-open-qr')){openQrFull();return}
   if(e.target.closest('#qr-full'))closeQrFull();
 });
