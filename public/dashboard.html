@@ -221,15 +221,8 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 </style>
 </head>
 <body>
-<div class="pin-overlay" id="pin-overlay">
+<div class="pin-overlay hidden" id="pin-overlay">
   <div class="pin-card">
-    <div id="pin-form">
-      <h2>Facilitator PIN</h2>
-      <p>Controls stay locked until this screen is unlocked.</p>
-      <input id="pin-input" maxlength="32" autocomplete="off" placeholder="Phrase" autocapitalize="off" spellcheck="false">
-      <div class="pin-err" id="pin-err"></div>
-      <button class="ctrl-btn primary" id="pin-btn" style="width:100%;padding:14px">Unlock</button>
-    </div>
     <div id="pin-busy" class="hidden">
       <h2>Lobby in use</h2>
       <p id="pin-busy-msg"></p>
@@ -394,7 +387,7 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 <script>
 const ROOM=(new URLSearchParams(location.search).get('room')||'').toUpperCase();
 if(!ROOM){location.replace('/');}
-const PIN_KEY='dz-pin',HOST_KEY='dz-host-'+ROOM;
+const HOST_KEY='dz-host-'+ROOM;
 const socket=io({query:{room:ROOM}});
 document.title='Day Zero Live — Lobby '+ROOM;
 const{ATTACKS:ATTACK_LIST,DEFENCES,EFFECTIVENESS,PRIORITY_MAP,PRIORITY_EMOJIS,ATTACK_COST,START_BUDGET,MAX_ROUNDS,SPIN_DURATION}=GAME_DATA;
@@ -486,33 +479,25 @@ function closeQrFull(){
 function showBusy(st){
   const phaseTxt=st&&st.state==='in-progress'?('a game is in progress'+(st.round?' (round '+st.round+' of '+st.maxRounds+')':'')):'another host has this lobby open';
   $('pin-busy-msg').textContent='Lobby '+ROOM+' is in use — '+phaseTxt+(st&&st.players?' with '+st.players+' player'+(st.players===1?'':'s'):'')+(st&&st.hostAway?' (host reconnecting)':'')+'.';
-  $('pin-form').classList.add('hidden');
   $('pin-busy').classList.remove('hidden');
 }
-function tryAuth(pin){
+function claimLobby(){
   const token=sessionStorage.getItem(HOST_KEY)||null;
-  socket.emit('facilitator-auth',pin,token,(res)=>{
+  socket.emit('claim-lobby',token,(res)=>{
     facilitatorOk=!!(res&&res.ok&&!res.busy);
     const overlay=$('pin-overlay');
     if(facilitatorOk){
-      sessionStorage.setItem(PIN_KEY,pin);
       if(res.hostToken)sessionStorage.setItem(HOST_KEY,res.hostToken);
       overlay.classList.add('hidden');
-      $('pin-err').textContent='';
-    }else if(res&&res.ok&&res.busy){
-      sessionStorage.setItem(PIN_KEY,pin);
+    }else if(res&&res.busy){
       overlay.classList.remove('hidden');
       showBusy(res.status);
-    }else{
-      sessionStorage.removeItem(PIN_KEY);
-      overlay.classList.remove('hidden');
-      $('pin-err').textContent=res&&res.locked?'Too many attempts — wait a minute':'Wrong PIN';
     }
   });
 }
 function takeOver(){
   if(!confirm('Take over Lobby '+ROOM+'? This ENDS the current session and removes its players.'))return;
-  socket.emit('take-over-lobby',sessionStorage.getItem(PIN_KEY)||'',(res)=>{
+  socket.emit('take-over-lobby',(res)=>{
     if(res&&res.ok){
       sessionStorage.setItem(HOST_KEY,res.hostToken);
       location.reload();
@@ -1080,8 +1065,7 @@ btnGovLobby.addEventListener('click',()=>{
   socket.emit('reset-game');
 });
 function clearDashboard(){
-  const pin=sessionStorage.getItem(PIN_KEY)||'';
-  socket.emit('hard-reset', pin, ()=>location.reload());
+  socket.emit('hard-reset', ()=>location.reload());
   setTimeout(()=>location.reload(),1500);
 }
 if(btnGovEnd)btnGovEnd.addEventListener('click',()=>{
@@ -1139,14 +1123,7 @@ document.addEventListener('keydown',e=>{
 
 $('lobby-back').addEventListener('click',leaveLobby);
 $('btn-matrix').addEventListener('click',()=>instOverlay.classList.remove('hidden'));
-function unlockPin(){tryAuth($('pin-input').value.trim())}
-$('pin-btn').addEventListener('click',unlockPin);
-$('pin-input').addEventListener('keydown',e=>{if(e.key==='Enter')unlockPin()});
-function authOnConnect(){
-  const saved=sessionStorage.getItem(PIN_KEY);
-  if(saved)tryAuth(saved);
-  else $('pin-overlay').classList.remove('hidden');
-}
+function authOnConnect(){claimLobby()}
 socket.on('connect',authOnConnect);
 if(socket.connected)authOnConnect();
 document.addEventListener('pointerdown',function prime(){

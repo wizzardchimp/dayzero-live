@@ -23,18 +23,11 @@ app.use(express.static(path.join(__dirname, 'public'), {
   },
 }));
 
-const FACILITATOR_PIN = process.env.FACILITATOR_PIN || 'wmrocu';
-if (!process.env.FACILITATOR_PIN) {
-  console.warn('WARNING: FACILITATOR_PIN is not set — using the default phrase from the public repo. Set it on Railway.');
-}
 const LOBBY_IDS = (process.env.LOBBIES || 'A,B').split(',').map(s => s.trim().toUpperCase()).filter(Boolean);
 const HOST_GRACE_MS = Number(process.env.HOST_GRACE_MS) || 5 * 60 * 1000; // host may drop out this long without losing the game
 const IDLE_RESET_MS = 60 * 60 * 1000; // 1 hour
 
 /* ---------- helpers ---------- */
-function pinOk(pin) {
-  return String(pin || '').trim().toLowerCase() === String(FACILITATOR_PIN).trim().toLowerCase();
-}
 function sanitise(name) {
   return String(name || '').trim().slice(0, 20) || 'Anonymous';
 }
@@ -44,25 +37,6 @@ function newToken() {
 function defName(id) {
   const d = DEFENCES.find(x => x.id === id);
   return d ? d.name : id;
-}
-
-// PIN brute-force limiter (per client IP)
-const pinFails = new Map();
-function clientIp(socket) {
-  const xff = socket.handshake.headers['x-forwarded-for'];
-  return (xff ? String(xff).split(',')[0].trim() : socket.handshake.address) || 'unknown';
-}
-function pinLocked(socket) {
-  const f = pinFails.get(clientIp(socket));
-  return !!(f && f.until && f.until > Date.now());
-}
-function pinAttempt(socket, ok) {
-  const ip = clientIp(socket);
-  if (ok) { pinFails.delete(ip); return; }
-  const f = pinFails.get(ip) || { count: 0, until: 0 };
-  f.count++;
-  if (f.count >= 5) { f.until = Date.now() + 60000; f.count = 0; }
-  pinFails.set(ip, f);
 }
 
 const rooms = new Map();
@@ -573,13 +547,9 @@ io.on('connection', (socket) => {
     return r && r.isHost(socket) ? r : null;
   };
 
-  socket.on('facilitator-auth', (pin, token, ack) => {
-    if (typeof token === 'function') { ack = token; token = null; }
+  // Dashboard claims its lobby. `token` lets the same host reclaim after a reload or dropout.
+  socket.on('claim-lobby', (token, ack) => {
     const reply = (o) => { if (typeof ack === 'function') ack(o); };
-    if (pinLocked(socket)) return reply({ ok: false, locked: true });
-    const ok = pinOk(pin);
-    pinAttempt(socket, ok);
-    if (!ok) return reply({ ok: false });
     const room = roomOf();
     if (!room) return reply({ ok: false, noRoom: true });
     const claim = room.claimHost(socket, token);
@@ -590,13 +560,10 @@ io.on('connection', (socket) => {
   });
 
   // Facilitator deliberately takes over a lobby that is in use (ends that session).
-  socket.on('take-over-lobby', (pin, ack) => {
+  socket.on('take-over-lobby', (ack) => {
     const reply = (o) => { if (typeof ack === 'function') ack(o); };
-    if (pinLocked(socket)) return reply({ ok: false, locked: true });
-    const ok = pinOk(pin);
-    pinAttempt(socket, ok);
     const room = roomOf();
-    if (!ok || !room) return reply({ ok: false });
+    if (!room) return reply({ ok: false });
     console.log(`[${room.id}] Lobby taken over by a new host`);
     room.releaseHost(true);
     const claim = room.claimHost(socket, null);
@@ -736,7 +703,7 @@ io.on('connection', (socket) => {
     room.broadcast();
   });
 
-  socket.on('hard-reset', (pin, ack) => {
+  socket.on('hard-reset', (ack) => {
     const room = hostRoom();
     if (!room) {
       if (typeof ack === 'function') ack({ ok: false });

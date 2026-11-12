@@ -12,15 +12,16 @@ The home page shows **Lobby A** and **Lobby B**, each with a live status: 🟢 F
 - Pick a **Free** lobby to host it. A busy lobby is locked so you can't interrupt a running game.
 - If your laptop drops off or you refresh, you have **5 minutes** to come back and keep the game going (same browser tab). After that the lobby is freed.
 - **← Lobbies** (top left of the dashboard) leaves and frees your lobby.
-- "Take over" on a busy lobby needs the facilitator PIN and ends that session — use only if the host has left.
-- Set `FACILITATOR_PIN` on Railway; the default phrase is public. `LOBBIES=A,B,C` adds more lobbies; `HOST_GRACE_MS` changes the 5-minute window.
+- "Take over" on a busy lobby asks for confirmation and ends that session — use only if the host has left.
+- There is no facilitator PIN: whoever opens a free lobby's dashboard becomes its host, and player phones still cannot start, reset or flush a game. Don't share the dashboard link with players.
+- `LOBBIES=A,B,C` adds more lobbies; `HOST_GRACE_MS` changes the 5-minute window.
 
 ---
 
 ## 1. Setup
 
-1. Unlock the dashboard with the facilitator phrase `wmrocu` (override with the `FACILITATOR_PIN` env var). Player phones cannot start, reset, or flush the game.
-2. Open `dashboard.html` on the big screen projector/laptop and enter the facilitator PIN
+1. Open the home page on the big screen projector/laptop and choose a free lobby. Player phones cannot start, reset, or flush the game.
+2. The dashboard opens already unlocked for that lobby
 3. A QR code and session code appear — players scan to join on their phones
 4. Wait for all players to join (they appear as cards on the dashboard)
 5. Click **Start Game** when ready
