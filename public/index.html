@@ -26,7 +26,7 @@
       flex-direction:column;
       align-items:center;
       justify-content:flex-end;
-      padding-bottom:22vh;
+      padding-bottom:6vh;
     }
     .content{
       position:relative;
@@ -71,6 +71,29 @@
       color:rgba(255,255,255,.75);
       letter-spacing:.5px;
     }
+    .lobbies{display:flex;gap:20px;justify-content:center;flex-wrap:wrap}
+    .lobby{
+      width:280px;padding:22px 20px;border-radius:16px;text-align:center;
+      background:rgba(15,17,23,.82);backdrop-filter:blur(6px);
+      border:2px solid rgba(255,255,255,.15);
+    }
+    .lobby h2{font-size:22px;font-weight:900;letter-spacing:1px;margin-bottom:10px}
+    .badge{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;padding:5px 12px;border-radius:999px;margin-bottom:8px}
+    .badge i{width:9px;height:9px;border-radius:50%;background:currentColor;display:inline-block}
+    .lobby.free{border-color:#10b981}.free .badge{background:rgba(16,185,129,.18);color:#34d399}
+    .lobby.open{border-color:#f59e0b}.open .badge{background:rgba(245,158,11,.18);color:#fbbf24}
+    .lobby.in-progress{border-color:#ef4444}.in-progress .badge{background:rgba(239,68,68,.2);color:#f87171}
+    .in-progress .badge i{animation:pulse 1.4s ease-in-out infinite}
+    @keyframes pulse{50%{opacity:.25}}
+    .detail{min-height:20px;font-size:13px;color:rgba(255,255,255,.75);margin-bottom:14px}
+    .lobby .btn-start{padding:14px 28px;font-size:16px;animation:none;width:100%;justify-content:center}
+    .lobby.in-progress .btn-start,.lobby.open .btn-start{background:linear-gradient(135deg,#475569,#334155);box-shadow:none}
+    .lobby.free .btn-start{background:linear-gradient(135deg,#10b981,#047857);box-shadow:0 8px 28px rgba(16,185,129,.4)}
+    .lobby .alt{display:block;margin-top:10px;font-size:12px;color:rgba(255,255,255,.55);text-decoration:underline}
+    .hint,.join{text-shadow:0 1px 6px rgba(0,0,0,.9);background:rgba(15,17,23,.6);border-radius:10px;padding:8px 14px;display:inline-block}
+    .join{margin-top:12px;font-size:13px;color:rgba(255,255,255,.7)}
+    .join input{width:90px;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,.25);background:rgba(15,17,23,.7);color:#fff;text-align:center;font-size:16px;letter-spacing:2px;margin:0 6px}
+    .join button{padding:8px 14px;border:none;border-radius:8px;background:#2563eb;color:#fff;font-weight:700;cursor:pointer}
     @media(max-width:600px){
       .btn-start{padding:18px 40px;font-size:18px}
     }
@@ -79,9 +102,39 @@
 <body>
   <div class="stage">
     <div class="content">
-      <a class="btn-start" href="/dashboard.html"><span class="ic">🛡️</span>Start</a>
-      <div class="hint">Smartphone players scan the QR code on the dashboard</div>
+      <div class="lobbies" id="lobbies"><div class="hint">Checking lobbies…</div></div>
+      <div class="hint">Facilitators: pick a free lobby to host. Players scan the QR code on the dashboard.</div>
+      <form class="join" id="join">Player? Enter your code:<input id="code" inputmode="numeric" maxlength="3" placeholder="123"><button type="submit">Join</button></form>
     </div>
   </div>
+<script>
+const el=document.getElementById('lobbies');
+const LABEL={free:'Free','open':'Open — waiting for players','in-progress':'In use'};
+function card(l){
+  let detail='Ready to host';
+  if(l.state==='open')detail=l.players+' player'+(l.players===1?'':'s')+' in the lobby'+(l.hostAway?' · host reconnecting':'');
+  if(l.state==='in-progress')detail='Round '+Math.max(1,l.round)+' of '+l.maxRounds+' · '+l.players+' player'+(l.players===1?'':'s')+(l.hostAway?' · host reconnecting':'');
+  const href='/dashboard.html?room='+encodeURIComponent(l.id);
+  const busy=l.state!=='free';
+  const label=l.state==='free'?'Host '+l.name:(l.state==='open'?'In use — pick another':'Game running — pick another');
+  const main=busy?'<span class="btn-start" style="opacity:.55;cursor:not-allowed"><span class="ic">🔒</span>'+label+'</span>'
+                  :'<a class="btn-start" href="'+href+'"><span class="ic">🛡️</span>'+label+'</a>';
+  return '<div class="lobby '+l.state+'"><h2>'+l.name+'</h2><div class="badge"><i></i>'+LABEL[l.state]+'</div><div class="detail">'+detail+'</div>'+main+
+    (busy?'<a class="alt" href="'+href+'">I am the host of this lobby / take over</a>':'')+'</div>';
+}
+async function refresh(){
+  try{
+    const r=await fetch('/api/lobbies',{cache:'no-store'});
+    const list=await r.json();
+    el.innerHTML=list.map(card).join('');
+  }catch(e){}
+}
+refresh();setInterval(refresh,3000);
+document.getElementById('join').addEventListener('submit',e=>{
+  e.preventDefault();
+  const c=document.getElementById('code').value.trim();
+  if(/^\d{3}$/.test(c))location.href='/play.html?code='+c;
+});
+</script>
 </body>
 </html>

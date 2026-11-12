@@ -5,6 +5,18 @@
 
 ---
 
+## 0. Two lobbies (A and B)
+
+The home page shows **Lobby A** and **Lobby B**, each with a live status: 🟢 Free, 🟡 Open (waiting for players) or 🔴 In use (game running). Two facilitators can run separate games at the same time on the same site.
+
+- Pick a **Free** lobby to host it. A busy lobby is locked so you can't interrupt a running game.
+- If your laptop drops off or you refresh, you have **5 minutes** to come back and keep the game going (same browser tab). After that the lobby is freed.
+- **← Lobbies** (top left of the dashboard) leaves and frees your lobby.
+- "Take over" on a busy lobby needs the facilitator PIN and ends that session — use only if the host has left.
+- Set `FACILITATOR_PIN` on Railway; the default phrase is public. `LOBBIES=A,B,C` adds more lobbies; `HOST_GRACE_MS` changes the 5-minute window.
+
+---
+
 ## 1. Setup
 
 1. Unlock the dashboard with the facilitator phrase `wmrocu` (override with the `FACILITATOR_PIN` env var). Player phones cannot start, reset, or flush the game.
