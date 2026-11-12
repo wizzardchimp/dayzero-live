@@ -214,21 +214,26 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .pin-card h2{font-size:22px;margin-bottom:8px}
 .pin-card p{color:var(--text2);font-size:14px;margin-bottom:16px}
 .pin-card input{width:100%;padding:14px;font-size:22px;font-weight:700;text-align:center;letter-spacing:2px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);margin-bottom:12px}
+.hidden{display:none!important}
+.session-code{white-space:nowrap}
+.lobby-back{background:none;border:1px solid var(--border);color:var(--text2);border-radius:8px;padding:6px 10px;font-size:12px;cursor:pointer;margin-right:8px}
 .pin-err{color:var(--red);font-size:13px;font-weight:700;min-height:18px;margin-bottom:8px}
 </style>
 </head>
 <body>
-<div class="pin-overlay" id="pin-overlay">
+<div class="pin-overlay hidden" id="pin-overlay">
   <div class="pin-card">
-    <h2>Facilitator PIN</h2>
-    <p>Controls stay locked until this screen is unlocked.</p>
-    <input id="pin-input" maxlength="32" autocomplete="off" placeholder="Phrase" autocapitalize="off" spellcheck="false">
-    <div class="pin-err" id="pin-err"></div>
-    <button class="ctrl-btn primary" id="pin-btn" style="width:100%;padding:14px">Unlock</button>
+    <div id="pin-busy" class="hidden">
+      <h2>Lobby in use</h2>
+      <p id="pin-busy-msg"></p>
+      <button class="ctrl-btn primary" style="width:100%;padding:14px;margin-bottom:10px" onclick="location.href='/'">Choose another lobby</button>
+      <button class="ctrl-btn secondary" style="width:100%;padding:12px" onclick="takeOver()">Take over (ends their session)</button>
+    </div>
+    <a href="/" style="display:block;margin-top:14px;font-size:13px;color:var(--text3)">&larr; Back to lobbies</a>
   </div>
 </div>
 <div class="header">
-  <div class="header-left"><button class="end-session-btn" id="reset-btn" title="Hard reset: clears game, flushes all players, new code">End Session</button><span class="session-code" id="session-code"></span><button class="ctrl-btn secondary" id="btn-matrix" style="padding:8px 14px;font-size:13px">Matrix</button></div>
+  <div class="header-left"><button class="lobby-back" id="lobby-back" title="Leave this lobby and return to the lobby list">&larr; Lobbies</button><button class="end-session-btn" id="reset-btn" title="Hard reset: clears game, flushes all players, new code">End Session</button><span class="session-code" id="session-code"></span><button class="ctrl-btn secondary" id="btn-matrix" style="padding:8px 14px;font-size:13px">Matrix</button></div>
   <div class="header-center">
     <img src="rocu-logo.png" alt="ROCU" class="header-logo" onerror="this.style.display='none';this.parentNode.innerHTML='<h1 style=&quot;font-size:20px;font-weight:900;background:linear-gradient(135deg,#2563eb,#8b5cf6);-webkit-background-clip:text;-webkit-text-fill-color:transparent&quot;>DAY ZERO LIVE</h1>'">
   </div>
@@ -380,7 +385,11 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 <audio id="dash-chime" src="chime.mp3"></audio>
 <script src="/shared.js"></script>
 <script>
-const socket=io();
+const ROOM=(new URLSearchParams(location.search).get('room')||'').toUpperCase();
+if(!ROOM){location.replace('/');}
+const HOST_KEY='dz-host-'+ROOM;
+const socket=io({query:{room:ROOM}});
+document.title='Day Zero Live — Lobby '+ROOM;
 const{ATTACKS:ATTACK_LIST,DEFENCES,EFFECTIVENESS,PRIORITY_MAP,PRIORITY_EMOJIS,ATTACK_COST,START_BUDGET,MAX_ROUNDS,SPIN_DURATION}=GAME_DATA;
 const ATTACKS={};ATTACK_LIST.forEach(a=>{ATTACKS[a.id]=a.icon});
 const ATTACK_DATA=ATTACK_LIST;
@@ -467,21 +476,42 @@ function closeQrFull(){
   qrPopup.classList.add('hidden');
   if(currentPhase==='lobby')renderCards(lastPlayers);
 }
-function tryAuth(pin){
-  socket.emit('facilitator-auth',pin,(res)=>{
-    facilitatorOk=!!(res&&res.ok);
+function showBusy(st){
+  const phaseTxt=st&&st.state==='in-progress'?('a game is in progress'+(st.round?' (round '+st.round+' of '+st.maxRounds+')':'')):'another host has this lobby open';
+  $('pin-busy-msg').textContent='Lobby '+ROOM+' is in use — '+phaseTxt+(st&&st.players?' with '+st.players+' player'+(st.players===1?'':'s'):'')+(st&&st.hostAway?' (host reconnecting)':'')+'.';
+  $('pin-busy').classList.remove('hidden');
+}
+function claimLobby(){
+  const token=sessionStorage.getItem(HOST_KEY)||null;
+  socket.emit('claim-lobby',token,(res)=>{
+    facilitatorOk=!!(res&&res.ok&&!res.busy);
     const overlay=$('pin-overlay');
     if(facilitatorOk){
-      sessionStorage.setItem('dz-pin',pin);
+      if(res.hostToken)sessionStorage.setItem(HOST_KEY,res.hostToken);
       overlay.classList.add('hidden');
-      $('pin-err').textContent='';
-    }else{
-      facilitatorOk=false;
+    }else if(res&&res.busy){
       overlay.classList.remove('hidden');
-      $('pin-err').textContent='Wrong PIN';
+      showBusy(res.status);
     }
   });
 }
+function takeOver(){
+  if(!confirm('Take over Lobby '+ROOM+'? This ENDS the current session and removes its players.'))return;
+  socket.emit('take-over-lobby',(res)=>{
+    if(res&&res.ok){
+      sessionStorage.setItem(HOST_KEY,res.hostToken);
+      location.reload();
+    }
+  });
+}
+function leaveLobby(){
+  if(facilitatorOk){
+    if(!confirm('Leave Lobby '+ROOM+'? This ends the session and frees the lobby for another host.'))return;
+    socket.emit('release-lobby',()=>{sessionStorage.removeItem(HOST_KEY);location.href='/'});
+    setTimeout(()=>{location.href='/'},1500);
+  }else location.href='/';
+}
+socket.on('lobby-released',()=>{sessionStorage.removeItem(HOST_KEY);location.href='/'});
 
 function playMusic(){dashMusic.setAttribute('loop','');dashMusic.currentTime=0;dashMusic.play().catch(()=>{})}
 function playDrumroll(){dashDrumroll.currentTime=0;dashDrumroll.play().catch(()=>{})}
@@ -888,7 +918,7 @@ socket.on('game-state',(gs)=>{
   currentAttack=gs.currentAttack;
   updatePhase(gs);
   updateButtons(gs);
-  sessionCode.textContent=gs.sessionCode?'CODE '+gs.sessionCode:'';
+  sessionCode.textContent=gs.sessionCode?('LOBBY '+ROOM+' · '+gs.sessionCode):'';
   sessionCode.classList.toggle('lobby-code',gs.phase==='lobby');
   currentSessionCode = gs.sessionCode || '';
   if(currentPhase!=='lobby')showWelcome=false;
@@ -1035,8 +1065,7 @@ btnGovLobby.addEventListener('click',()=>{
   socket.emit('reset-game');
 });
 function clearDashboard(){
-  const pin=sessionStorage.getItem('dz-pin')||'';
-  socket.emit('hard-reset', pin, ()=>location.reload());
+  socket.emit('hard-reset', ()=>location.reload());
   setTimeout(()=>location.reload(),1500);
 }
 if(btnGovEnd)btnGovEnd.addEventListener('click',()=>{
@@ -1049,9 +1078,6 @@ resetBtn.addEventListener('click',()=>{
   if(confirm('End session — this removes every player, sends phones back to the code screen, and creates a new join code. Are you sure?')){
     clearDashboard();
   }
-});
-window.addEventListener('pagehide',()=>{
-  socket.emit('hard-reset', sessionStorage.getItem('dz-pin')||'');
 });
 
 btnHidePriority.addEventListener('click',()=>{
@@ -1095,15 +1121,9 @@ document.addEventListener('keydown',e=>{
   }
 });
 
+$('lobby-back').addEventListener('click',leaveLobby);
 $('btn-matrix').addEventListener('click',()=>instOverlay.classList.remove('hidden'));
-function unlockPin(){tryAuth($('pin-input').value.trim())}
-$('pin-btn').addEventListener('click',unlockPin);
-$('pin-input').addEventListener('keydown',e=>{if(e.key==='Enter')unlockPin()});
-function authOnConnect(){
-  const saved=sessionStorage.getItem('dz-pin');
-  if(saved)tryAuth(saved);
-  else $('pin-overlay').classList.remove('hidden');
-}
+function authOnConnect(){claimLobby()}
 socket.on('connect',authOnConnect);
 if(socket.connected)authOnConnect();
 document.addEventListener('pointerdown',function prime(){
