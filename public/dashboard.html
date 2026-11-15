@@ -160,39 +160,46 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
   display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;padding:12px;background:var(--card2);border-radius:var(--radius-sm);justify-content:center
 }
 .dg-title{font-size:16px;font-weight:700;margin-bottom:8px;color:var(--text2);text-align:center}
-.winner-round{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.04);border-radius:var(--radius-sm);padding:12px 16px;margin-bottom:8px}
-.winner-round .wr-left{display:flex;align-items:center;gap:10px;flex:1;min-width:0}
-.winner-round .wr-icon{font-size:35px;text-align:center;flex-shrink:0}
-.winner-round .wr-name{font-weight:700;color:rgba(255,255,255,.8);font-size:24px}
-.winner-round .wr-result{font-size:19px;font-weight:700;padding:4px 14px;border-radius:6px;letter-spacing:1px;flex-shrink:0}
-.winner-round .wr-result.blocked{background:rgba(16,185,129,.2);color:var(--green)}
-.winner-round .wr-result.breached{background:rgba(239,68,68,.2);color:var(--red)}
-.ranking-title{font-size:22px;font-weight:900;margin-bottom:20px;text-align:center;color:rgba(255,255,255,.7)}
-.podium{display:flex;align-items:flex-end;justify-content:center;gap:16px;margin-bottom:32px}
-.podium-item{text-align:center;border-radius:var(--radius);padding:20px 24px;min-width:180px;transition:all .3s}
-.podium-item.gold{background:linear-gradient(135deg,#f59e0b,#d97706);order:2;padding-bottom:32px}
-.podium-item.silver{background:linear-gradient(135deg,#94a3b8,#64748b);order:1;padding-bottom:16px}
-.podium-item.bronze{background:linear-gradient(135deg,#cd7f32,#a0522d);order:3;padding-bottom:12px}
-.podium-rank{font-size:32px;font-weight:900;color:#fff;margin-bottom:4px}
-.podium-name{font-size:28px;font-weight:800;color:#fff;margin-bottom:4px}
-.podium-score{font-size:14px;color:rgba(255,255,255,.8)}
-.podium-priority{font-size:12px;color:rgba(255,255,255,.7);margin-bottom:4px}
-.podium-budget{font-size:16px;font-weight:700;color:rgba(255,255,255,.9);margin-top:4px}
-.podium-award{display:inline-block;font-size:28px;margin-top:6px}
+.section-title{font-size:13px;font-weight:700;color:rgba(255,255,255,.55);margin-bottom:10px;text-transform:uppercase;letter-spacing:1.5px}
+#gameover-reveal{justify-content:flex-start;padding-bottom:110px}
+.go-wrap{display:grid;grid-template-columns:minmax(300px,1fr) minmax(0,1.5fr);gap:32px;width:100%;max-width:1200px;margin:auto 0 0;align-items:start}
+.go-left,.go-right{min-width:0}
+.go-round{background:rgba(255,255,255,.05);border-radius:var(--radius-sm);padding:12px 14px;margin-bottom:10px}
+.go-round-top{display:flex;align-items:center;gap:10px}
+.go-round-icon{font-size:30px;flex-shrink:0}
+.go-round-name{font-weight:800;font-size:18px;color:#fff;flex:1;min-width:0}
+.go-round-count{font-size:13px;font-weight:700;color:rgba(255,255,255,.7);white-space:nowrap}
+.go-bar{height:8px;border-radius:4px;background:rgba(239,68,68,.35);overflow:hidden;margin:8px 0}
+.go-bar i{display:block;height:100%;background:var(--green)}
+.go-stop{font-size:12px;color:rgba(255,255,255,.55);line-height:1.9}
+.go-chip{display:inline-block;font-size:12px;font-weight:600;padding:1px 8px;border-radius:6px;background:rgba(16,185,129,.18);color:var(--green);margin:0 4px 0 0;white-space:nowrap}
+.go-room{font-size:13px;color:rgba(255,255,255,.6);margin-top:4px;line-height:1.5}
+.podium{display:flex;align-items:flex-end;justify-content:center;gap:10px;margin-bottom:22px}
+.podium-item{flex:1;max-width:190px;min-width:0;text-align:center;border-radius:var(--radius);padding:14px 10px}
+.podium-item.gold{background:linear-gradient(135deg,#f59e0b,#d97706);order:2;padding-bottom:26px}
+.podium-item.silver{background:linear-gradient(135deg,#94a3b8,#64748b);order:1;padding-bottom:14px}
+.podium-item.bronze{background:linear-gradient(135deg,#cd7f32,#a0522d);order:3;padding-bottom:10px}
+.podium-rank{font-size:26px;font-weight:900;color:#fff}
+.podium-name{font-size:22px;font-weight:800;color:#fff;margin:2px 0;overflow-wrap:anywhere;line-height:1.15}
+.podium-score{font-size:13px;color:rgba(255,255,255,.9);font-weight:700}
+.podium-sub{font-size:12px;color:rgba(255,255,255,.78);margin-top:2px}
 .ranking-table{background:rgba(255,255,255,.05);border-radius:var(--radius);overflow:hidden}
-.ranking-row{display:grid;grid-template-columns:56px 1fr 90px 80px;align-items:center;padding:14px 20px;border-bottom:1px solid rgba(255,255,255,.08);font-size:20px;color:rgba(255,255,255,.9);gap:8px}
+.ranking-row{display:grid;grid-template-columns:34px minmax(0,1fr) 78px 62px 66px 50px 34px;align-items:center;padding:9px 14px;border-bottom:1px solid rgba(255,255,255,.08);font-size:16px;color:rgba(255,255,255,.9);gap:8px}
 .ranking-row:last-child{border-bottom:none}
 .ranking-row.header{font-size:11px;color:rgba(255,255,255,.4);font-weight:600;letter-spacing:1px;text-transform:uppercase}
-.ranking-row .rr-rank{font-weight:800;font-size:16px;text-align:center}
-.ranking-row .rr-name{font-weight:700;text-align:left}
-.ranking-row .rr-priority{text-align:center;font-size:13px}
-.ranking-row .rr-budget{text-align:right;font-weight:700;font-family:monospace}
-.ranking-row .rr-award{text-align:center;font-size:18px}
-.summary-split{display:flex;gap:32px;width:100%;max-width:1100px;margin:0 auto 16px;align-items:flex-start}
-.attacks-col{flex:0 0 40%;min-width:280px}
-.standings-col{flex:1;min-width:0}
-.section-title{font-size:15px;font-weight:700;color:rgba(255,255,255,.55);margin-bottom:10px;text-transform:uppercase;letter-spacing:1.5px}
-.rank-below{max-width:900px;width:100%;margin:8px auto 16px;text-align:center}
+.ranking-row.out{opacity:.7}
+.ranking-row .rr-rank{font-weight:800;font-size:14px;text-align:center}
+.ranking-row .rr-name{font-weight:700;text-align:left;overflow-wrap:anywhere;line-height:1.15}
+.ranking-row .rr-out{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--red);background:rgba(239,68,68,.15);border-radius:5px;padding:1px 6px;margin-left:6px;vertical-align:middle;white-space:nowrap}
+.ranking-row .rr-num{text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
+.ranking-row .rr-money{text-align:right;font-weight:700;font-variant-numeric:tabular-nums;font-size:14px}
+.ranking-row .rr-award{text-align:center;font-size:16px}
+.rr-dots{display:flex;gap:4px}
+.rr-dot{width:16px;height:16px;border-radius:4px;background:rgba(255,255,255,.12)}
+.rr-dot.blocked{background:var(--green)}
+.rr-dot.breached{background:var(--red)}
+.go-foot{font-size:12px;color:rgba(255,255,255,.45);margin-top:8px}
+@media (max-width:900px){.go-wrap{grid-template-columns:minmax(0,1fr)}}
 .priority-overlay{position:fixed;inset:0;background:rgba(0,0,0,.92);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:1000}
 .priority-overlay.hidden{display:none}
 .po-title{font-size:28px;font-weight:900;color:#fff;margin-bottom:24px}
@@ -351,21 +358,20 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
   </div>
 </div>
 <div class="reveal-overlay hidden" id="gameover-reveal">
-  <div class="summary-split">
-    <div class="attacks-col">
-      <div class="section-title">All Attacks</div>
+  <div class="go-wrap">
+    <div class="go-left">
+      <div class="section-title">Round by round</div>
       <div id="summary-attacks"></div>
+      <div class="go-room" id="go-room"></div>
     </div>
-    <div class="standings-col">
-      <div class="section-title">Final Standings</div>
+    <div class="go-right">
+      <div class="podium" id="podium"></div>
+      <div class="section-title">Final standings</div>
       <div id="ranking-table"></div>
+      <div class="go-foot">Ties are broken by fewest breaches.</div>
     </div>
   </div>
-  <div class="rank-below">
-    <div class="section-title">Rank</div>
-    <div class="podium" id="podium"></div>
-  </div>
-  <div style="display:flex;gap:12px;margin-top:12px">
+  <div style="display:flex;gap:12px;margin:24px 0 auto">
     <button class="ctrl-btn primary" id="btn-gov-lobby" style="font-size:18px;padding:14px 48px">Return to Lobby</button>
     <button class="ctrl-btn danger" id="btn-gov-end" style="font-size:18px;padding:14px 32px">End Session</button>
   </div>
@@ -856,63 +862,62 @@ function renderPriorityCharts(players){
 }
 
 function renderWinner(players){
+  const podiumEl=$('podium'),tableEl=$('ranking-table'),atkEl=$('summary-attacks'),roomEl=$('go-room');
   if(!players||players.length===0){
-    $('podium').innerHTML='';$('ranking-table').innerHTML='<div style="text-align:center;padding:32px;color:rgba(255,255,255,.4)">No players</div>';
-    const atkEl=$('summary-attacks'); if(atkEl) atkEl.innerHTML='';
+    podiumEl.innerHTML='';atkEl.innerHTML='';roomEl.textContent='';
+    tableEl.innerHTML='<div style="text-align:center;padding:32px;color:rgba(255,255,255,.4)">No players</div>';
     return;
   }
   const sorted=[...players].sort(byScore);
-  const top3=sorted.slice(0,3);
+  const awardIcon=a=>a==='Gold'?'🏆':a==='Silver'?'🥈':a==='Bronze'?'🥉':'—';
+  const money=n=>'£'+Math.round((n||0)/1000)+'k';
 
   // Podium
-  const podiumEl=$('podium');
   podiumEl.innerHTML='';
-  const rankLabels=['🥇','🥈','🥉'];
-  const rankClasses=['gold','silver','bronze'];
-  top3.forEach((p,i)=>{
+  const rankLabels=['🥇','🥈','🥉'],rankClasses=['gold','silver','bronze'];
+  sorted.slice(0,3).forEach((p,i)=>{
     const div=document.createElement('div');
     div.className='podium-item '+rankClasses[i];
-    const pr=p.priority&&p.priority[0]?`${PRIORITY_EMOJIS[p.priority[0]]||''} ${p.priority[0]}`:'—';
-    const match = (p.priorityPct!=null) ? `Match ${p.priorityPct}%` : '';
-    div.innerHTML=`<div class="podium-rank">${rankLabels[i]}</div><div class="podium-name">${esc(p.name)}</div><div class="podium-priority">${pr}</div><div class="podium-score">Score: ${p.score||0}</div><div class="podium-award">${p.award==='Gold'?'🏆':p.award==='Silver'?'🥈':p.award==='Bronze'?'🥉':'—'}</div><div style="font-size:14px;color:rgba(255,255,255,.85);margin-top:4px">${match}</div>`;
+    div.innerHTML=`<div class="podium-rank">${rankLabels[i]}</div><div class="podium-name">${esc(p.name)}</div><div class="podium-score">Score ${p.score||0} ${awardIcon(p.award)}</div><div class="podium-sub">${money(p.budget)} left · ${p.breaches||0} breach${(p.breaches||0)===1?'':'es'}</div>`;
     podiumEl.appendChild(div);
   });
-  if(podiumEl.children.length<3){
-    for(let i=podiumEl.children.length;i<3;i++){
-      const div=document.createElement('div');
-      div.className='podium-item silver';div.style.background='rgba(255,255,255,.05)';
-      div.innerHTML='<div class="podium-name" style="color:rgba(255,255,255,.3)">—</div>';
-      podiumEl.appendChild(div);
-    }
-  }
 
-  // Full ranking table (70% side)
-  const tableEl=$('ranking-table');
-  tableEl.innerHTML='<div class="ranking-row header"><span class="rr-rank">Rank</span><span class="rr-name">Name</span><span class="rr-priority">Score</span><span class="rr-award">Award</span></div>';
+  // Standings
+  tableEl.innerHTML='<div class="ranking-row header"><span class="rr-rank">#</span><span>Player</span><span>Rounds</span><span style="text-align:right">Budget</span><span style="text-align:right">Breaches</span><span style="text-align:right">Score</span><span style="text-align:center"></span></div>';
   sorted.forEach((p,i)=>{
+    const hist=p.roundHistory||[];
+    let dots='';
+    for(let r=0;r<MAX_ROUNDS;r++){
+      const h=hist[r];
+      dots+=`<i class="rr-dot ${h?(h.blocked?'blocked':'breached'):''}" title="Round ${r+1}${h?(h.blocked?' blocked':' breached'):' not played'}"></i>`;
+    }
+    const out=p.eliminated?`<span class="rr-out">Out R${Math.max(1,hist.length)}</span>`:'';
     const row=document.createElement('div');
-    row.className='ranking-row';
-    row.innerHTML=`<span class="rr-rank">#${i+1}</span><span class="rr-name">${esc(p.name)}</span><span class="rr-priority">${p.score||0}</span><span class="rr-award">${p.award==='Gold'?'🏆':p.award==='Silver'?'🥈':p.award==='Bronze'?'🥉':'—'}</span>`;
+    row.className='ranking-row'+(p.eliminated?' out':'');
+    row.innerHTML=`<span class="rr-rank">${i+1}</span><span class="rr-name">${esc(p.name)}${out}</span><span class="rr-dots">${dots}</span><span class="rr-money">${money(p.budget)}</span><span class="rr-num">${p.breaches||0}</span><span class="rr-num">${p.score||0}</span><span class="rr-award">${awardIcon(p.award)}</span>`;
     tableEl.appendChild(row);
   });
 
-  // All Attacks (30% side) - list what was faced across game
-  const atkEl=$('summary-attacks');
+  // Debrief: what hit the room, and what would have stopped it
   const rounds=Math.max(0,...sorted.map(p=>(p.roundHistory||[]).length));
-  if(atkEl && rounds){
-    atkEl.innerHTML = Array.from({length:rounds},(_,i)=>{
-      const sample=(sorted.find(p=>(p.roundHistory||[])[i])||{}).roundHistory[i];
-      const icon=ATTACK_ICONS[sample.attackId]||'🔓';
-      const name=ATTACK_NAMES[sample.attackId]||sample.attackId;
-      const faced=sorted.filter(p=>(p.roundHistory||[])[i]);
-      const blocked=faced.filter(p=>p.roundHistory[i].blocked).length;
-      return `<div class="winner-round"><div class="wr-left"><span class="wr-icon">${icon}</span><span class="wr-name">${esc(name)}</span><span class="wr-result blocked">${blocked}/${faced.length} blocked</span></div></div>`;
-    }).join('');
-  }else if(atkEl){
-    atkEl.innerHTML='';
+  let totBlocked=0,totFaced=0,worst=null;
+  atkEl.innerHTML='';
+  for(let i=0;i<rounds;i++){
+    const faced=sorted.filter(p=>(p.roundHistory||[])[i]);
+    if(!faced.length)continue;
+    const attackId=faced[0].roundHistory[i].attackId;
+    const blocked=faced.filter(p=>p.roundHistory[i].blocked).length;
+    totBlocked+=blocked;totFaced+=faced.length;
+    const pct=Math.round(blocked/faced.length*100);
+    if(!worst||pct<worst.pct)worst={pct,name:ATTACK_NAMES[attackId]||attackId};
+    const stoppers=DEFENCES.filter(d=>(EFFECTIVENESS[d.id]||[]).includes(attackId));
+    const card=document.createElement('div');
+    card.className='go-round';
+    card.innerHTML=`<div class="go-round-top"><span class="go-round-icon">${ATTACK_ICONS[attackId]||'🔓'}</span><span class="go-round-name">R${i+1} · ${esc(ATTACK_NAMES[attackId]||attackId)}</span><span class="go-round-count">${blocked} of ${faced.length} blocked</span></div><div class="go-bar"><i style="width:${pct}%"></i></div><div class="go-stop">Stopped by ${stoppers.map(d=>`<span class="go-chip">${DEFENCE_ICONS[d.id]||''} ${esc((d.short||d.name))}</span>`).join('')}</div>`;
+    atkEl.appendChild(card);
   }
+  roomEl.textContent=totFaced?`The room blocked ${totBlocked} of ${totFaced} attacks.${worst&&worst.pct<100?' Most missed: '+worst.name+'.':''}`:'';
 }
-
 function showGameOver(){
   slotOverlay.classList.add('hidden');
   revealOverlay.classList.add('hidden');
