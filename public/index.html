@@ -120,7 +120,7 @@ function card(l){
   const main=busy?'<span class="btn-start" style="opacity:.55;cursor:not-allowed"><span class="ic">🔒</span>'+label+'</span>'
                   :'<a class="btn-start" href="'+href+'"><span class="ic">🛡️</span>'+label+'</a>';
   return '<div class="lobby '+l.state+'"><h2>'+l.name+'</h2><div class="badge"><i></i>'+LABEL[l.state]+'</div><div class="detail">'+detail+'</div>'+main+
-    (busy?'<a class="alt" href="'+href+'">I am the host of this lobby / take over</a>':'')+'</div>';
+    (busy?'<a class="alt" href="'+href+'">'+(l.canTakeOver?'Host has left — take over this lobby':'I am the host of this lobby')+'</a>':'')+'</div>';
 }
 async function refresh(){
   try{

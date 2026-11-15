@@ -228,7 +228,8 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
       <h2>Lobby in use</h2>
       <p id="pin-busy-msg"></p>
       <button class="ctrl-btn primary" style="width:100%;padding:14px;margin-bottom:10px" onclick="location.href='/'">Choose another lobby</button>
-      <button class="ctrl-btn secondary" style="width:100%;padding:12px" onclick="takeOver()">Take over (ends their session)</button>
+      <p id="pin-busy-note" style="font-size:13px"></p>
+      <button class="ctrl-btn secondary" id="btn-takeover" style="width:100%;padding:12px;display:none" onclick="takeOver()">Take over (ends their session)</button>
     </div>
     <a href="/" style="display:block;margin-top:14px;font-size:13px;color:var(--text3)">&larr; Back to lobbies</a>
   </div>
@@ -477,10 +478,25 @@ function closeQrFull(){
   qrPopup.classList.add('hidden');
   if(currentPhase==='lobby')renderCards(lastPlayers);
 }
+let busyPoll=null;
 function showBusy(st){
   const phaseTxt=st&&st.state==='in-progress'?('a game is in progress'+(st.round?' (round '+st.round+' of '+st.maxRounds+')':'')):'another host has this lobby open';
-  $('pin-busy-msg').textContent='Lobby '+ROOM+' is in use — '+phaseTxt+(st&&st.players?' with '+st.players+' player'+(st.players===1?'':'s'):'')+(st&&st.hostAway?' (host reconnecting)':'')+'.';
+  $('pin-busy-msg').textContent='Lobby '+ROOM+' is in use — '+phaseTxt+(st&&st.players?' with '+st.players+' player'+(st.players===1?'':'s'):'')+'.';
+  const can=!!(st&&st.canTakeOver);
+  $('btn-takeover').style.display=can?'':'none';
+  $('pin-busy-note').textContent=can?'Its host has been disconnected for a while. You can take over, which ends their session.'
+    :(st&&st.hostAway?'Its host has just disconnected and may be reconnecting. Take over becomes available if they stay away.'
+    :'Its host is connected, so it cannot be taken over. If this is your lobby, go back to the browser tab you started it in.');
   $('pin-busy').classList.remove('hidden');
+  if(!busyPoll)busyPoll=setInterval(async()=>{
+    if(facilitatorOk){clearInterval(busyPoll);busyPoll=null;return}
+    try{
+      const list=await (await fetch('/api/lobbies',{cache:'no-store'})).json();
+      const me=list.find(l=>l.id===ROOM);
+      if(me&&me.state==='free'){clearInterval(busyPoll);busyPoll=null;claimLobby()}
+      else if(me)showBusy(me);
+    }catch(e){}
+  },3000);
 }
 function claimLobby(){
   const token=sessionStorage.getItem(HOST_KEY)||null;
@@ -502,7 +518,8 @@ function takeOver(){
     if(res&&res.ok){
       sessionStorage.setItem(HOST_KEY,res.hostToken);
       location.reload();
-    }
+    }else if(res&&res.reason==='free'){claimLobby()}
+    else if(res&&res.status){showBusy(res.status)}
   });
 }
 function leaveLobby(){
