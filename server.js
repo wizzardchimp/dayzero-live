@@ -25,6 +25,7 @@ app.use(express.static(path.join(__dirname, 'public'), {
 
 const LOBBY_IDS = (process.env.LOBBIES || 'A,B').split(',').map(s => s.trim().toUpperCase()).filter(Boolean);
 const HOST_GRACE_MS = Number(process.env.HOST_GRACE_MS) || 5 * 60 * 1000; // host may drop out this long without losing the game
+const TAKEOVER_AFTER_MS = Number(process.env.TAKEOVER_AFTER_MS) || 30 * 1000; // host must be gone this long before someone else may take over
 const IDLE_RESET_MS = 60 * 60 * 1000; // 1 hour
 
 /* ---------- helpers ---------- */
@@ -98,6 +99,7 @@ class Room {
       if (old) old.data.facilitator = false;
       h.socketId = socket.id;
       h.connected = true;
+      h.awaySince = null;
       return { ok: true, token: h.token };
     }
     return { ok: false, busy: true, status: this.status() };
@@ -111,6 +113,7 @@ class Room {
     const h = this.host;
     if (!h || h.socketId !== socket.id) return;
     h.connected = false;
+    h.awaySince = Date.now();
     if (this.game.phase === 'lobby' && Object.keys(this.players).length === 0) {
       this.releaseHost(); // nothing to protect
       return;
@@ -136,6 +139,12 @@ class Room {
     this.hardReset();
   }
 
+  // A lobby can only be taken from a host who has been disconnected for a while.
+  canTakeOver() {
+    const h = this.host;
+    return !!(h && !h.connected && h.awaySince && Date.now() - h.awaySince >= TAKEOVER_AFTER_MS);
+  }
+
   status() {
     const g = this.game;
     let state = 'free';
@@ -149,6 +158,7 @@ class Room {
       maxRounds: MAX_ROUNDS,
       players: Object.keys(this.players).length,
       hostAway: !!(this.host && !this.host.connected),
+      canTakeOver: this.canTakeOver(),
     };
   }
 
@@ -245,13 +255,16 @@ class Room {
 
     const prioPct = maxPoints > 0 ? Math.round((points / maxPoints) * 100) : 50;
 
-    let speedPct = 50;
+    // Speed: averaged over every round the player took part in. A round where they
+    // never locked in a full selection counts as the slowest possible time.
+    let speedPct = 0;
     const cap = (game.timerDuration || 120) * 1000;
     const times = [];
-    (player.roundSelectTimes || []).forEach((t, idx) => {
-      if (t && game.roundStartTimes[idx]) {
-        times.push(Math.min(cap, Math.max(0, t - game.roundStartTimes[idx])));
-      }
+    history.forEach((_, idx) => {
+      const start = game.roundStartTimes[idx];
+      if (!start) return;
+      const t = (player.roundSelectTimes || [])[idx];
+      times.push(t ? Math.min(cap, Math.max(0, t - start)) : cap);
     });
     if (times.length > 0) {
       const avg = times.reduce((a, b) => a + b, 0) / times.length;
@@ -552,6 +565,7 @@ io.on('connection', (socket) => {
     const reply = (o) => { if (typeof ack === 'function') ack(o); };
     const room = roomOf();
     if (!room) return reply({ ok: false, noRoom: true });
+    if (room.players[socket.id]) return reply({ ok: false }); // a player's phone can never host
     const claim = room.claimHost(socket, token);
     if (!claim.ok) return reply({ ok: true, busy: true, status: claim.status });
     socket.data.facilitator = true;
@@ -563,7 +577,9 @@ io.on('connection', (socket) => {
   socket.on('take-over-lobby', (ack) => {
     const reply = (o) => { if (typeof ack === 'function') ack(o); };
     const room = roomOf();
-    if (!room) return reply({ ok: false });
+    if (!room || room.players[socket.id]) return reply({ ok: false });
+    if (!room.host) return reply({ ok: false, reason: 'free' });
+    if (!room.canTakeOver()) return reply({ ok: false, reason: 'host-active', status: room.status() });
     console.log(`[${room.id}] Lobby taken over by a new host`);
     room.releaseHost(true);
     const claim = room.claimHost(socket, null);
@@ -627,8 +643,9 @@ io.on('connection', (socket) => {
       reclaim(room, existing);
       return;
     }
-    if (game.phase === 'gameover') {
-      socket.emit('joined', { id: socket.id, error: 'Game already in progress' });
+    if (game.phase !== 'lobby' && game.phase !== 'priority') {
+      // New players can't join once Round 1 has started (existing players can still reconnect above).
+      socket.emit('joined', { id: socket.id, error: 'This game has already started — wait for the next one' });
       return;
     }
     const rejoinToken = newToken();
@@ -750,6 +767,7 @@ io.on('connection', (socket) => {
     if (new Set(priority).size !== 3) return;
     const validPriorities = Object.keys(PRIORITY_MAP);
     if (!priority.every(v => validPriorities.includes(v))) return;
+    if (p.priority && p.priority.length === 3) return; // priorities are final once submitted
     p.priority = priority;
     if (!p.prioritySubmitTime && room.game.priorityStartTime) {
       p.prioritySubmitTime = Date.now();

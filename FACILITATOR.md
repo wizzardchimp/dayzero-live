@@ -12,7 +12,8 @@ The home page shows **Lobby A** and **Lobby B**, each with a live status: 🟢 F
 - Pick a **Free** lobby to host it. A busy lobby is locked so you can't interrupt a running game.
 - If your laptop drops off or you refresh, you have **5 minutes** to come back and keep the game going (same browser tab). After that the lobby is freed.
 - **← Lobbies** (top left of the dashboard) leaves and frees your lobby.
-- "Take over" on a busy lobby asks for confirmation and ends that session — use only if the host has left.
+- "Take over" only appears once a lobby's host has been disconnected for 30 seconds (`TAKEOVER_AFTER_MS`). A lobby whose host is connected cannot be taken over, and a player's phone can never host.
+- New players can join until Round 1 starts; after that only existing players can reconnect. Priorities are final once submitted.
 - There is no facilitator PIN: whoever opens a free lobby's dashboard becomes its host, and player phones still cannot start, reset or flush a game. Don't share the dashboard link with players.
 - `LOBBIES=A,B,C` adds more lobbies; `HOST_GRACE_MS` changes the 5-minute window.
 
@@ -87,7 +88,7 @@ The home page shows **Lobby A** and **Lobby B**, each with a live status: 🟢 F
 | Component | Weight | How It Works |
 |-----------|--------|--------------|
 | Priority Match | **75%** | Rank 1 = 3pts, Rank 2 = 2pts, Rank 3 = 1pt per matching attack |
-| Speed | **25%** | Faster defence selection under the round timer = more points. Priority time is not scored. |
+| Speed | **25%** | Faster defence selection under the round timer = more points. A round with no completed selection scores 0 for speed. Priority time is not scored. |
 | ICO Budget | ~~0%~~ | Removed — ICO Budget is now an elimination mechanic only |
 
 **Awards:** Gold (≥78) · Silver (≥58) · Bronze (<58)
