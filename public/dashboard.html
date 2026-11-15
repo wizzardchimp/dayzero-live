@@ -176,62 +176,49 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
   display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;padding:12px;background:var(--card2);border-radius:var(--radius-sm);justify-content:center
 }
 .dg-title{font-size:16px;font-weight:700;margin-bottom:8px;color:var(--text2);text-align:center}
-.section-title{font-size:13px;font-weight:700;color:rgba(255,255,255,.55);margin-bottom:10px;text-transform:uppercase;letter-spacing:1.5px}
-#gameover-reveal{justify-content:flex-start;padding-bottom:110px}
-.go-wrap{display:grid;grid-template-columns:minmax(300px,1fr) minmax(0,1.5fr);gap:32px;width:100%;max-width:1200px;margin:auto 0 0;align-items:start}
+/* Final score screen: sized in em so it scales with the screen (1em = 16px at 1280px wide) */
+.reveal-overlay#gameover-reveal{background:#fff;justify-content:flex-start;padding:3vh 4vw 120px;font-size:calc(clamp(14px,min(1.4vw,2vh),34px) * var(--go-scale,1));color:#0f172a}
+.go-wrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.6fr);gap:1em 3em;width:100%;max-width:100em;margin:auto;align-items:start}
+.go-head{grid-column:1/-1;text-align:center;margin-bottom:.8em}
+.go-head h1{font-size:2.4em;font-weight:900;letter-spacing:-.01em;color:#0f172a;line-height:1.1}
+.go-room{font-size:1.05em;color:#475569;margin-top:.4em}
 .go-left,.go-right{min-width:0}
-.go-round{background:rgba(255,255,255,.05);border-radius:var(--radius-sm);padding:12px 14px;margin-bottom:10px}
-.go-round-top{display:flex;align-items:center;gap:10px}
-.go-round-icon{font-size:30px;flex-shrink:0}
-.go-round-name{font-weight:800;font-size:18px;color:#fff;flex:1;min-width:0}
-.go-round-count{font-size:13px;font-weight:700;color:rgba(255,255,255,.7);white-space:nowrap}
-.go-bar{height:8px;border-radius:4px;background:rgba(239,68,68,.35);overflow:hidden;margin:8px 0}
+.section-title{font-size:.8em;font-weight:700;color:#64748b;margin-bottom:.8em;text-transform:uppercase;letter-spacing:.12em}
+.go-round{background:#f1f5f9;border-radius:.7em;padding:.9em 1.1em;margin-bottom:.7em}
+.go-round-top{display:flex;align-items:center;gap:.7em}
+.go-round-icon{font-size:2em;line-height:1;flex-shrink:0}
+.go-round-name{font-weight:800;font-size:1.2em;color:#0f172a;flex:1;min-width:0}
+.go-round-count{font-size:.85em;font-weight:700;color:#475569;white-space:nowrap}
+.go-bar{height:.55em;border-radius:.3em;background:rgba(239,68,68,.25);overflow:hidden;margin:.6em 0}
 .go-bar i{display:block;height:100%;background:var(--green)}
-.go-stop{font-size:12px;color:rgba(255,255,255,.55);line-height:1.9}
-.go-chip{display:inline-block;font-size:12px;font-weight:600;padding:1px 8px;border-radius:6px;background:rgba(16,185,129,.18);color:var(--green);margin:0 4px 0 0;white-space:nowrap}
-.go-room{font-size:13px;color:rgba(255,255,255,.6);margin-top:4px;line-height:1.5}
-.podium{display:flex;align-items:flex-end;justify-content:center;gap:10px;margin-bottom:22px}
-.podium-item{flex:1;max-width:190px;min-width:0;text-align:center;border-radius:var(--radius);padding:14px 10px}
-.podium-item.gold{background:linear-gradient(135deg,#f59e0b,#d97706);order:2;padding-bottom:26px}
-.podium-item.silver{background:linear-gradient(135deg,#94a3b8,#64748b);order:1;padding-bottom:14px}
-.podium-item.bronze{background:linear-gradient(135deg,#cd7f32,#a0522d);order:3;padding-bottom:10px}
-.podium-rank{font-size:26px;font-weight:900;color:#fff}
-.podium-name{font-size:22px;font-weight:800;color:#fff;margin:2px 0;overflow-wrap:anywhere;line-height:1.15}
-.podium-score{font-size:13px;color:rgba(255,255,255,.9);font-weight:700}
-.podium-sub{font-size:12px;color:rgba(255,255,255,.78);margin-top:2px}
-.ranking-table{background:rgba(255,255,255,.05);border-radius:var(--radius);overflow:hidden}
-.ranking-row{display:grid;grid-template-columns:34px minmax(0,1fr) 78px 62px 66px 50px 34px;align-items:center;padding:9px 14px;border-bottom:1px solid rgba(255,255,255,.08);font-size:16px;color:rgba(255,255,255,.9);gap:8px}
+.go-stop{font-size:.8em;color:#64748b;line-height:2}
+.go-chip{display:inline-block;font-size:1em;font-weight:600;padding:.05em .6em;border-radius:.4em;background:rgba(16,185,129,.16);color:#047857;margin:0 .3em 0 0;white-space:nowrap}
+.podium{display:flex;align-items:flex-end;justify-content:center;gap:.8em;margin-bottom:1.6em}
+.podium-item{flex:0 1 13em;min-width:0;text-align:center;border-radius:.8em;padding:1em .7em}
+.podium-item.gold{background:linear-gradient(135deg,#f59e0b,#d97706);order:2;padding-bottom:1.8em}
+.podium-item.silver{background:linear-gradient(135deg,#94a3b8,#64748b);order:1;padding-bottom:1em}
+.podium-item.bronze{background:linear-gradient(135deg,#cd7f32,#a0522d);order:3;padding-bottom:.7em}
+.podium-rank{font-size:1.9em;font-weight:900;color:#fff;line-height:1.2}
+.podium-name{font-size:1.5em;font-weight:800;color:#fff;margin:.1em 0;overflow-wrap:anywhere;line-height:1.15}
+.podium-score{font-size:.95em;color:#fff;font-weight:700}
+.podium-sub{font-size:.85em;color:rgba(255,255,255,.85);margin-top:.2em}
+.ranking-table{background:#f8fafc;border:1px solid #e2e8f0;border-radius:.8em;overflow:hidden}
+.ranking-row{display:grid;grid-template-columns:1.8em minmax(7em,1fr) 4.2em 3.8em 5.2em 3.4em 1.8em;align-items:center;padding:.65em 1em;border-bottom:1px solid #e2e8f0;font-size:1em;color:#0f172a;gap:.6em}
 .ranking-row:last-child{border-bottom:none}
-.ranking-row.header{font-size:11px;color:rgba(255,255,255,.4);font-weight:600;letter-spacing:1px;text-transform:uppercase}
+.ranking-row.header{color:#94a3b8;font-weight:600;letter-spacing:.06em;text-transform:uppercase}
+.ranking-row.header>span{font-size:.7em}
 .ranking-row.out{opacity:.7}
-.ranking-row .rr-rank{font-weight:800;font-size:14px;text-align:center}
+.ranking-row .rr-rank{font-weight:800;font-size:.9em;text-align:center}
 .ranking-row .rr-name{font-weight:700;text-align:left;overflow-wrap:anywhere;line-height:1.15}
-.ranking-row .rr-out{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--red);background:rgba(239,68,68,.15);border-radius:5px;padding:1px 6px;margin-left:6px;vertical-align:middle;white-space:nowrap}
+.ranking-row .rr-out{display:inline-block;font-size:.62em;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#dc2626;background:rgba(239,68,68,.12);border-radius:.4em;padding:.1em .5em;margin-left:.5em;vertical-align:middle;white-space:nowrap}
 .ranking-row .rr-num{text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
-.ranking-row .rr-money{text-align:right;font-weight:700;font-variant-numeric:tabular-nums;font-size:14px}
-.ranking-row .rr-award{text-align:center;font-size:16px}
-.rr-dots{display:flex;gap:4px}
-.rr-dot{width:16px;height:16px;border-radius:4px;background:rgba(255,255,255,.12)}
+.ranking-row .rr-money{text-align:right;font-weight:700;font-variant-numeric:tabular-nums;font-size:.9em}
+.ranking-row .rr-award{text-align:center;font-size:1em}
+.rr-dots{display:flex;gap:.3em}
+.rr-dot{width:1em;height:1em;border-radius:.25em;background:#e2e8f0}
 .rr-dot.blocked{background:var(--green)}
 .rr-dot.breached{background:var(--red)}
-.reveal-overlay#gameover-reveal{background:#fff}
-#gameover-reveal .section-title{color:#64748b}
-#gameover-reveal .go-round{background:#f1f5f9}
-#gameover-reveal .go-round-name{color:#0f172a}
-#gameover-reveal .go-round-count{color:#475569}
-#gameover-reveal .go-bar{background:rgba(239,68,68,.25)}
-#gameover-reveal .go-stop{color:#64748b}
-#gameover-reveal .go-chip{background:rgba(16,185,129,.16);color:#047857}
-#gameover-reveal .go-room{color:#475569}
-#gameover-reveal .ranking-table{background:#f8fafc;border:1px solid #e2e8f0}
-#gameover-reveal .ranking-row{color:#0f172a;border-bottom-color:#e2e8f0}
-#gameover-reveal .ranking-row.header{color:#94a3b8}
-#gameover-reveal .rr-dot{background:#e2e8f0}
-#gameover-reveal .rr-dot.blocked{background:var(--green)}
-#gameover-reveal .rr-dot.breached{background:var(--red)}
-#gameover-reveal .ranking-row .rr-out{background:rgba(239,68,68,.12);color:#dc2626}
-#gameover-reveal .go-foot{color:#94a3b8}
-.go-foot{font-size:12px;color:rgba(255,255,255,.45);margin-top:8px}
+.go-foot{font-size:.75em;color:#94a3b8;margin-top:.7em}
 @media (max-width:900px){.go-wrap{grid-template-columns:minmax(0,1fr)}}
 .priority-overlay{position:fixed;inset:0;background:rgba(0,0,0,.92);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:1000}
 .priority-overlay.hidden{display:none}
@@ -397,10 +384,13 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 </div>
 <div class="reveal-overlay hidden" id="gameover-reveal">
   <div class="go-wrap">
+    <div class="go-head">
+      <h1>Final results</h1>
+      <div class="go-room" id="go-room"></div>
+    </div>
     <div class="go-left">
       <div class="section-title">Round by round</div>
       <div id="summary-attacks"></div>
-      <div class="go-room" id="go-room"></div>
     </div>
     <div class="go-right">
       <div class="podium" id="podium"></div>
@@ -914,6 +904,8 @@ function renderWinner(players){
     tableEl.innerHTML='<div style="text-align:center;padding:32px;color:rgba(255,255,255,.4)">No players</div>';
     return;
   }
+  // Few players: scale everything up so the screen is used
+  gameoverReveal.style.setProperty('--go-scale',players.length<=3?1.2:players.length<=6?1.1:players.length<=8?1:players.length<=12?.88:.78);
   const sorted=[...players].sort(byScore);
   const awardIcon=a=>a==='Gold'?'🏆':a==='Silver'?'🥈':a==='Bronze'?'🥉':'—';
   const money=n=>'£'+Math.round((n||0)/1000)+'k';
