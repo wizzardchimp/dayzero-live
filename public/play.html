@@ -211,6 +211,13 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .go-meta .go-score{font-weight:700;margin-left:6px}
 .go-meta .go-match{font-size:15px;color:var(--text3);margin-top:4px}
 .go-attacks-section{max-width:none;margin:0 auto;text-align:left}
+.ga-bar{height:7px;border-radius:4px;background:var(--red-light);overflow:hidden;margin:8px 0 4px}
+.ga-bar i{display:block;height:100%;background:var(--green)}
+.ga-room{font-size:13px;color:var(--text3)}
+.ga-chips{margin-top:6px;font-size:13px;color:var(--text3);line-height:1.9}
+.ga-chip{display:inline-block;font-size:12px;font-weight:600;padding:1px 8px;border-radius:6px;background:var(--green-light);color:var(--green);margin:0 4px 0 0;white-space:nowrap}
+.ga-chip.mine{outline:1.5px solid var(--green)}
+.go-room{font-size:14px;color:var(--text2);margin-top:6px;line-height:1.5;text-align:center}
 .go-attack-row{background:var(--bg3);border-radius:var(--radius-sm);padding:12px 14px;margin-bottom:8px;font-size:16px}
 .go-attack-row .go-attack-main{display:flex;align-items:center;gap:8px}
 .ga-icon{font-size:20px}
@@ -341,8 +348,9 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
     </div>
     <div class="go-meta" id="go-meta"></div>
     <div class="go-attacks-section">
-      <div class="go-section-title">Attacks &amp; Results</div>
+      <div class="go-section-title">Round by round</div>
       <div id="go-attacks-list"></div>
+      <div class="go-room" id="go-room"></div>
     </div>
     <div class="waiting-text" style="color:var(--text3);font-size:14px;margin-top:20px">Game session ended — thank you for playing!</div>
   </div>
@@ -389,6 +397,8 @@ let currentAttack=null;
 let roundIntroShown=0;
 let rejoinToken='';
 const SAVE_KEY='dz-rejoin';
+let urlCode='';
+try{urlCode=(new URLSearchParams(window.location.search).get('code')||'').trim().slice(0,3)}catch(e){}
 function saveRejoin(){
   try{localStorage.setItem(SAVE_KEY,JSON.stringify({code:playerCode,name:playerName,token:rejoinToken}))}catch(e){}
 }
@@ -680,28 +690,36 @@ function renderPhase(gs){
     const history = myData.roundHistory || [];
     const atkIcons = {'phishing':'🎣','malware':'🦠','ransomware':'🔒','ddos':'🌊','sql_injection':'💉','zero_day':'⚡','insider':'🏢','data_exfil':'📤','social_eng':'🎭'};
     const atkNames = {'phishing':'Phishing','malware':'Malware','ransomware':'Ransomware','ddos':'DDoS','sql_injection':'SQL Injection','zero_day':'Zero-Day','insider':'Insider Threat','data_exfil':'Data Exfiltration','social_eng':'Social Engineering'};
+    const goRoom = $('go-room');
     if (history.length && goAttacksList) {
+      const activeBy = [2, 4, 5];
+      const everyone = allPlayers && allPlayers.length ? allPlayers : [myData];
+      let totBlocked = 0, totFaced = 0, worst = null;
       goAttacksList.innerHTML = history.map((r, i) => {
         const icon = atkIcons[r.attackId] || '🔓';
         const name = atkNames[r.attackId] || r.attackId;
         const cls = r.blocked ? 'blocked' : 'breached';
         const label = r.blocked ? 'BLOCKED' : 'BREACHED';
-        let detail = '';
-        if (r.blocked) {
-          detail = 'Your defence stopped it.';
-        } else {
-          const needed = (EFFECTIVENESS ? Object.entries(EFFECTIVENESS).filter(([,attacks])=>attacks.includes(r.attackId)).map(([id])=>{
-            const d=DEFENCES.find(x=>x.id===id); return d ? `${d.icon} ${d.name}` : id;
-          }) : []);
-          detail = needed.length ? `Needed: ${needed.join(' or ')}` : 'No counter available.';
-        }
+        const faced = everyone.filter(p => (p.roundHistory || [])[i]);
+        const blockedN = faced.filter(p => p.roundHistory[i].blocked).length;
+        const pct = faced.length ? Math.round(blockedN / faced.length * 100) : 0;
+        totBlocked += blockedN; totFaced += faced.length;
+        if (faced.length && (!worst || pct < worst.pct)) worst = { pct, name };
+        const mine = (myData.defences || []).slice(0, activeBy[i] || 5);
+        const stoppers = DEFENCES.filter(d => (EFFECTIVENESS[d.id] || []).includes(r.attackId));
+        const chips = stoppers.map(d => `<span class="ga-chip${mine.includes(d.id) ? ' mine' : ''}">${d.icon} ${d.short || d.name}</span>`).join('');
+        const lead = r.blocked ? 'Your defence stopped it. Stopped by' : 'You needed one of';
         return `<div class="go-attack-row ${cls}">
-          <div class="go-attack-main"><span class="ga-icon">${icon}</span><span class="ga-name">${name}</span><span class="ga-result ${cls}">${label}</span></div>
-          <div class="ga-detail">${detail}</div>
+          <div class="go-attack-main"><span class="ga-icon">${icon}</span><span class="ga-name">R${i + 1} · ${name}</span><span class="ga-result ${cls}">${label}</span></div>
+          <div class="ga-bar"><i style="width:${pct}%"></i></div>
+          <div class="ga-room">${blockedN} of ${faced.length} players blocked it</div>
+          <div class="ga-chips">${lead} ${chips}</div>
         </div>`;
       }).join('');
+      if (goRoom) goRoom.textContent = totFaced ? `The room blocked ${totBlocked} of ${totFaced} attacks.${worst && worst.pct < 100 ? ' Most missed: ' + worst.name + '.' : ''}` : '';
     } else if (goAttacksList) {
       goAttacksList.innerHTML = '';
+      if (goRoom) goRoom.textContent = '';
     }
     gameoverOverlay.classList.remove('hidden');
   }
@@ -754,6 +772,8 @@ function showResult(){
   (function restoreRejoin(){
   const saved=loadRejoin();
   if(!saved)return;
+  // Scanned a QR for a different session: forget the old one so the new code is used
+  if(urlCode&&saved.code!==urlCode){clearRejoin();return}
   playerCode=saved.code||'';
   playerName=saved.name||'';
   rejoinToken=saved.token||'';
@@ -777,8 +797,8 @@ if(socket.connected)onPlayConnect();
   try{
     const params = new URLSearchParams(window.location.search);
     const c = params.get('code');
-    if(c && codeInput && !codeInput.value){
-      codeInput.value = c;
+    if(c && codeInput && codeInput.value!==c.trim().slice(0,3)){
+      codeInput.value = c.trim().slice(0,3);
       // focus name next
       setTimeout(()=> nameInput && nameInput.focus(), 50);
     }
@@ -790,7 +810,7 @@ socket.on('joined',(data)=>{
   if(data.error){
     clearRejoin();
     playerCode='';
-    if(codeInput)codeInput.value='';
+    if(codeInput)codeInput.value=urlCode||'';
     nameOverlay.classList.remove('hidden');
     joinError.textContent=data.error;
     joinError.classList.remove('hidden');

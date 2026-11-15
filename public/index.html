@@ -93,6 +93,7 @@
     .lobby.in-progress .btn-start,.lobby.open .btn-start{background:linear-gradient(135deg,#475569,#334155);box-shadow:none}
     .lobby.free .btn-start{background:linear-gradient(135deg,#10b981,#047857);box-shadow:0 8px 28px rgba(16,185,129,.4)}
     .lobby .alt{display:block;margin-top:10px;text-align:right;font-size:12px;color:rgba(255,255,255,.55);text-decoration:underline}
+    .hint kbd{display:inline-block;min-width:22px;padding:1px 7px;margin:0 2px;border-radius:5px;border:1px solid rgba(255,255,255,.45);border-bottom-width:2px;background:rgba(255,255,255,.1);font:700 13px/1.4 inherit;color:#fff;text-align:center}
     .hint,.join{text-shadow:0 1px 6px rgba(0,0,0,.9);background:rgba(15,17,23,.6);border-radius:10px;padding:8px 14px;display:inline-block}
     .join{margin-top:12px;font-size:13px;color:rgba(255,255,255,.7)}
     .join input{width:90px;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,.25);background:rgba(15,17,23,.7);color:#fff;text-align:center;font-size:16px;letter-spacing:2px;margin:0 6px}
@@ -106,7 +107,7 @@
   <div class="stage">
     <div class="content">
       <div class="lobbies" id="lobbies"><div class="hint">Checking lobbies…</div></div>
-      <div class="hint">Facilitators: pick a free lobby to host. Players scan the QR code on the dashboard.</div>
+      <div class="hint">Facilitator shortcut: press <kbd>F</kbd> on the dashboard for fullscreen</div>
       <form class="join" id="join">Player? Enter your code:<input id="code" inputmode="numeric" maxlength="3" placeholder="123"><button type="submit">Join</button></form>
     </div>
   </div>
@@ -116,7 +117,7 @@ const LABEL={free:'Free','open':'Open — waiting for players','in-progress':'In
 function card(l){
   let detail='Ready to host';
   if(l.state==='open')detail=l.players+' player'+(l.players===1?'':'s')+' in the lobby'+(l.hostAway?' · host reconnecting':'');
-  if(l.state==='in-progress')detail='Round '+Math.max(1,l.round)+' of '+l.maxRounds+' · '+l.players+' player'+(l.players===1?'':'s')+(l.hostAway?' · host reconnecting':'');
+  if(l.state==='in-progress')detail=(l.phase==='gameover'?'Final scores':'Round '+Math.min(Math.max(1,l.round),l.maxRounds)+' of '+l.maxRounds)+' · '+l.players+' player'+(l.players===1?'':'s')+(l.hostAway?' · host reconnecting':'');
   const href='/dashboard.html?room='+encodeURIComponent(l.id);
   const busy=l.state!=='free';
   const label=l.state==='free'?'Host '+l.name:(l.state==='open'?'In use — pick another':'Game running — pick another');
