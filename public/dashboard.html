@@ -626,12 +626,12 @@ function renderCards(players){
     const readyClass=!p.eliminated&&currentPhase==='selecting'&&p.selected&&p.selected.length>=p.maxSelect?' ready':'';
     const priReady=currentPhase==='priority'&&p.priority&&p.priority.length===3?' ready':'';
     const elimClass=p.eliminated?' eliminated':'';
-    const status = p.eliminated ? 'Eliminated' : (currentPhase==='priority'?(p.priority&&p.priority.length===3?'Ready':'Waiting'):(p.selected.length+'/'+p.maxSelect));
+    const status = p.eliminated ? 'Eliminated' : (currentPhase==='priority'?(p.priority&&p.priority.length===3?'Ready':'Waiting'):'');
     return `<div class="card ${currentPhase==='selecting'?'playing':currentPhase==='gameover'?(p.budget>0?'done':'bankrupt'):''}${readyClass}${priReady}${elimClass}" data-id="${esc(p.id)}">
       <div class="card-header">
         <div class="card-name">${esc(p.name)}</div>
         <div class="card-header-left">
-          <div class="card-status ${p.eliminated?'':currentPhase==='priority'?'intro':currentPhase==='selecting'?'playing':''}">${status}</div>${!p.connected?'<div class="dc-badge">DISCONNECTED</div>':''}
+          ${status?`<div class="card-status ${p.eliminated?'':currentPhase==='priority'?'intro':currentPhase==='selecting'?'playing':''}">${status}</div>`:''}${!p.connected?'<div class="dc-badge">DISCONNECTED</div>':''}
         </div>
       </div>
       <div class="card-body">
