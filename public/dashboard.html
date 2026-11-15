@@ -72,10 +72,17 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .lobby-qr .info-bullets{display:flex;flex-direction:column;gap:18px}
 .lobby-qr .info-bullet{display:flex;align-items:flex-start;gap:14px;font-size:20px;color:var(--text2);line-height:1.5}
 .lobby-qr .info-bullet .bullet-num{flex-shrink:0;width:36px;height:36px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:16px}
-.lobby-qr .qr-label{font-size:24px;font-weight:800;margin-bottom:16px;color:var(--text)}
-.lobby-qr #lobby-qr-code canvas{border-radius:16px;background:#fff;padding:16px;box-shadow:0 4px 20px rgba(0,0,0,.2)}
-.lobby-qr .qr-code-big{font-size:48px;font-weight:900;letter-spacing:8px;margin:12px 0 4px;background:var(--accent-light);color:var(--accent2);padding:10px 32px;border-radius:14px}
-.lobby-qr .qr-sub{font-size:16px;color:var(--text2);margin-top:8px}
+.lobby-qr .join-card{display:flex;flex-direction:column;align-items:center;gap:14px;background:var(--card);border:1px solid var(--border);border-radius:24px;padding:28px 36px 24px;box-shadow:0 10px 40px rgba(0,0,0,.25)}
+.join-kicker{font-size:13px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent2)}
+.lobby-qr .qr-label{font-size:26px;font-weight:900;color:var(--text);margin-top:-6px}
+.lobby-qr .join-card img{width:260px;height:260px;border-radius:16px;background:#fff;padding:10px}
+.join-or{font-size:13px;color:var(--text3);letter-spacing:1px;text-transform:uppercase}
+.qr-digits{display:flex;gap:10px}
+.qr-digits span{width:62px;height:78px;display:flex;align-items:center;justify-content:center;border-radius:12px;background:var(--accent-light);color:var(--accent2);font-size:46px;font-weight:900;font-variant-numeric:tabular-nums}
+.join-wait{display:flex;align-items:center;gap:10px;margin-top:22px;font-size:16px;color:var(--text2)}
+.join-wait i{width:10px;height:10px;border-radius:50%;background:var(--green);animation:joinPulse 1.4s ease-in-out infinite}
+@keyframes joinPulse{50%{opacity:.25}}
+.lobby-qr .qr-sub{font-size:14px;color:var(--text2)}
 .qr-link-btn{margin-top:10px;width:38px;height:38px;border-radius:50%;border:1px solid var(--border);background:var(--card2);color:var(--text2);font-size:17px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s}
 .qr-link-btn:hover{background:var(--accent-light);color:var(--accent2);border-color:var(--accent)}
 .qr-link-url{margin-top:8px;max-width:320px;padding:8px 12px;font-size:13px;color:var(--text2);background:var(--card2);border:1px solid var(--border);border-radius:8px;word-break:break-all;text-align:center;line-height:1.4}
@@ -105,17 +112,26 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .qr-full-code{font-size:64px;font-weight:900;letter-spacing:10px;color:#fff}
 .qr-full-hint{font-size:16px;color:rgba(255,255,255,.6)}
 .lobby-qr img,.qr-popup img{cursor:pointer}
-.qr-popup-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:32px 40px;display:flex;flex-direction:column;align-items:center;gap:12px}
-.qr-popup-top{display:flex;gap:40px;align-items:flex-start}
-.qr-popup-left{display:flex;flex-direction:column;align-items:center;gap:10px}
-.qr-popup-right{display:flex;flex-direction:column;gap:10px;min-width:220px}
-.qr-popup-label{font-size:24px;font-weight:800;color:var(--text)}
-.qr-popup-code{font-size:48px;font-weight:900;letter-spacing:8px;background:var(--accent-light);color:var(--accent2);padding:10px 32px;border-radius:14px}
-.qr-popup-sub{font-size:16px;color:var(--text2)}
-.qr-popup-players-label{font-size:18px;font-weight:700;color:var(--text);margin-bottom:4px}
-.qr-popup-players{display:flex;flex-direction:column;gap:6px;max-height:320px;overflow-y:auto}
-.qr-popup-players .qp-row{display:flex;align-items:center;gap:10px;background:var(--card2);border-radius:var(--radius-sm);padding:10px 14px;font-size:16px;color:var(--text)}
-.qr-popup-players .qp-num{font-weight:800;color:var(--accent2);min-width:24px}
+.qr-popup-card{background:var(--card);border:1px solid var(--border);border-radius:24px;padding:0;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.4);overflow:hidden;max-width:min(860px,94vw)}
+.qr-popup-top{display:flex;align-items:stretch}
+.qr-popup-left{display:flex;flex-direction:column;align-items:center;gap:12px;padding:32px 36px;background:var(--card2);border-right:1px solid var(--border)}
+.qr-popup-right{display:flex;flex-direction:column;gap:12px;min-width:320px;padding:28px 28px 24px}
+.qr-popup-label{font-size:24px;font-weight:900;color:var(--text)}
+.qr-popup-code{display:flex;gap:8px}
+.qr-popup-code span{width:48px;height:60px;display:flex;align-items:center;justify-content:center;border-radius:10px;background:var(--accent-light);color:var(--accent2);font-size:36px;font-weight:900}
+.qr-popup-sub{font-size:14px;color:var(--text2);text-align:center}
+.qp-head{display:flex;align-items:center;justify-content:space-between}
+.qr-popup-players-label{font-size:18px;font-weight:800;color:var(--text)}
+.qp-count{min-width:28px;text-align:center;font-size:14px;font-weight:800;padding:3px 10px;border-radius:999px;background:var(--accent-light);color:var(--accent2)}
+.qr-popup-players{display:flex;flex-direction:column;gap:6px;flex:1;min-height:120px;max-height:300px;overflow-y:auto}
+.qp-empty{color:var(--text3);font-size:14px;padding:16px 4px}
+.qr-popup-players .qp-row{display:flex;align-items:center;gap:10px;background:var(--card2);border-radius:var(--radius-sm);padding:8px 8px 8px 14px;font-size:16px;color:var(--text)}
+.qr-popup-players .qp-name{flex:1;min-width:0;overflow-wrap:anywhere;line-height:1.2}
+.qr-popup-players .qp-row.off{opacity:.55}
+.qp-remove{flex-shrink:0;width:28px;height:28px;border:none;border-radius:50%;background:none;color:var(--text3);font-size:15px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s}
+.qp-remove:hover{background:rgba(239,68,68,.15);color:var(--red)}
+.qp-hint{font-size:12px;color:var(--text3);text-align:center}
+@media (max-width:760px){.qr-popup-top{flex-direction:column}.qr-popup-left{border-right:none;border-bottom:1px solid var(--border)}.qr-popup-right{min-width:0}}
 .controls-bar{position:fixed;bottom:0;left:0;right:0;z-index:120;background:var(--card);border-top:1px solid var(--border);padding:12px 32px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-shrink:0}
 .controls-left{display:flex;align-items:center;gap:16px}
 .controls-center{display:flex;align-items:center;gap:8px;flex:1;justify-content:center;padding:0 16px}
@@ -202,7 +218,10 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 @media (max-width:900px){.go-wrap{grid-template-columns:minmax(0,1fr)}}
 .priority-overlay{position:fixed;inset:0;background:rgba(0,0,0,.92);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:1000}
 .priority-overlay.hidden{display:none}
-.po-title{font-size:28px;font-weight:900;color:#fff;margin-bottom:24px}
+.po-title{font-size:28px;font-weight:900;color:#fff;margin-bottom:8px}
+.po-timer{font-size:48px;font-weight:900;font-variant-numeric:tabular-nums;color:#fff;margin-bottom:20px}
+.po-timer.warning{color:var(--orange)}
+.po-timer.danger{color:var(--red)}
 .po-charts{display:flex;flex-direction:column;gap:20px;align-items:center;width:100%;max-width:700px;margin:0 auto}
 .po-chart-box{width:100%;text-align:center}
 .ctrl-btn.glow{animation:btnGlow 1.5s ease-in-out infinite alternate}
@@ -313,16 +332,17 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
     <div class="qr-popup-top">
       <div class="qr-popup-left">
         <div class="qr-popup-label">Scan to join</div>
-        <img id="qr-popup-img" class="js-open-qr" src="" alt="QR code to join" style="width:260px;height:260px;border-radius:16px;background:white;padding:8px;box-shadow:0 4px 20px rgba(0,0,0,0.3);">
+        <img id="qr-popup-img" class="js-open-qr" src="" alt="QR code to join" style="width:240px;height:240px;border-radius:16px;background:white;padding:10px;">
         <div class="qr-popup-code" id="qr-popup-code"></div>
-        <div class="qr-popup-sub">Players scan this to enter the game</div>
+        <div class="qr-popup-sub">Or enter the code on the player page</div>
       </div>
       <div class="qr-popup-right">
-        <div class="qr-popup-players-label">Players joined</div>
+        <div class="qp-head"><div class="qr-popup-players-label">Players joined</div><span class="qp-count" id="qp-count">0</span></div>
         <div class="qr-popup-players" id="qr-popup-players"></div>
+        <button class="ctrl-btn primary" id="qr-popup-start" style="font-size:18px;padding:14px 24px;width:100%">Start Game</button>
+        <div class="qp-hint" id="qp-hint"></div>
       </div>
     </div>
-    <button class="ctrl-btn primary" id="qr-popup-start" style="font-size:18px;padding:14px 48px;margin-top:8px">Start game and select priorities</button>
   </div>
 </div>
 <div class="controls-bar">
@@ -378,6 +398,7 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 </div>
 <div class="priority-overlay hidden" id="priority-overlay">
   <div class="po-title">Priority Selections</div>
+  <div class="po-timer" id="po-timer">02:00</div>
   <div class="po-charts" id="po-charts"></div>
   <div style="display:flex;gap:12px;margin-top:16px">
     <button class="ctrl-btn secondary" id="btn-show-priority" style="font-size:18px;padding:12px 32px">Show</button>
@@ -461,15 +482,17 @@ function setQr(img,code){
   img.dataset.code=code;
   img.src=src;
 }
+function codeDigits(code){return String(code||'').split('').map(d=>`<span>${esc(d)}</span>`).join('')}
 function refreshSessionQr(){
   if(!currentSessionCode)return;
   document.querySelectorAll('.js-open-qr,#qr-full-img,#qr-popup-img').forEach(img=>setQr(img,currentSessionCode));
   const big=document.querySelector('.qr-code-big');
-  if(big)big.textContent=currentSessionCode;
-  if(qrPopupCode)qrPopupCode.textContent=currentSessionCode;
+  if(big)big.innerHTML=codeDigits(currentSessionCode);
+  if(qrPopupCode)qrPopupCode.innerHTML=codeDigits(currentSessionCode);
   const full=$('qr-full-code');
   if(full)full.textContent=currentSessionCode;
 }
+let priorityDuration=120;
 let facilitatorOk=false;
 let showWelcome=false;
 function openQrFull(){
@@ -556,8 +579,10 @@ function updateQrPopup(){
   if(showWelcome){qrPopup.classList.add('hidden');return}
   if(currentPhase==='lobby'&&currentSessionCode&&lastPlayers.length>0){
     setQr(qrPopupImg,currentSessionCode);
-    qrPopupCode.textContent=currentSessionCode;
-    qrPopupPlayers.innerHTML=lastPlayers.map((p,i)=>`<div class="qp-row"><span class="qp-num">${i+1}.</span><span>${esc(p.name)}</span></div>`).join('');
+    qrPopupCode.innerHTML=codeDigits(currentSessionCode);
+    qrPopupPlayers.innerHTML=lastPlayers.map(p=>`<div class="qp-row${p.connected?'':' off'}"><span class="qp-name">${esc(p.name)}</span><button class="qp-remove" data-id="${esc(p.id)}" title="Remove player" aria-label="Remove ${esc(p.name)}">✕</button></div>`).join('');
+    $('qp-count').textContent=lastPlayers.length;
+    $('qp-hint').textContent='Players get '+(priorityDuration%60===0?(priorityDuration/60)+' minute'+(priorityDuration===60?'':'s'):priorityDuration+' seconds')+' to set their priorities, then Round 1 starts.';
     qrPopupStart.disabled=false;
     qrPopupStart.textContent='Start Game';
     qrPopup.classList.remove('hidden');
@@ -597,12 +622,16 @@ function renderCards(players){
             <button class="inst-btn" id="inst-btn">Full Instructions</button>
           </div>
           <div class="qr-side">
-            <div class="qr-label">Scan to join</div>
-            <img class="js-open-qr" src="${qrImg}" alt="QR code to join" style="width:280px;height:280px;border-radius:16px;background:white;padding:8px;box-shadow:0 4px 20px rgba(0,0,0,0.3);">
-            <div class="qr-code-big">${currentSessionCode}</div>
-            <div class="qr-sub">Players scan this to enter the game</div>
-            <button class="qr-link-btn" id="lobby-link-btn" title="Show player link">🔗</button>
-            <div class="qr-link-url ${lobbyUrlShown?'':'hidden'}" id="lobby-link-url">${lobbyUrlShown?lobbyJoinUrl():''}</div>
+            <div class="join-card">
+              <div class="join-kicker">Lobby ${esc(ROOM)}</div>
+              <div class="qr-label">Scan to join</div>
+              <img class="js-open-qr" src="${qrImg}" alt="QR code to join">
+              <div class="join-or">or enter the code</div>
+              <div class="qr-code-big qr-digits">${codeDigits(currentSessionCode)}</div>
+              <button class="qr-link-btn" id="lobby-link-btn" title="Show player link">🔗</button>
+              <div class="qr-link-url ${lobbyUrlShown?'':'hidden'}" id="lobby-link-url">${lobbyUrlShown?lobbyJoinUrl():''}</div>
+            </div>
+            <div class="join-wait"><i></i>Waiting for players to join</div>
           </div>
         </div>
       `;
@@ -685,8 +714,9 @@ function updateButtons(gs){
   btnNextRound.style.display='none';
   btnPriorityCharts.style.display='none';
   btnPriorityCharts.classList.remove('glow');
-  timerDec.style.display=gs.phase==='selecting'?'':'none';
-  timerInc.style.display=gs.phase==='selecting'?'':'none';
+  const adjustable=gs.phase==='selecting'||gs.phase==='priority';
+  timerDec.style.display=adjustable?'':'none';
+  timerInc.style.display=adjustable?'':'none';
   if(gs.phase==='lobby'){
     btnStartGame.style.display='';
     btnStartGame.disabled=false;
@@ -941,6 +971,8 @@ socket.on('game-state',(gs)=>{
   currentPhase=gs.phase;
   currentRound=gs.round||0;
   currentAttack=gs.currentAttack;
+  if(typeof gs.priorityDuration==='number')priorityDuration=gs.priorityDuration;
+  if(gs.phase==='priority'&&typeof gs.priorityRemaining==='number')paintPriorityTimer(gs.priorityRemaining);
   updatePhase(gs);
   updateButtons(gs);
   sessionCode.textContent=gs.sessionCode?('LOBBY '+ROOM+' · '+gs.sessionCode):'';
@@ -1019,6 +1051,16 @@ socket.on('players-update',(players)=>{
   }
 });
 
+function paintPriorityTimer(sec){
+  if(currentPhase!=='priority')return;
+  const cls=sec<=10?' danger':sec<=30?' warning':'';
+  dashTimer.textContent=formatTime(Math.max(0,sec));
+  dashTimer.className='dash-timer'+cls;
+  const po=$('po-timer');
+  if(po){po.textContent=formatTime(Math.max(0,sec));po.className='po-timer'+cls}
+  if(sec===15)playDashWarningChime();
+}
+socket.on('priority-timer',paintPriorityTimer);
 socket.on('timer-update',(remaining)=>{
   dashTimer.textContent=formatTime(remaining);
   dashTimer.className='dash-timer'+(remaining<=10?' danger':remaining<=30?' warning':'');
@@ -1049,6 +1091,10 @@ document.addEventListener('click',(e)=>{
   }
   if(e.target.closest('.js-open-qr')){openQrFull();return}
   if(e.target.closest('#qr-full'))closeQrFull();
+});
+qrPopupPlayers.addEventListener('click',(e)=>{
+  const btn=e.target.closest('.qp-remove');
+  if(btn)socket.emit('remove-player',btn.dataset.id);
 });
 qrPopupStart.addEventListener('click',()=>{
   qrPopupStart.disabled=true;

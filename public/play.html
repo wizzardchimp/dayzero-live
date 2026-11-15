@@ -106,6 +106,11 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .priority-card{background:var(--bg2);border-radius:var(--radius);padding:24px 16px;box-shadow:var(--shadow-lg);text-align:center;max-width:400px;width:92%}
 .priority-card h2{font-size:22px;font-weight:800;margin-bottom:8px;color:var(--text)}
 .priority-card .p-intro{color:var(--text2);font-size:15px;margin-bottom:4px;line-height:1.5}
+.p-timer{font-size:34px;font-weight:900;font-variant-numeric:tabular-nums;margin:2px 0 10px;color:var(--text)}
+.p-timer small{display:block;font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);margin-bottom:2px}
+.p-timer.hidden{display:none}
+.p-timer.warning{color:var(--orange)}
+.p-timer.danger{color:var(--red)}
 .p-caption{color:var(--text3);font-size:14px;margin-bottom:16px;font-weight:500}
 .priority-clear{background:transparent;border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 16px;font-size:14px;font-weight:600;color:var(--text3);cursor:pointer;transition:all .15s;margin-bottom:10px;width:100%;min-height:44px}
 .priority-clear:active{color:var(--red);border-color:var(--red);background:var(--red-light)}
@@ -286,6 +291,7 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 <div class="priority-overlay hidden" id="priority-overlay">
   <div class="priority-card">
     <h2>Your Priority</h2>
+    <div class="p-timer" id="p-timer"><small>Round 1 starts in</small><span id="p-timer-val">02:00</span></div>
     <p class="p-intro">What is your first priority for the function of your organisation?</p>
     <p class="p-caption">Tap each item in order of importance — first tap is 1st priority</p>
     <div id="priority-list"></div>
@@ -298,6 +304,7 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
   <div class="wo-icon">⏳</div>
   <div class="wo-text" id="wo-text">Waiting for next round...</div>
   <div class="wo-sub" id="wo-sub">The dashboard operator will start the next round shortly</div>
+  <div class="p-timer hidden" id="wo-timer"><small>Round 1 starts in</small><span id="wo-timer-val">02:00</span></div>
   <div class="wo-picks" id="wo-picks"></div>
 </div>
 <div class="wheel-overlay hidden" id="wheel-overlay">
@@ -475,6 +482,7 @@ prioritySubBtn.addEventListener('click',()=>{
   if(lastGameState&&lastGameState.phase==='selecting'){
     renderPhase(lastGameState);
     if(typeof lastGameState.timerRemaining==='number')paintTimer(lastGameState.timerRemaining);
+    maybeShowRoundIntro(lastGameState); // late priorities: straight on to the instructions before picking defences
     return;
   }
   waitingOverlay.classList.remove('hidden');
@@ -482,6 +490,26 @@ prioritySubBtn.addEventListener('click',()=>{
   woSub.textContent='Waiting for the round to start...';
 });
 
+function maybeShowRoundIntro(gs){
+  if(!gs||gs.phase!=='selecting'||(myData&&myData.eliminated)||roundIntroShown===gs.round)return;
+  const n=gs.round===3?1:2;
+  riRound.textContent=`ROUND ${gs.round}`;
+  riTitle.textContent=`Select ${n} defence${n>1?'s':''}`;
+  riSub.textContent=n===1?'Choose 1 defence to deploy this round. Once locked in, you cannot change your selection.':'Choose 2 defences to deploy this round. Once locked in, you cannot change your selection.';
+  roundIntroOverlay.classList.remove('hidden');
+  roundIntroShown=gs.round;
+}
+function paintPriorityTimer(sec){
+  const inPrio=!!(lastGameState&&lastGameState.phase==='priority');
+  const label=formatTime(Math.max(0,sec||0));
+  const cls=sec<=10?' danger':sec<=30?' warning':'';
+  [['p-timer','p-timer-val'],['wo-timer','wo-timer-val']].forEach(([w,v])=>{
+    const el=$(w);if(!el)return;
+    $(v).textContent=label;
+    el.className='p-timer'+cls+(inPrio?'':' hidden');
+  });
+  if(inPrio&&sec===10)playBeep();
+}
 function defName(id){const d=DEFENCES.find(x=>x.id===id);return d?d.name:id}
 function formatTime(s){const m=Math.floor(s/60),sec=s%60;return `${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`}
 
@@ -803,6 +831,7 @@ socket.on('joined',(data)=>{
 socket.on('game-state',(gs)=>{
   const prevPhase=lastGameState&&lastGameState.phase;
   lastGameState=gs;
+  paintPriorityTimer(typeof gs.priorityRemaining==='number'?gs.priorityRemaining:0);
   if(gs.phase!=='reveal'&&gs.phase!=='spinning')clearTimeout(revealTimer);
   if(gs.phase==='priority'){
     if(prevPhase!=='priority'){
@@ -833,16 +862,7 @@ socket.on('game-state',(gs)=>{
     }else{
       renderPhase(gs);
       if(typeof gs.timerRemaining==='number')paintTimer(gs.timerRemaining);
-      if(!myData||!myData.eliminated){
-        if(roundIntroShown!==gs.round){
-          const n=gs.round===3?1:2;
-          riRound.textContent=`ROUND ${gs.round}`;
-          riTitle.textContent=`Select ${n} defence${n>1?'s':''}`;
-          riSub.textContent=n===1?'Choose 1 defence to deploy this round. Once locked in, you cannot change your selection.':'Choose 2 defences to deploy this round. Once locked in, you cannot change your selection.';
-          roundIntroOverlay.classList.remove('hidden');
-          roundIntroShown=gs.round;
-        }
-      }
+      maybeShowRoundIntro(gs);
     }
   }else if(gs.phase==='spinning'){
     document.querySelector('.main').classList.remove('selecting');
@@ -909,6 +929,7 @@ function paintTimer(remaining){
     headerTimer.className='header-timer'+(headerTimer.classList.contains('hidden')?' hidden':'')+cls;
   }
 }
+socket.on('priority-timer',paintPriorityTimer);
 socket.on('timer-update',(remaining)=>{
   paintTimer(remaining);
   if(remaining===15||remaining===5)playBeep();

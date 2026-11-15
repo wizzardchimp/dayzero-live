@@ -33,7 +33,7 @@ The home page shows **Lobby A** and **Lobby B**, each with a live status: 🟢 F
 
 ## 2. Game Flow (per round)
 
-1. **Priority Phase** — Players rank 3 priorities (Money, Data, Maintain Services). Faster = bonus points.
+1. **Priority Phase** — Players rank 3 priorities (Money, Data, Maintain Services) against a **2 minute timer** shown on the dashboard and every phone. Round 1 starts automatically when it ends, or sooner if you press Start Round 1. Use − / + to adjust the time (`PRIORITY_TIMER` sets the default, in seconds). A player who hasn't chosen yet can still do it once Round 1 starts, and is then taken straight to the instructions before picking defences.
 2. **Selecting Phase** — 120s timer. Players pick defences to deploy this round. Defences carry over.
 3. **Spinning** — Wheel spins for about 5.5s (drumroll is ~6.5s). One attack is revealed, pre-drawn so each round is from a different priority bucket.
 4. **Reveal** — Each player sees if they blocked or were breached. ICO fine of £100,000 imposed on breach.
@@ -45,7 +45,7 @@ The home page shows **Lobby A** and **Lobby B**, each with a live status: 🟢 F
 
 | Phase | What Happens | Player Action | Key Rules |
 |-------|-------------|---------------|-----------|
-| **Priority** | Players rank 3 priorities: 💰 Money, 💾 Data, ⚙️ Maintain Services | Tap each item in order, then confirm | 75% of score. Untimed. Each priority covers 3 attacks. |
+| **Priority** | Players rank 3 priorities: 💰 Money, 💾 Data, ⚙️ Maintain Services | Tap each item in order, then confirm | 75% of score. 2 minute timer; final once submitted. Each priority covers 3 attacks. |
 | **Select R1** | Choose **2 defences** to deploy | Tap cards to select | Carry over — all 2 carry into Round 2 |
 | **Select R2** | Choose **2 more defences** (2 carried from R1 = 4 active) | Tap cards to select | Carry over — all 4 carry into Round 3 |
 | **Select R3** | Choose **1 more defence** (4 carried = 5 active) | Tap cards to select | Final round. Eliminated players see red screen. |

@@ -26,6 +26,7 @@ app.use(express.static(path.join(__dirname, 'public'), {
 const LOBBY_IDS = (process.env.LOBBIES || 'A,B').split(',').map(s => s.trim().toUpperCase()).filter(Boolean);
 const HOST_GRACE_MS = Number(process.env.HOST_GRACE_MS) || 5 * 60 * 1000; // host may drop out this long without losing the game
 const TAKEOVER_AFTER_MS = Number(process.env.TAKEOVER_AFTER_MS) || 30 * 1000; // host must be gone this long before someone else may take over
+const PRIORITY_TIMER = Number(process.env.PRIORITY_TIMER) || 120; // seconds to set priorities before Round 1 starts itself
 const IDLE_RESET_MS = 60 * 60 * 1000; // 1 hour
 
 /* ---------- helpers ---------- */
@@ -71,6 +72,9 @@ class Room {
       timerDuration: DEFAULT_TIMER,
       timerRemaining: DEFAULT_TIMER,
       timerInterval: null,
+      priorityDuration: PRIORITY_TIMER,
+      priorityRemaining: PRIORITY_TIMER,
+      priorityInterval: null,
       currentAttack: null,
       usedAttacks: [],
       sessionCode: genUniqueCode(),
@@ -222,6 +226,8 @@ class Room {
       round: g.round,
       timerRemaining: g.timerRemaining,
       timerDuration: g.timerDuration,
+      priorityRemaining: g.priorityRemaining,
+      priorityDuration: g.priorityDuration,
       currentAttack: g.currentAttack,
       usedAttacks: g.usedAttacks,
       sessionCode: g.sessionCode,
@@ -369,6 +375,21 @@ class Room {
     this.emit('players-update', this.getPlayersData());
   }
 
+  startPriorityTimer() {
+    const game = this.game;
+    clearInterval(game.priorityInterval);
+    game.priorityRemaining = game.priorityDuration;
+    this.emit('priority-timer', game.priorityRemaining);
+    game.priorityInterval = setInterval(() => {
+      game.priorityRemaining--;
+      this.emit('priority-timer', Math.max(0, game.priorityRemaining));
+      if (game.priorityRemaining <= 0) {
+        clearInterval(game.priorityInterval);
+        if (game.phase === 'priority') this.startRound(); // time's up: Round 1 begins
+      }
+    }, 1000);
+  }
+
   startTimer() {
     const game = this.game;
     clearInterval(game.timerInterval);
@@ -439,6 +460,7 @@ class Room {
 
   startRound() {
     const game = this.game;
+    clearInterval(game.priorityInterval);
     game.round++;
     if (game.round > MAX_ROUNDS) {
       game.phase = 'gameover';
@@ -488,11 +510,14 @@ class Room {
     }
     Object.values(this.players).forEach(p => this.resetPlayer(p));
     this.broadcast();
+    this.startPriorityTimer();
   }
 
   resetGame() {
     const game = this.game;
     clearInterval(game.timerInterval);
+    clearInterval(game.priorityInterval);
+    game.priorityRemaining = game.priorityDuration;
     game.phase = 'lobby';
     game.round = 0;
     game.timerRemaining = DEFAULT_TIMER;
@@ -682,12 +707,17 @@ io.on('connection', (socket) => {
 
   socket.on('adjust-timer', (amount) => {
     const room = hostRoom();
-    if (!room || room.game.phase !== 'selecting') return;
+    if (!room) return;
     const g = room.game;
     const n = Number(amount) || 0;
-    g.timerDuration = Math.max(30, Math.min(600, g.timerDuration + n));
-    g.timerRemaining = Math.max(1, Math.min(600, g.timerRemaining + n));
-    room.emit('timer-update', g.timerRemaining);
+    if (g.phase === 'selecting') {
+      g.timerDuration = Math.max(30, Math.min(600, g.timerDuration + n));
+      g.timerRemaining = Math.max(1, Math.min(600, g.timerRemaining + n));
+      room.emit('timer-update', g.timerRemaining);
+    } else if (g.phase === 'priority') {
+      g.priorityRemaining = Math.max(5, Math.min(600, g.priorityRemaining + n));
+      room.emit('priority-timer', g.priorityRemaining);
+    }
   });
 
   socket.on('force-end', () => {
