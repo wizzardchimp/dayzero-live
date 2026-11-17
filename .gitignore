@@ -8,3 +8,6 @@ day-zero-live.json
 Officeguy.gif
 Winner.mp3
 cyber-range.html
+
+# Local log database (production uses the Railway volume)
+data/

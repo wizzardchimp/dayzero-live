@@ -4,6 +4,8 @@ const crypto = require('crypto');
 const { Server } = require('socket.io');
 const path = require('path');
 const QRCode = require('qrcode');
+const logger = require('./logger');
+const backup = require('./backup');
 const { ATTACKS, DEFENCES, EFFECTIVENESS, PRIORITY_MAP,
   ATTACK_COST, START_BUDGET, MAX_ROUNDS, SPIN_DURATION, DEFAULT_TIMER } = require('./public/shared');
 
@@ -58,6 +60,8 @@ function roomByCode(code) {
 }
 
 /* ---------- a single lobby / game session ---------- */
+logger.init();
+
 class Room {
   constructor(id) {
     this.id = id;
@@ -66,6 +70,7 @@ class Room {
     this.players = {};
     this.host = null; // { socketId, token, connected, graceTimer }
     this.lastActivity = Date.now();
+    this.sessionLog = null; // set while a game is running; written to the log when it ends
     this.game = {
       phase: 'lobby',
       round: 0,
@@ -104,6 +109,7 @@ class Room {
       h.socketId = socket.id;
       h.connected = true;
       h.awaySince = null;
+      logger.event('host-back', this.id, null);
       return { ok: true, token: h.token };
     }
     return { ok: false, busy: true, status: this.status() };
@@ -118,6 +124,7 @@ class Room {
     if (!h || h.socketId !== socket.id) return;
     h.connected = false;
     h.awaySince = Date.now();
+    logger.event('host-away', this.id, { phase: this.game.phase, players: Object.keys(this.players).length });
     if (this.game.phase === 'lobby' && Object.keys(this.players).length === 0) {
       this.releaseHost(); // nothing to protect
       return;
@@ -126,12 +133,12 @@ class Room {
     clearTimeout(h.graceTimer);
     h.graceTimer = setTimeout(() => {
       console.log(`[${this.id}] host did not return — releasing lobby`);
-      this.releaseHost();
+      this.releaseHost(false, 'host-left');
     }, HOST_GRACE_MS);
   }
 
   // Frees the lobby: ends any session and clears the host. A free lobby is always clean.
-  releaseHost(notify = false) {
+  releaseHost(notify = false, reason = 'host-released') {
     if (this.host) {
       clearTimeout(this.host.graceTimer);
       if (notify) {
@@ -140,7 +147,8 @@ class Room {
       }
     }
     this.host = null;
-    this.hardReset();
+    logger.event('lobby-released', this.id, { reason });
+    this.hardReset(reason);
   }
 
   // A lobby can only be taken from a host who has been disconnected for a while.
@@ -176,7 +184,8 @@ class Room {
     });
   }
 
-  hardReset() {
+  hardReset(reason = 'ended-by-host') {
+    this.finishSession(reason);
     this.flushPlayers();
     this.game.sessionCode = genUniqueCode();
     this.game.plannedAttacks = [];
@@ -199,6 +208,8 @@ class Room {
     p.priority = [];
     p.prioritySubmitTime = null;
     p.roundSelectTimes = [null, null, null];
+    p.latePriority = false;
+    p.disconnects = 0;
   }
 
   /* --- game logic --- */
@@ -375,6 +386,49 @@ class Room {
     this.emit('players-update', this.getPlayersData());
   }
 
+  // Writes the running session (if any) to the log. Player names are never stored:
+  // players are numbered by final rank only.
+  finishSession(outcome) {
+    const log = this.sessionLog;
+    if (!log) return;
+    this.sessionLog = null;
+    try {
+      const g = this.game;
+      const list = Object.values(this.players).map(p => ({ p, a: this.calculateAward(p) }))
+        .sort((x, y) => (y.a.score - x.a.score) || ((x.p.breaches || 0) - (y.p.breaches || 0)));
+      const players = list.map(({ p, a }, i) => {
+        const hist = p.roundHistory || [];
+        return {
+          idx: i + 1, score: a.score, award: a.award, budget: p.budget, breaches: p.breaches || 0,
+          eliminatedRound: p.eliminated ? Math.max(1, hist.length) : 0,
+          priority: p.priority || [], priorityPct: a.priorityPct, speedPct: a.speedPct || 0,
+          latePriority: !!p.latePriority, disconnects: p.disconnects || 0,
+          defences: [...(p.carriedOver || []), ...(p.selected || [])],
+          roundResults: hist.map(h => (h.blocked ? 1 : 0)),
+          selectSecs: (p.roundSelectTimes || []).map((t, r) => (t && g.roundStartTimes[r] ? Math.round((t - g.roundStartTimes[r]) / 1000) : null)),
+        };
+      });
+      const rounds = [];
+      for (let r = 0; r < g.usedAttacks.length; r++) {
+        const faced = Object.values(this.players).filter(p => (p.roundHistory || [])[r]);
+        if (!faced.length) continue;
+        rounds.push({
+          round: r + 1, attackId: faced[0].roundHistory[r].attackId, faced: faced.length,
+          blocked: faced.filter(p => p.roundHistory[r].blocked).length,
+        });
+      }
+      logger.recordSession({
+        id: log.id, lobby: this.id, startedAt: log.startedAt, endedAt: Date.now(), outcome,
+        playerCount: players.length, roundsPlayed: rounds.length,
+        durationSec: Math.round((Date.now() - log.startedAt) / 1000),
+        priorityExpired: log.priorityExpired, priorityDurationSec: g.priorityDuration, players, rounds,
+      });
+      logger.event('session-ended', this.id, { outcome, players: players.length, rounds: rounds.length });
+    } catch (err) {
+      console.error('Could not log session:', err.message);
+    }
+  }
+
   startPriorityTimer() {
     const game = this.game;
     clearInterval(game.priorityInterval);
@@ -385,7 +439,10 @@ class Room {
       this.emit('priority-timer', Math.max(0, game.priorityRemaining));
       if (game.priorityRemaining <= 0) {
         clearInterval(game.priorityInterval);
-        if (game.phase === 'priority') this.startRound(); // time's up: Round 1 begins
+        if (game.phase === 'priority') {
+          if (this.sessionLog) this.sessionLog.priorityExpired = true;
+          this.startRound(); // time's up: Round 1 begins
+        }
       }
     }, 1000);
   }
@@ -465,6 +522,7 @@ class Room {
     if (game.round > MAX_ROUNDS) {
       game.phase = 'gameover';
       this.broadcast();
+      this.finishSession('completed');
       this.logGameToSheet();
       return;
     }
@@ -509,12 +567,15 @@ class Room {
       [game.plannedAttacks[i], game.plannedAttacks[j]] = [game.plannedAttacks[j], game.plannedAttacks[i]];
     }
     Object.values(this.players).forEach(p => this.resetPlayer(p));
+    this.sessionLog = { id: crypto.randomUUID(), startedAt: Date.now(), priorityExpired: false };
+    logger.event('session-started', this.id, { players: Object.keys(this.players).length, priorityTimer: game.priorityDuration });
     this.broadcast();
     this.startPriorityTimer();
   }
 
   resetGame() {
     const game = this.game;
+    this.finishSession('returned-to-lobby'); // no-op if the session already finished
     clearInterval(game.timerInterval);
     clearInterval(game.priorityInterval);
     game.priorityRemaining = game.priorityDuration;
@@ -545,7 +606,7 @@ setInterval(() => {
       if (room.host && room.host.connected) return; // host still looking at results
     }
     console.log(`[${room.id}] Idle timeout (${IDLE_RESET_MS / 60000} min) reached — releasing lobby`);
-    room.releaseHost(true);
+    room.releaseHost(true, 'idle-timeout');
   });
 }, 60000);
 
@@ -594,6 +655,7 @@ io.on('connection', (socket) => {
     const claim = room.claimHost(socket, token);
     if (!claim.ok) return reply({ ok: true, busy: true, status: claim.status });
     socket.data.facilitator = true;
+    logger.event('host-claimed', room.id, null);
     room.broadcast();
     reply({ ok: true, hostToken: claim.token });
   });
@@ -606,7 +668,8 @@ io.on('connection', (socket) => {
     if (!room.host) return reply({ ok: false, reason: 'free' });
     if (!room.canTakeOver()) return reply({ ok: false, reason: 'host-active', status: room.status() });
     console.log(`[${room.id}] Lobby taken over by a new host`);
-    room.releaseHost(true);
+    logger.event('lobby-taken-over', room.id, null);
+    room.releaseHost(true, 'taken-over');
     const claim = room.claimHost(socket, null);
     socket.data.facilitator = true;
     room.broadcast();
@@ -640,6 +703,7 @@ io.on('connection', (socket) => {
     const room = roomByCode(code);
     if (!room || !room.host) {
       // A lobby with no host is free, so any code it once had is dead.
+      logger.event('join-bad-code', null, null);
       socket.emit('joined', { id: socket.id, error: 'Invalid session code' });
       return;
     }
@@ -670,6 +734,7 @@ io.on('connection', (socket) => {
     }
     if (game.phase !== 'lobby' && game.phase !== 'priority') {
       // New players can't join once Round 1 has started (existing players can still reconnect above).
+      logger.event('join-refused-late', room.id, { phase: game.phase });
       socket.emit('joined', { id: socket.id, error: 'This game has already started — wait for the next one' });
       return;
     }
@@ -799,6 +864,7 @@ io.on('connection', (socket) => {
     if (!priority.every(v => validPriorities.includes(v))) return;
     if (p.priority && p.priority.length === 3) return; // priorities are final once submitted
     p.priority = priority;
+    if (room.game.phase === 'selecting') p.latePriority = true; // set after Round 1 had started
     if (!p.prioritySubmitTime && room.game.priorityStartTime) {
       p.prioritySubmitTime = Date.now();
     }
@@ -826,13 +892,44 @@ io.on('connection', (socket) => {
     if (p) {
       console.log(`[${room.id}] ${p.name} disconnected`);
       p.connected = false;
+      p.disconnects = (p.disconnects || 0) + 1;
       room.broadcast();
     }
   });
 });
 
+// Server health sample every 5 minutes, plus one at start-up
+function sampleHealth() {
+  const rs = [...rooms.values()];
+  logger.healthSample({
+    uptimeSec: Math.round(process.uptime()),
+    rssMb: Math.round(process.memoryUsage().rss / 1048576),
+    sockets: io.engine ? io.engine.clientsCount : 0,
+    activeLobbies: rs.filter(r => r.host).length,
+    players: rs.reduce((n, r) => n + Object.keys(r.players).length, 0),
+  });
+}
+setInterval(sampleHealth, 5 * 60 * 1000);
+
+// A redeploy sends SIGTERM: record any running games as interrupted before exiting.
+let shuttingDown = false;
+function shutdown(signal) {
+  if (shuttingDown) return;
+  shuttingDown = true;
+  console.log(`${signal} received — saving running sessions`);
+  rooms.forEach(r => r.finishSession('server-restart'));
+  logger.event('server-stop', null, { signal });
+  logger.close();
+  process.exit(0);
+}
+process.on('SIGTERM', () => shutdown('SIGTERM'));
+process.on('SIGINT', () => shutdown('SIGINT'));
+
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, '0.0.0.0', () => {
+  logger.event('server-start', null, { lobbies: LOBBY_IDS });
+  sampleHealth();
+  backup.start();
   console.log(`Day Zero Live running on http://localhost:${PORT} — lobbies: ${LOBBY_IDS.join(', ')}`);
   const os = require('os');
   const ifaces = os.networkInterfaces();
