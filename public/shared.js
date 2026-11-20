@@ -40,6 +40,14 @@ const PRIORITY_MAP={
 };
 const PRIORITY_EMOJIS={'Money':'💰','Data':'💾','Maintain Services':'⚙️'};
 
+// Which priorities each defence protects (Money, Data, Maintain Services), worked out
+// from the attacks it counters. Shown as tags on the phone and used in the guides.
+const PRIORITY_ORDER=['Money','Data','Maintain Services'];
+const DEFENCE_PRIORITIES={};
+DEFENCES.forEach(d=>{
+  DEFENCE_PRIORITIES[d.id]=PRIORITY_ORDER.filter(p=>d.counters.some(a=>PRIORITY_MAP[p].includes(a)));
+});
+
 const ATTACK_COST=100000;
 const START_BUDGET=200000;
 const MAX_ROUNDS=3;
@@ -48,7 +56,7 @@ const DEFAULT_TIMER=120;
 
 const GAME_DATA={
   ATTACKS,DEFENCES,EFFECTIVENESS,
-  PRIORITY_MAP,PRIORITY_EMOJIS,
+  PRIORITY_MAP,PRIORITY_EMOJIS,PRIORITY_ORDER,DEFENCE_PRIORITIES,
   ATTACK_COST,START_BUDGET,MAX_ROUNDS,SPIN_DURATION,DEFAULT_TIMER
 };
 

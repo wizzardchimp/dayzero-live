@@ -56,20 +56,20 @@ The home page shows **Lobby A** and **Lobby B**, each with a live status: 🟢 F
 
 ## 4. Defence → Attack Effectiveness
 
-| Defence | 🎣 Phish | 🦠 Mal | 🔒 Ransom | 🌊 DDoS | 💉 SQL | ⚡ 0-Day | 🏢 Insider | 📤 Exfil | 🎭 Social |
-|---------|---------|--------|----------|---------|--------|---------|-----------|---------|----------|
-| 🛡️ Firewall | ✅ | — | — | ✅ | — | — | — | — | — |
-| 💻 Endpoint | — | ✅ | ✅ | — | — | — | — | — | — |
-| 🔐 MFA | — | — | — | — | — | — | — | — | ✅ |
-| 🔒 Encryption | — | — | ✅ | — | — | — | — | — | — |
-| 🔀 Segmentation | — | — | — | — | ✅ | — | ✅ | — | — |
-| 💾 Backup | — | — | ✅ | ✅ | — | — | — | — | — |
-| 👁️ Threat Det. | ✅ | — | — | — | — | ✅ | — | — | — |
-| 🔑 Passwords | — | — | — | — | ✅ | — | — | — | ✅ |
-| 📚 Training | — | ✅ | — | — | — | — | — | — | ✅ |
-| 📊 Monitoring | — | — | — | — | — | ✅ | — | ✅ | — |
-| 🔑 Passkeys | ✅ | — | — | — | — | — | — | — | ✅ |
-| 📋 Policy & Procedure | — | — | — | — | — | — | ✅ | ✅ | — |
+| Defence | Protects | 🎣 Phish | 🦠 Mal | 🔒 Ransom | 🌊 DDoS | 💉 SQL | ⚡ 0-Day | 🏢 Insider | 📤 Exfil | 🎭 Social |
+|---------|----------|---------|--------|----------|---------|--------|---------|-----------|---------|----------|
+| 🛡️ Firewall | 💾 ⚙️ | ✅ | — | — | ✅ | — | — | — | — | — |
+| 💻 Endpoint | 💰 ⚙️ | — | ✅ | ✅ | — | — | — | — | — | — |
+| 🔐 MFA | 💰 | — | — | — | — | — | — | — | — | ✅ |
+| 🔒 Encryption | 💰 | — | — | ✅ | — | — | — | — | — | — |
+| 🔀 Segmentation | 💰 💾 | — | — | — | — | ✅ | — | ✅ | — | — |
+| 💾 Backup | 💰 ⚙️ | — | — | ✅ | ✅ | — | — | — | — | — |
+| 👁️ Threat Det. | 💾 ⚙️ | ✅ | — | — | — | — | ✅ | — | — | — |
+| 🔑 Passwords | 💰 💾 | — | — | — | — | ✅ | — | — | — | ✅ |
+| 📚 Training | 💰 ⚙️ | — | ✅ | — | — | — | — | — | — | ✅ |
+| 📊 Monitoring | 💾 ⚙️ | — | — | — | — | — | ✅ | — | ✅ | — |
+| 🔑 Passkeys | 💰 💾 | ✅ | — | — | — | — | — | — | — | ✅ |
+| 📋 Policy & Procedure | 💰 💾 | — | — | — | — | — | — | ✅ | ✅ | — |
 
 > Each defence counters **2 attacks**. Each attack is countered by **2–4 defences**. Social Engineering has the most counters (4).
 
@@ -82,6 +82,38 @@ The home page shows **Lobby A** and **Lobby B**, each with a live status: 🟢 F
 | 💰 **Money** | Ransomware, Insider Threat, Social Engineering |
 | 💾 **Data** | Phishing, SQL Injection, Data Exfiltration |
 | ⚙️ **Maintain Services** | Malware, DDoS, Zero-Day Exploit |
+
+### Defences by priority
+
+Each defence counters two attacks, and those two usually sit in different priority buckets, so most defences protect **two** priorities. The phone shows this as tags on every defence card, and highlights the player's first priority.
+
+| Priority | Defences that protect it | Count |
+|----------|--------------------------|-------|
+| 💰 **Money** | Endpoint Protection, Encryption, Backup & Recovery, Network Segmentation, Policy & Procedure, Multi-Factor Auth, Secure Passwords, Security Training, Passkeys | 9 |
+| 💾 **Data** | Firewall, Threat Detection, Passkeys, Network Segmentation, Secure Passwords, Continuous Monitoring, Policy & Procedure | 7 |
+| ⚙️ **Maintain Services** | Endpoint Protection, Security Training, Firewall, Backup & Recovery, Threat Detection, Continuous Monitoring | 6 |
+
+| Spans | Defences | What they counter |
+|-------|----------|-------------------|
+| 💰 + 💾 | Network Segmentation | Insider Threat, SQL Injection |
+| | Secure Passwords | Social Engineering, SQL Injection |
+| | Passkeys | Social Engineering, Phishing |
+| | Policy & Procedure | Insider Threat, Data Exfiltration |
+| 💰 + ⚙️ | Endpoint Protection | Ransomware, Malware |
+| | Backup & Recovery | Ransomware, DDoS |
+| | Security Training | Social Engineering, Malware |
+| 💾 + ⚙️ | Firewall | Phishing, DDoS |
+| | Threat Detection | Phishing, Zero-Day |
+| | Continuous Monitoring | Data Exfiltration, Zero-Day |
+| 💰 only | Multi-Factor Auth | Social Engineering |
+| | Encryption | Ransomware |
+
+**What this means in play**
+
+- **Dual-purpose defences are the strongest picks.** Ten of the twelve defences cover two attacks in two different priorities. MFA and Encryption cover one attack each, so they are the weakest picks.
+- **Maintain Services is the hardest priority.** It has the fewest defences (6), and each of its attacks (Malware, DDoS, Zero-Day) is countered by only 2 defences. Money has 9 defences and Social Engineering alone has 4.
+- **Money + Data pair up well.** Network Segmentation, Secure Passwords, Passkeys and Policy & Procedure protect both, so a player who ranks those two first can cover most of both with four picks.
+- **Debrief prompt:** ask players which priority they ranked first, then which of their defences protected it. Players who picked only single-priority cover usually find they left the other two exposed.
 
 ### Scoring Formula
 
@@ -127,7 +159,7 @@ The home page shows **Lobby A** and **Lobby B**, each with a live status: 🟢 F
 ### Typography
 
 | Element | Font | Size | Weight |
-|---------|------|------|--------|
+|---------|----------|------|------|--------|
 | Body | system-ui, -apple-system, Segoe UI, Roboto, sans-serif | 13–14px | 400 |
 | Dashboard title | Same | 28–36px | 900 |
 | Card name | Same | 16–18px | 700 |
@@ -139,7 +171,7 @@ The home page shows **Lobby A** and **Lobby B**, each with a live status: 🟢 F
 ### Key Layout Values
 
 | Element | Property | Value |
-|---------|----------|-------|
+|---------|----------|----------|-------|
 | Card border-radius | `border-radius` | 12px |
 | Button border-radius | `border-radius` | 8px |
 | Badge border-radius | `border-radius` | 6px |
@@ -151,7 +183,7 @@ The home page shows **Lobby A** and **Lobby B**, each with a live status: 🟢 F
 ### Overlay Z-Index Stack
 
 | Overlay | z-index |
-|---------|---------|
+|---------|----------|---------|
 | Name entry | 100 |
 | Priority | 90 |
 | Waiting | 80 |

@@ -1,6 +1,6 @@
 // Turns the session log into the numbers shown on the hidden /insights page.
 
-const { EFFECTIVENESS, DEFENCES, ATTACKS } = require('./public/shared');
+const { EFFECTIVENESS, DEFENCES, ATTACKS, PRIORITY_MAP, PRIORITY_EMOJIS, PRIORITY_ORDER, DEFENCE_PRIORITIES } = require('./public/shared');
 
 const ACTIVE_BY_ROUND = [2, 4, 5]; // defences a player has in play in rounds 1, 2 and 3
 const pct = (n, d) => (d ? Math.round((n / d) * 100) : null);
@@ -67,6 +67,23 @@ function compute(logger, rangeDays) {
     coveredPct: pct(dstat[d.id].covered, dstat[d.id].relevant),
   })).sort((a, b) => (b.pickedPct || 0) - (a.pickedPct || 0));
 
+  // Defences grouped by the priority they protect. A defence that spans two priorities
+  // appears under both. Block rate is for rounds where the attack belonged to that priority.
+  const priorityGroups = PRIORITY_ORDER.map(name => {
+    const attackIds = PRIORITY_MAP[name];
+    let f = 0, b = 0;
+    attackIds.forEach(id => { if (byAttack[id]) { f += byAttack[id].faced; b += byAttack[id].blocked; } });
+    return {
+      name, icon: PRIORITY_EMOJIS[name],
+      attacks: attackIds.map(id => (ATTACKS.find(a => a.id === id) || {}).name || id),
+      faced: f, blockedPct: pct(b, f),
+      defences: defences.filter(d => DEFENCE_PRIORITIES[d.id].includes(name)).map(d => ({
+        id: d.id, name: d.name, icon: d.icon, pickedPct: d.pickedPct,
+        also: DEFENCE_PRIORITIES[d.id].filter(x => x !== name).map(x => PRIORITY_EMOJIS[x]).join(' '),
+      })),
+    };
+  });
+
   // Priorities: what players put first
   const first = {};
   players.forEach(p => {
@@ -119,7 +136,7 @@ function compute(logger, rangeDays) {
       avgScore: sessionPlayers[s.id] ? Math.round(avg(sessionPlayers[s.id].map(p => p.score))) : null,
       priorityExpired: !!s.priority_expired,
     })),
-    attacks, defences, priorities, scoreBins: bins, outcomes, events,
+    attacks, defences, priorityGroups, priorities, scoreBins: bins, outcomes, events,
     health: lastHealth ? {
       at: lastHealth.ts, uptimeSec: lastHealth.uptime_sec, rssMb: lastHealth.rss_mb,
       sockets: lastHealth.sockets, activeLobbies: lastHealth.active_lobbies, players: lastHealth.players,
