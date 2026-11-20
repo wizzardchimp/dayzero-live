@@ -57,3 +57,25 @@ Optional: `BACKUP_BRANCH` (default `main`), `BACKUP_INTERVAL_MS`.
 The database is SQLite: `dayzero.db` on the volume, or clone the data repo and read
 the JSON files. Tables: `sessions`, `session_players`, `session_rounds`, `events`,
 `health`.
+
+## The hidden insights page
+
+`/insights` shows the data as a dashboard: totals, attacks and defences, what players
+put first, scores, how sessions ended, when games are played, a sessions table, events,
+and server and backup health. It has a time-range picker and downloads (sessions as
+CSV, everything as JSON).
+
+It is switched off until you set a key:
+
+1. In Railway, add a variable `ADMIN_KEY` with a long random value. One way to make
+   one: run `openssl rand -base64 24` in a terminal.
+2. Open `https://<your-app>/insights` and enter the key. Nothing on the page loads
+   without it.
+
+How it is protected:
+
+- With no `ADMIN_KEY` set, `/insights` and `/api/insights` return "not found".
+- The key is sent in a request header, never in the address, so it doesn't end up in
+  browser history or server logs. It is kept only for the browser tab's session.
+- Five wrong attempts from one address lock it out for a minute.
+- The page is not linked from anywhere and tells search engines not to index it.

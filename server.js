@@ -6,6 +6,7 @@ const path = require('path');
 const QRCode = require('qrcode');
 const logger = require('./logger');
 const backup = require('./backup');
+const insights = require('./insights');
 const { ATTACKS, DEFENCES, EFFECTIVENESS, PRIORITY_MAP,
   ATTACK_COST, START_BUDGET, MAX_ROUNDS, SPIN_DURATION, DEFAULT_TIMER } = require('./public/shared');
 
@@ -618,6 +619,44 @@ app.get('/api/lobbies', (req, res) => {
 
 app.get('/health', (req, res) => res.json({ ok: true }));
 
+/* ---------- hidden insights page (needs ADMIN_KEY; off if it isn't set) ---------- */
+const ADMIN_KEY = process.env.ADMIN_KEY || '';
+const adminFails = new Map(); // ip -> { count, until }
+function adminIp(req) {
+  const xff = req.get('x-forwarded-for');
+  return (xff ? String(xff).split(',')[0].trim() : req.ip) || 'unknown';
+}
+function adminKeyOk(req) {
+  const given = Buffer.from(String(req.get('x-admin-key') || ''));
+  const want = Buffer.from(ADMIN_KEY);
+  return given.length === want.length && crypto.timingSafeEqual(given, want);
+}
+app.get('/insights', (req, res) => {
+  if (!ADMIN_KEY) return res.status(404).send('Not found');
+  res.set({ 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex, nofollow' });
+  res.sendFile(path.join(__dirname, 'private', 'insights.html'));
+});
+app.get('/api/insights', (req, res) => {
+  res.set({ 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex, nofollow' });
+  if (!ADMIN_KEY) return res.status(404).json({ error: 'not found' });
+  const ip = adminIp(req);
+  const f = adminFails.get(ip);
+  if (f && f.until > Date.now()) return res.status(429).json({ error: 'too many attempts, wait a minute' });
+  if (!adminKeyOk(req)) {
+    const n = (f ? f.count : 0) + 1;
+    adminFails.set(ip, n >= 5 ? { count: 0, until: Date.now() + 60000 } : { count: n, until: 0 });
+    return res.status(401).json({ error: 'wrong key' });
+  }
+  adminFails.delete(ip);
+  const range = Number(req.query.range);
+  const data = insights.compute(logger, range > 0 ? range : 0);
+  data.backup = backup.status();
+  data.log = { enabled: logger.enabled(), dir: logger.DATA_DIR };
+  data.uptimeSec = Math.round(process.uptime());
+  data.rssMb = Math.round(process.memoryUsage().rss / 1048576);
+  res.json(data);
+});
+
 app.get('/qr/:file', (req, res) => {
   const code = String(req.params.file || '').replace(/\.png$/i, '');
   if (!/^\d{3}$/.test(code)) return res.status(400).end();
@@ -928,6 +967,7 @@ process.on('SIGINT', () => shutdown('SIGINT'));
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, '0.0.0.0', () => {
   logger.event('server-start', null, { lobbies: LOBBY_IDS });
+  if (!ADMIN_KEY) console.log('Insights page: off (set ADMIN_KEY to enable /insights)');
   sampleHealth();
   backup.start();
   console.log(`Day Zero Live running on http://localhost:${PORT} — lobbies: ${LOBBY_IDS.join(', ')}`);

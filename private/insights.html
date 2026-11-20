@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Day Zero insights</title>
+<style>
+:root{--bg:#0f1117;--card:#1a1d28;--card2:#232736;--border:#2d3142;--text:#e2e8f0;--text2:#94a3b8;--text3:#64748b;--accent:#3b82f6;--green:#10b981;--red:#ef4444;--amber:#f59e0b;--pink:#f472b6}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1200px;margin:0 auto;padding:20px max(16px,env(safe-area-inset-left,0px)) 60px}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+h1{font-size:22px;font-weight:800}
+h1 small{display:block;font-size:12px;font-weight:500;color:var(--text3);margin-top:2px}
+.bar-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+select,button,input{font:inherit;color:var(--text);background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:7px 12px}
+button{cursor:pointer}
+button:hover{border-color:var(--accent)}
+button.primary{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+.gate{max-width:360px;margin:15vh auto;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px;text-align:center}
+.gate h2{font-size:20px;margin-bottom:6px}
+.gate p{color:var(--text2);margin-bottom:16px}
+.gate input{width:100%;margin-bottom:10px;text-align:center}
+.gate .err{color:var(--red);min-height:20px;font-size:13px;margin-bottom:8px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:16px}
+.kpi{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 14px}
+.kpi p{color:var(--text2);font-size:12px}
+.kpi b{display:block;font-size:26px;font-weight:800;line-height:1.25;font-variant-numeric:tabular-nums}
+.kpi span{color:var(--text3);font-size:12px}
+.notes{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 18px;margin-bottom:16px}
+.notes h2{font-size:13px;color:var(--text2);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px}
+.notes li{margin:0 0 6px 18px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-bottom:12px}
+.panel{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 16px;min-width:0}
+.panel.wide{grid-column:1/-1}
+.panel h2{font-size:13px;color:var(--text2);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px}
+.panel .hint{font-size:12px;color:var(--text3);margin:-4px 0 10px}
+.row{display:grid;grid-template-columns:minmax(110px,150px) minmax(0,1fr) 54px;gap:10px;align-items:center;margin-bottom:7px}
+.row .lbl{overflow-wrap:anywhere;line-height:1.2}
+.row.two{grid-template-columns:minmax(110px,150px) minmax(0,1fr) 96px}
+.row .val small{color:var(--text3);font-size:12px}
+.track{height:10px;border-radius:5px;background:var(--card2);overflow:hidden}
+.track i{display:block;height:100%;border-radius:5px;background:var(--accent)}
+.track i.good{background:var(--green)}.track i.bad{background:var(--red)}.track i.warn{background:var(--amber)}
+.row .val{text-align:right;font-variant-numeric:tabular-nums;color:var(--text2)}
+.tbl{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+th,td{text-align:left;padding:7px 8px;border-bottom:1px solid var(--border);white-space:nowrap}
+th{font-size:11px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.06em}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+.badge{display:inline-block;font-size:12px;padding:1px 9px;border-radius:6px;background:var(--card2);color:var(--text2)}
+.badge.ok{background:rgba(16,185,129,.16);color:var(--green)}
+.badge.warn{background:rgba(245,158,11,.16);color:var(--amber)}
+.badge.bad{background:rgba(239,68,68,.16);color:var(--red)}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:4px 14px}
+.kv dt{color:var(--text3)}.kv dd{font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.empty{color:var(--text3);padding:6px 0}
+.foot{color:var(--text3);font-size:12px;margin-top:14px}
+[hidden]{display:none!important}
+@media(max-width:760px){.grid{grid-template-columns:minmax(0,1fr)}.row{grid-template-columns:minmax(90px,120px) minmax(0,1fr) 48px}.row.two{grid-template-columns:minmax(90px,120px) minmax(0,1fr) 84px}}
+</style>
+</head>
+<body>
+<div class="gate" id="gate">
+  <h2>Day Zero insights</h2>
+  <p>Enter the admin key to view session data.</p>
+  <input id="key" type="password" autocomplete="off" placeholder="Admin key" aria-label="Admin key">
+  <div class="err" id="gate-err"></div>
+  <button class="primary" id="unlock" style="width:100%">Open</button>
+</div>
+
+<div class="wrap" id="app" hidden>
+  <header>
+    <h1>Day Zero insights<small id="stamp"></small></h1>
+    <div class="bar-actions">
+      <select id="range" aria-label="Time range">
+        <option value="7">Last 7 days</option>
+        <option value="30" selected>Last 30 days</option>
+        <option value="90">Last 90 days</option>
+        <option value="0">All time</option>
+      </select>
+      <button id="refresh">Refresh</button>
+      <button id="dl-csv">Sessions CSV</button>
+      <button id="dl-json">All data JSON</button>
+      <button id="lock">Lock</button>
+    </div>
+  </header>
+
+  <div class="kpis" id="kpis"></div>
+  <div class="notes" id="notes"></div>
+
+  <div class="grid">
+    <div class="panel"><h2>Attacks: how often players blocked them</h2><div id="attacks"></div></div>
+    <div class="panel"><h2>Defences: picked and in play when needed</h2><p class="hint">Picked is the share of players who chose it. In play is how often they had it in a round where it would have stopped the attack.</p><div id="defences"></div></div>
+    <div class="panel"><h2>What players put first</h2><div id="priorities"></div></div>
+    <div class="panel"><h2>Scores</h2><div id="scores"></div></div>
+    <div class="panel"><h2>How sessions ended</h2><div id="outcomes"></div></div>
+    <div class="panel"><h2>When games are played</h2><div id="weekdays"></div></div>
+    <div class="panel wide"><h2>Sessions</h2><div class="tbl" id="sessions"></div></div>
+    <div class="panel"><h2>Events</h2><dl class="kv" id="events"></dl></div>
+    <div class="panel"><h2>Server and backup</h2><dl class="kv" id="health"></dl></div>
+  </div>
+  <p class="foot">Players are never recorded by name. Times are shown in your local time.</p>
+</div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const KEY_STORE = 'dz-admin-key';
+let key = '';
+let data = null;
+
+try { key = sessionStorage.getItem(KEY_STORE) || ''; } catch (e) {}
+
+const OUTCOME = {
+  'completed': ['Completed', 'ok'], 'ended-by-host': ['Ended by host', 'warn'], 'returned-to-lobby': ['Returned to lobby', 'warn'],
+  'host-left': ['Host left', 'bad'], 'taken-over': ['Taken over', 'bad'], 'idle-timeout': ['Idle timeout', 'bad'],
+  'host-released': ['Host released', 'warn'], 'server-restart': ['Server restart', 'bad'],
+};
+const outcomeLabel = (o) => (OUTCOME[o] || [o, ''])[0];
+const fmtDur = (s) => `${Math.floor(s / 60)}m ${String(s % 60).padStart(2, '0')}s`;
+const fmtUptime = (s) => { const d = Math.floor(s / 86400), h = Math.floor(s % 86400 / 3600), m = Math.floor(s % 3600 / 60); return d ? `${d}d ${h}h` : h ? `${h}h ${m}m` : `${m}m`; };
+const fmtWhen = (ms) => new Date(ms).toLocaleString([], { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+const pctTxt = (n) => (n == null ? '–' : n + '%');
+
+async function load() {
+  $('stamp').textContent = 'Loading…';
+  let res;
+  try {
+    res = await fetch('/api/insights?range=' + encodeURIComponent($('range').value), { headers: { 'x-admin-key': key }, cache: 'no-store' });
+  } catch (e) { return fail('Could not reach the server.'); }
+  if (res.status === 404) return fail('Insights is switched off. Set ADMIN_KEY on the server to enable it.');
+  if (res.status === 429) return fail('Too many attempts. Wait a minute and try again.');
+  if (res.status === 401) return fail('That key is not right.');
+  if (!res.ok) return fail('Something went wrong (' + res.status + ').');
+  data = await res.json();
+  try { sessionStorage.setItem(KEY_STORE, key); } catch (e) {}
+  $('gate').hidden = true;
+  $('app').hidden = false;
+  render();
+}
+function fail(msg) {
+  $('app').hidden = true;
+  $('gate').hidden = false;
+  $('gate-err').textContent = msg;
+  if (/key is not right/.test(msg)) { key = ''; try { sessionStorage.removeItem(KEY_STORE); } catch (e) {} }
+}
+
+function bars(items, opts) {
+  if (!items.length) return '<p class="empty">No data in this period yet.</p>';
+  return items.map(it => `<div class="row"><span class="lbl">${it.icon ? esc(it.icon) + ' ' : ''}${esc(it.label)}</span><div class="track"><i class="${it.cls || ''}" style="width:${Math.max(0, Math.min(100, it.pct || 0))}%"></i></div><span class="val">${esc(it.text)}</span></div>`).join('');
+}
+const goodBad = (p) => (p == null ? '' : p >= 60 ? 'good' : p >= 35 ? 'warn' : 'bad');
+
+function render() {
+  const d = data, k = d.kpis;
+  $('stamp').textContent = 'Updated ' + new Date(d.generatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + (d.rangeDays ? ` · last ${d.rangeDays} days` : ' · all time');
+
+  const kp = [
+    ['Sessions', k.sessions, `${k.completed} completed (${pctTxt(k.completionPct)})`],
+    ['Players', k.players, k.avgPlayers != null ? `${k.avgPlayers} per finished game` : ''],
+    ['Average score', k.avgScore != null ? k.avgScore : '–', `${pctTxt(k.eliminatedPct)} eliminated`],
+    ['Attacks blocked', pctTxt(k.blockedPct), `Round 1: ${pctTxt(k.round1BlockedPct)}`],
+    ['Average game', k.avgMinutes != null ? k.avgMinutes + ' min' : '–', 'finished games'],
+    ['Priority timer ran out', pctTxt(k.priorityTimerRanOutPct), `${pctTxt(k.latePriorityPct)} of players set priorities late`],
+  ];
+  $('kpis').innerHTML = kp.map(([a, b, c]) => `<div class="kpi"><p>${esc(a)}</p><b>${esc(b)}</b><span>${esc(c)}</span></div>`).join('');
+
+  // Plain-language notes
+  const notes = [];
+  if (k.sessions < 10) notes.push(`Small sample: ${k.sessions} session${k.sessions === 1 ? '' : 's'}. Treat the patterns below as early hints.`);
+  const worstAtk = d.attacks.find(a => a.faced >= 5);
+  if (worstAtk) notes.push(`${worstAtk.icon} ${worstAtk.name} was missed most: only ${worstAtk.blockedPct}% of players blocked it (${worstAtk.faced} faced).`);
+  const gap = d.defences.filter(x => x.relevantRounds >= 5 && x.coveredPct != null).sort((a, b) => a.coveredPct - b.coveredPct)[0];
+  if (gap) notes.push(`${gap.icon} ${gap.name} was needed in ${gap.relevantRounds} player rounds but players had it only ${gap.coveredPct}% of the time.`);
+  const topPri = d.priorities[0];
+  if (topPri) notes.push(`${topPri.sharePct}% of players put ${topPri.name} first.`);
+  const lateRefused = d.events['join-refused-late'] || 0;
+  if (lateRefused) notes.push(`${lateRefused} player${lateRefused === 1 ? ' was' : 's were'} turned away for joining after a game had started.`);
+  const notDone = k.sessions - k.completed;
+  if (notDone > 0) notes.push(`${notDone} of ${k.sessions} sessions did not reach the final screen.`);
+  $('notes').innerHTML = notes.length ? `<h2>What stands out</h2><ul>${notes.map(n => `<li>${esc(n)}</li>`).join('')}</ul>` : '<h2>What stands out</h2><p class="empty">Nothing to report yet.</p>';
+
+  $('attacks').innerHTML = bars(d.attacks.map(a => ({ icon: a.icon, label: a.name, pct: a.blockedPct, text: a.blockedPct + '%', cls: goodBad(a.blockedPct) })));
+  $('defences').innerHTML = d.defences.length ? d.defences.map(x => `<div class="row two"><span class="lbl">${esc(x.icon)} ${esc(x.name)}</span><div class="track"><i style="width:${x.pickedPct || 0}%"></i></div><span class="val" title="Picked by ${pctTxt(x.pickedPct)} of players, in play for ${pctTxt(x.coveredPct)} of the rounds it was needed">${pctTxt(x.pickedPct)} <small>/ ${pctTxt(x.coveredPct)}</small></span></div>`).join('') + '<p class="hint" style="margin-top:8px">Bar and first number: picked. Second number: in play when needed.</p>' : '<p class="empty">No data in this period yet.</p>';
+  $('priorities').innerHTML = bars(d.priorities.map(p => ({ label: p.name, pct: p.sharePct, text: p.sharePct + '%' }))) + (d.priorities.length ? '<p class="hint" style="margin-top:8px">Share of players who ranked it first.</p>' : '');
+  const maxBin = Math.max(1, ...d.scoreBins.map(b => b.players));
+  $('scores').innerHTML = k.players ? d.scoreBins.map(b => `<div class="row"><span class="lbl">${esc(b.label)}</span><div class="track"><i style="width:${Math.round(b.players / maxBin * 100)}%"></i></div><span class="val">${b.players}</span></div>`).join('') : '<p class="empty">No data in this period yet.</p>';
+  const oc = Object.entries(d.outcomes).sort((a, b) => b[1] - a[1]);
+  $('outcomes').innerHTML = oc.length ? oc.map(([o, n]) => `<div class="row"><span class="lbl">${esc(outcomeLabel(o))}</span><div class="track"><i class="${(OUTCOME[o] || [0, ''])[1] === 'ok' ? 'good' : (OUTCOME[o] || [0, ''])[1] === 'bad' ? 'bad' : 'warn'}" style="width:${Math.round(n / k.sessions * 100)}%"></i></div><span class="val">${n}</span></div>`).join('') : '<p class="empty">No data in this period yet.</p>';
+
+  // Weekday pattern in the viewer's local time
+  const names = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'], counts = [0, 0, 0, 0, 0, 0, 0];
+  d.sessions.forEach(s => { counts[(new Date(s.startedAt).getDay() + 6) % 7]++; });
+  const maxDay = Math.max(1, ...counts);
+  $('weekdays').innerHTML = d.sessions.length ? names.map((n, i) => `<div class="row"><span class="lbl">${n}</span><div class="track"><i style="width:${Math.round(counts[i] / maxDay * 100)}%"></i></div><span class="val">${counts[i]}</span></div>`).join('') : '<p class="empty">No data in this period yet.</p>';
+
+  $('sessions').innerHTML = d.sessions.length ? `<table><thead><tr><th>When</th><th>Lobby</th><th class="num">Players</th><th class="num">Rounds</th><th class="num">Length</th><th class="num">Blocked</th><th class="num">Avg score</th><th>Outcome</th></tr></thead><tbody>${d.sessions.map(s => `<tr><td>${esc(fmtWhen(s.startedAt))}</td><td>${esc(s.lobby)}</td><td class="num">${s.players}</td><td class="num">${s.rounds}</td><td class="num">${esc(fmtDur(s.durationSec))}</td><td class="num">${pctTxt(s.blockedPct)}</td><td class="num">${s.avgScore == null ? '–' : s.avgScore}</td><td><span class="badge ${(OUTCOME[s.outcome] || [0, ''])[1]}">${esc(outcomeLabel(s.outcome))}</span></td></tr>`).join('')}</tbody></table>` : '<p class="empty">No sessions in this period yet.</p>';
+
+  const ev = d.events, evRows = [
+    ['Sessions started', ev['session-started']], ['Host claimed a lobby', ev['host-claimed']], ['Host went away', ev['host-away']],
+    ['Host came back', ev['host-back']], ['Lobbies released', ev['lobby-released']], ['Lobbies taken over', ev['lobby-taken-over']],
+    ['Wrong join codes', ev['join-bad-code']], ['Late joins turned away', ev['join-refused-late']], ['Server starts', ev['server-start']],
+  ];
+  $('events').innerHTML = evRows.map(([a, b]) => `<dt>${esc(a)}</dt><dd>${b || 0}</dd>`).join('');
+
+  const h = d.health, b = d.backup || {};
+  const hv = [
+    ['Server uptime', fmtUptime(d.uptimeSec)], ['Memory', d.rssMb + ' MB'],
+    ['Connected now', h ? h.sockets : '–'], ['Log storage', d.log && d.log.enabled ? 'On' : 'Off'],
+    ['Backup', b.configured ? 'On' : 'Not set up'],
+    ['Last backup', b.lastSuccess ? new Date(b.lastSuccess).toLocaleString() : '–'],
+    ['Waiting to back up', b.pending == null ? '–' : b.pending],
+    ['Backup error', b.lastError || 'None'],
+  ];
+  $('health').innerHTML = hv.map(([a, c]) => `<dt>${esc(a)}</dt><dd>${esc(c)}</dd>`).join('');
+}
+
+function download(name, text, type) {
+  const url = URL.createObjectURL(new Blob([text], { type }));
+  const a = document.createElement('a');
+  a.href = url; a.download = name;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+$('dl-json').onclick = () => data && download('dayzero-insights.json', JSON.stringify(data, null, 2), 'application/json');
+$('dl-csv').onclick = () => {
+  if (!data) return;
+  const cols = ['id', 'lobby', 'startedAt', 'durationSec', 'players', 'rounds', 'outcome', 'blockedPct', 'avgScore', 'priorityExpired'];
+  const rows = data.sessions.map(s => cols.map(c => c === 'startedAt' ? new Date(s[c]).toISOString() : s[c]).join(','));
+  download('dayzero-sessions.csv', [cols.join(',')].concat(rows).join('\n'), 'text/csv');
+};
+$('refresh').onclick = load;
+$('range').onchange = load;
+$('lock').onclick = () => { key = ''; data = null; try { sessionStorage.removeItem(KEY_STORE); } catch (e) {} $('key').value = ''; $('gate-err').textContent = ''; $('app').hidden = true; $('gate').hidden = false; };
+function unlock() { key = $('key').value.trim(); if (!key) { $('gate-err').textContent = 'Enter the key first.'; return; } load(); }
+$('unlock').onclick = unlock;
+$('key').addEventListener('keydown', e => { if (e.key === 'Enter') unlock(); });
+
+if (key) load();
+</script>
+</body>
+</html>

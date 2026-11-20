@@ -190,9 +190,12 @@ function prune() {
   });
 }
 
+// Read-only helper for the insights page (fixed SQL only, never user input)
+const query = (sql, params) => safe(() => db.prepare(sql).all(...(params || [])), []);
+
 function close() { try { if (db) db.close(); } catch (e) { /* ignore */ } db = null; }
 
 module.exports = {
   init, enabled, recordSession, event, healthSample, exportSession, pendingExportIds, markExported,
-  sessionCount, hasSession, importSession, eventsForDay, prune, close, DATA_DIR,
+  sessionCount, hasSession, importSession, eventsForDay, prune, close, query, DATA_DIR,
 };
