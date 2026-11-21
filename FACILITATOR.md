@@ -87,6 +87,8 @@ The home page shows **Lobby A** and **Lobby B**, each with a live status: 🟢 F
 
 Each defence counters two attacks, and those two usually sit in different priority buckets, so most defences protect **two** priorities. Every defence card on the phone shows three evenly spaced tags (Money, Data, Services). Tags the defence protects are lit and the rest are faded; the player's own ranking sets the colour: solid blue for their 1st priority, outlined blue for 2nd, grey for 3rd. A banner above the cards names their first priority and how many defences protect it.
 
+**Telling the look-alikes apart.** Three defences sound alike to non-technical players, so the phone describes them by where they work: **Endpoint Protection** is antivirus *on the device* (laptops and phones); **Threat Detection** is an *alarm for the whole network* that spots an attack already under way; **Continuous Monitoring** is *CCTV for your data*, recording activity and noticing information leaving. If a table asks which is which, those three phrases are the answer.
+
 | Priority | Defences that protect it | Count |
 |----------|--------------------------|-------|
 | 💰 **Money** | Endpoint Protection, Encryption, Backup & Recovery, Network Segmentation, Policy & Procedure, Multi-Factor Auth, Secure Passwords, Security Training, Passkeys | 9 |
