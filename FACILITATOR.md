@@ -85,7 +85,7 @@ The home page shows **Lobby A** and **Lobby B**, each with a live status: 🟢 F
 
 ### Defences by priority
 
-Each defence counters two attacks, and those two usually sit in different priority buckets, so most defences protect **two** priorities. The phone shows this as tags on every defence card, and highlights the player's first priority.
+Each defence counters two attacks, and those two usually sit in different priority buckets, so most defences protect **two** priorities. Every defence card on the phone shows three evenly spaced tags (Money, Data, Services). Tags the defence protects are lit and the rest are faded; the player's own ranking sets the colour: solid blue for their 1st priority, outlined blue for 2nd, grey for 3rd. A banner above the cards names their first priority and how many defences protect it.
 
 | Priority | Defences that protect it | Count |
 |----------|--------------------------|-------|
